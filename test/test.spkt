@@ -1,0 +1,45 @@
+const x #m/s^2 : int32 = 123 #m / 456 #s / 789#s;
+const y #N*m : int32 = 123#m * 40#N;
+var z #J : int32 = 0#J;
+const v #V : int32 = 12 #A + 4 #Ohm;
+
+unit #m {
+    operator #km(const x) = x / 1000#m/km;
+    operator #mm(const x) = x * 1000#mm/m;
+    operator #cm(const x) = x * 100#cm/m;
+}
+
+type GPS {
+    var lat #deg : int32;  // Latitude
+    var long #deg : int32; // Longitude
+    var alt #m : int32;    // Altitude
+    func check(var p #m : int32) #m : bool {
+        return 1#m;
+    }
+}
+
+func area(const r #m : int32) #m^2 : int32 {
+    return 2#m/m * PI * r ^ 2#m;
+}
+
+func circumference(const r #m : int32) #m : int32 {
+    return 2#m/m * PI * r;
+}
+
+func volume(const r #m : int32) #m^3 : int32 {
+    return 3#m/m / 4#m/m * PI * r ^ 3#m;
+}
+
+/**
+ * Ohm's Law
+ * @param i Current
+ * @param r Resistance
+ * @return Voltage
+ */
+func voltage(const i #A : int32, const r #Ohm : int32) #V : int32 {
+    const v #V : int32 = i * r;
+    if v == 12 #V {
+        v = 2#V;
+    }
+    return v;
+}
