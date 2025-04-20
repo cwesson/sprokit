@@ -58,7 +58,7 @@ bool Dimensions::operator==(const Dimensions& other) const {
 			}
 		}
 	}
-	for(const auto d : dim){
+	for(const auto& d : dim){
 		if(d.second != 0){
 			if(other.dim.contains(d.first)){
 				if(d.second != other.dim.at(d.first)){

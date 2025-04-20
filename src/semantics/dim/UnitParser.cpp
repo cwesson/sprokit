@@ -44,7 +44,7 @@ Dimensions UnitParser::parse(const std::string& unit){
 	std::string last;
 	bool add = true;
 	for(std::string token = scanner.token(); token != ""; token = scanner.token()){
-		if(token == "#" || token == "*" | token == "1"){
+		if(token == "#" || token == "*" || token == "1"){
 			continue;
 		}else if(token == "/"){
 			add = false;

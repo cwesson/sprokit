@@ -9,8 +9,11 @@
 
 #pragma once
 
-#include <string>
+#include "Expression.h"
+#include "Type.h"
 #include <iostream>
+#include <map>
+#include <string>
 
 class FunctionSymbols;
 
@@ -24,9 +27,10 @@ class SymbolTable {
 		 * Variables are indexed by name.
 		 */
 		struct variable {
-			std::string type; ///< Declared type.
+			ADT::Type* type;  ///< Declared type.
 			std::string unit; ///< Declared unit.
 			bool constant;    ///< True if declared constant.
+			bool pointer;     ///< True if declared as a pointer.
 			bool used;        ///< True if the variable is accessed.
 			bool modified;    ///< True if the variable is modified.
 
@@ -37,6 +41,7 @@ class SymbolTable {
 				type(),
 				unit(),
 				constant(true),
+				pointer(false),
 				used(false),
 				modified(false) {}
 		};
@@ -62,9 +67,10 @@ class SymbolTable {
 		 * Functions are indexed by name.
 		 */
 		struct function {
-			std::string type; ///< Declared return type.
+			ADT::Type* type;  ///< Declared return type.
 			std::string unit; ///< Declared return unit.
 			FunctionSymbols* table; ///< Symbol table for parameters.
+			bool pointer;     ///< true if the function returns a pointer.
 
 			/**
 			 * Constructor.
@@ -73,6 +79,17 @@ class SymbolTable {
 				type(),
 				unit(),
 				table(nullptr) {}
+			
+			~function();
+		};
+
+		/**
+		 * Unit declaration entry for symbol tables.
+		 * Units are indexed by short name.
+		 */
+		struct unit {
+			std::string alias; ///< Expanded unit name.
+			std::map<std::string, AST::Expression*> conversion; ///< Map of unit conversion expressions.
 		};
 
 		/**
@@ -124,11 +141,33 @@ class SymbolTable {
 		virtual SymbolTable* addType(const std::string& n);
 
 		/**
+		 * Add a unit declaration.
+		 * @param n Unit name.
+		 * @return The symbol table entry.
+		 * @note The same unit may be declared multiple times.
+		 */
+		virtual unit* addUnit(const std::string& n);
+
+		/**
 		 * Recursively search for the variable.
 		 * @param n Variable name.
 		 * @return The variable entry, or nullptr if no variable with the given name was found.
 		 */
 		virtual variable* findVariable(const std::string& n);
+
+		/**
+		 * Recursively search for the function.
+		 * @param n Function name.
+		 * @return The function entry, or nullptr if no function with the given name was found.
+		 */
+		virtual function* findFunction(const std::string& n);
+
+		/**
+		 * Recursively search for the type.
+		 * @param n Type name.
+		 * @return The type symbol table, or nullptr if no type with the given name was found.
+		 */
+		virtual SymbolTable* findType(const std::string& n);
 		
 		SymbolTable* parent; ///< Parent symbol table, nullptr if there is no parent.
 		std::string name;    ///< Name of the symbol table.

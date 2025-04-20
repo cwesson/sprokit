@@ -21,6 +21,31 @@ classDiagram
 	ASTNode ..> SymbolTable
 ```
 
+## Abstract Data Types
+```mermaid
+classDiagram
+	class Type
+	<<abstract>> Type
+	Type <|-- UnknownType
+	Type <-- UserType
+	Type <|-- PrimitiveType
+	<<abstract>> PrimitiveType
+	PrimitiveType <|-- BoolType
+	PrimitiveType <|-- IntType
+	PrimitiveType <|-- FloatType
+```
+
+```mermaid
+sequenceDiagram
+	Note over Semantics,TypeU: Check if TypeU is<br>convertible to TypeT
+	Semantics ->>+ TypeU: convertibleTo(t)
+	TypeU ->>+ TypeT: accept(u)
+	TypeT ->>+ TypeU: visit(t)
+	TypeU -->>- TypeT: true
+	TypeT -->>- TypeU: true
+	TypeU -->>- Semantics: true
+```
+
 ### Abstract Syntax Tree
 ```mermaid
 classDiagram
@@ -45,7 +70,6 @@ classDiagram
 	BinaryOperator <|-- Modulo
 	BinaryOperator <|-- Multiplication
 	BinaryOperator <|-- Subtraction
-
 ```
 
 ### Dimensional Analysis

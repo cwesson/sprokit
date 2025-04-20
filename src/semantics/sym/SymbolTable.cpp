@@ -8,13 +8,19 @@
  */
 
 #include "SymbolTable.h"
+#include "FunctionSymbols.h"
 #include <string>
 #include <iostream>
 
 SymbolTable::SymbolTable(const std::string& n, SymbolTable* p) :
-	name(n),
-	parent(p)
+	parent(p),
+	name(n)
 {}
+
+
+SymbolTable::function::~function() {
+	delete table;
+}
 
 std::ostream& SymbolTable::print(std::ostream& os, unsigned int depth) const {
 	for(unsigned int i = 0; i < depth; ++i){
@@ -36,6 +42,13 @@ SymbolTable::function* SymbolTable::addFunction(const std::string& n) {
 	return nullptr;
 }
 
+SymbolTable::unit* SymbolTable::addUnit(const std::string& n) {
+	if(parent != nullptr){
+		return parent->addUnit(n);
+	}
+	return nullptr;
+}
+
 SymbolTable* SymbolTable::addType(const std::string& n) {
 	return nullptr;
 }
@@ -43,6 +56,22 @@ SymbolTable* SymbolTable::addType(const std::string& n) {
 SymbolTable::variable* SymbolTable::findVariable(const std::string& n) {
 	if(parent != nullptr){
 		return parent->findVariable(n);
+	}else{
+		return nullptr;
+	}
+}
+
+SymbolTable::function* SymbolTable::findFunction(const std::string& n) {
+	if(parent != nullptr){
+		return parent->findFunction(n);
+	}else{
+		return nullptr;
+	}
+}
+
+SymbolTable* SymbolTable::findType(const std::string& n) {
+	if(parent != nullptr){
+		return parent->findType(n);
 	}else{
 		return nullptr;
 	}

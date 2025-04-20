@@ -23,12 +23,13 @@ class DimensionalAnalysis : public Visitor {
 	private:
 		Dimensions constructed_unit; ///< Unit dimensions found from recursive visits.
 		UnitParser parser;           ///< Parser for unit names.
+		AST::FunctionDeclaration* in_func; ///< Function currently being checked.
 
 	public:
 		/**
 		 * Constructor.
 		 */
-		DimensionalAnalysis() = default;
+		DimensionalAnalysis();
 
 		/**
 		 * X-macro declaring visit functions for each ASTNode.

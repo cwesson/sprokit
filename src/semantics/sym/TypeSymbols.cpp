@@ -12,18 +12,31 @@ TypeSymbols::TypeSymbols(const std::string& name, SymbolTable* p) :
 	SymbolTable("type " + name, p)
 {}
 
+TypeSymbols::~TypeSymbols() {
+	for(auto v : vars){
+		delete v.second;
+	}
+	vars.clear();
+	for(auto f : funcs){
+		delete f.second;
+	}
+	funcs.clear();
+}
+
 std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 	SymbolTable::print(os, depth);
 	
-	os << "| Name            | Type       | Unit       | const |" << std::endl;
-	os << "|-----------------|------------|------------|-------|" << std::endl;
+	os << "| Name            | Type       | Unit       | const | point |" << std::endl;
+	os << "|-----------------|------------|------------|-------|-------|" << std::endl;
 	for(auto sym : vars) {
-		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(10) << sym.second->type << " | " << std::setw(10) << sym.second->unit
-			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false") << " |" << std::endl;
+		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
+			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
+			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false") << " |" << std::endl;
 	}
 	for(auto sym : funcs) {
 		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << sym.second->type << " | " << std::setw(10) << sym.second->unit
-			<< " | " << std::setw(5) << "n/a" << " |" << std::endl;
+			<< " | " << std::setw(5) << "n/a"
+			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false") << " |" << std::endl;
 	}
 	os << std::endl;
 
@@ -50,5 +63,13 @@ SymbolTable::function* TypeSymbols::addFunction(const std::string& n) {
 		funcs[n] = new SymbolTable::function();
 		funcs[n]->table = new FunctionSymbols(name + "::" + n, this);
 		return funcs[n];
+	}
+}
+
+SymbolTable::variable* TypeSymbols::findVariable(const std::string& n) {
+	if(vars.contains(n)){
+		return vars[n];
+	}else{
+		return nullptr;
 	}
 }

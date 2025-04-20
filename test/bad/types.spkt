@@ -1,0 +1,15 @@
+
+type A {
+	var v : int32;
+}
+
+func test() : int32 {
+	var a : int8 = 14569;
+	var b : int16 = 4562156;
+	var c : A = 12;
+	var d : int32 = 159 + true;
+	if 13 - 13 {
+		return 0;
+	}
+	return false;
+}

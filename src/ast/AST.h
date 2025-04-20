@@ -13,7 +13,9 @@
  */
 #define AST_LIST \
 	X(Addition) \
+	X(Array) \
 	X(Assignment) \
+	X(BoolLiteral) \
 	X(Conversion) \
 	X(Division) \
 	X(Equal) \
@@ -23,9 +25,11 @@
 	X(IfStatement) \
 	X(IntegerLiteral) \
 	X(List) \
+	X(Member) \
 	X(Modulo) \
 	X(Multiplication) \
-	X(ParameterDeclaration) \
+	X(Pointer) \
+	X(Property) \
 	X(Return) \
 	X(Subtraction) \
 	X(TypeDeclaration) \
@@ -34,7 +38,9 @@
 	X(VariableDeclaration) \
 
 #include "Addition.h"
+#include "Array.h"
 #include "Assignment.h"
+#include "BoolLiteral.h"
 #include "Conversion.h"
 #include "Division.h"
 #include "Equal.h"
@@ -44,9 +50,11 @@
 #include "IfStatement.h"
 #include "IntegerLiteral.h"
 #include "List.h"
+#include "Member.h"
 #include "Modulo.h"
 #include "Multiplication.h"
-#include "ParameterDeclaration.h"
+#include "Pointer.h"
+#include "Property.h"
 #include "Return.h"
 #include "Subtraction.h"
 #include "TypeDeclaration.h"

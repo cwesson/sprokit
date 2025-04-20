@@ -8,26 +8,53 @@
 
 #include "ASTNode.h"
 #include "Expression.h"
+#include "Array.h"
 #include <string>
 
 namespace AST {
 
+/**
+ * ASTNode for `const` and `var` declarations.
+ * @ingroup ast
+ */
 class VariableDeclaration : public ASTNode {
 	public:
-		VariableDeclaration(unsigned int line, const char* n, const char* t, const char* u, Expression* i) :
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param n Variable name.
+		 * @param t Variable type.
+		 * @param u Variable unit.
+		 * @param a Array dimensions.
+		 */
+		VariableDeclaration(unsigned int line, const char* n, const char* t, const char* u, Array* a) :
 			ASTNode(line),
 			name(n),
 			type(t),
 			unit(u),
-			initial(i) {}
+			array(a),
+			initial(nullptr),
+			constant(true),
+			pointer(false) {}
+		
+		/**
+		 * Destructor.
+		 */
+		virtual ~VariableDeclaration() {
+			if(initial != nullptr) {
+				delete initial;
+			}
+		}
 		
 		virtual void accept(Visitor& v) override;
 		
-		std::string name;
-		std::string type;
-		std::string unit;
-		Expression* initial;
-		bool constant;
+		std::string name;    ///< Variable name.
+		std::string type;    ///< Variable type.
+		std::string unit;    ///< Variable unit.
+		Array* array;        ///< Array dimensions.
+		Expression* initial; ///< Variable initializer.
+		bool constant;       ///< true if declared `const`.
+		bool pointer;        ///< true if the variable is a pointer.
 };
 
 }

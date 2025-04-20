@@ -1,0 +1,9 @@
+
+func test(const con : int32, const v : bool) : int32 {
+	if v == true {
+		con = 2;
+	} else {
+		v = false;
+	}
+	return 1;
+}

@@ -15,7 +15,9 @@
  */
 class CollectSymbols : public Visitor {
 	public:
-		SymbolTable* table; ///< Current symbol table.
+		SymbolTable* table;       ///< Current symbol table.
+		SymbolTable* type_table;  ///< Symbol table when processing member accesses.
+		ADT::UserType* user_type; ///< ADT type when processing member declarations.
 
 	private:
 		/**
@@ -29,12 +31,17 @@ class CollectSymbols : public Visitor {
 		 */
 		void removeTable();
 
+		bool collect_param; ///< Set to true when visiting parameter declarations.
+
 	public:
 		/**
 		 * Constructor.
 		 */
 		CollectSymbols();
 
+		/**
+		 * Destructor.
+		 */
 		virtual ~CollectSymbols();
 
 		/**

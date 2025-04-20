@@ -34,6 +34,9 @@ bool parser::parse_int(const char* str, unsigned long long* out) {
 	}
 
 	for(auto c : std::string(str)){
+		if(c == '_') {
+			continue;
+		}
 		unsigned long long prev = *out;
 		*out *= base;
 		if(*out < prev){

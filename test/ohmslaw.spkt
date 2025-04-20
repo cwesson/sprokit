@@ -1,0 +1,14 @@
+unit #V : #A*Ohm {
+    
+}
+
+/**
+ * Ohm's Law
+ * @param i Current
+ * @param r Resistance
+ * @return Voltage
+ */
+func voltage(const i #A : int32, const r #Ohm : int32) #V : int32 {
+    const v : int32 = i * r;
+    return v;
+}

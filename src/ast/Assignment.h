@@ -8,7 +8,7 @@
 
 #include "ASTNode.h"
 #include "Expression.h"
-#include <string>
+#include "Variable.h"
 
 namespace AST {
 
@@ -21,24 +21,25 @@ class Assignment : public ASTNode {
 		/**
 		 * Constructor.
 		 * @param line Line number.
-		 * @param n Name on left-hand side.
+		 * @param v Variable on left-hand side.
 		 * @param e Right-hand side.
 		 */
-		Assignment(unsigned int line, const char* n, Expression* e) :
+		Assignment(unsigned int line, Variable* v, Expression* e) :
 			ASTNode(line),
-			name(n),
+			var(v),
 			expression(e) {}
 
 		/**
 		 * Destructor.
 		 */
 		virtual ~Assignment() {
+			delete var;
 			delete expression;
 		}
 
 		virtual void accept(Visitor& v);
 
-		std::string name;       ///< Left-hand side of assignment.
+		Variable* var;          ///< Left-hand side of assignment.
 		Expression* expression; ///< Right-hand side of assignment.
 };
 

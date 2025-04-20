@@ -1,0 +1,14 @@
+Error on line 7:
+  Cannot assign int16 to int8
+Error on line 8:
+  Cannot assign int32 to int16
+Error on line 9:
+  Cannot assign int8 to A
+Error on line 10:
+  Cannot add int8 and bool
+Error on line 10:
+  Cannot assign unknown type to int32
+Error on line 11:
+  Cannot convert int8 to bool
+Error on line 14:
+  Cannot return bool, expecting int32

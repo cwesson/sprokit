@@ -18,9 +18,9 @@ extern yy::parser::value_type yylval;
 %option yylineno
 %option bison-locations
 
-dec  [0-9]
-oct  [0-7]
-hex  [0-9a-fA-F]
+dec  [0-9_]
+oct  [0-7_]
+hex  [0-9a-fA-F_]
 word [_a-zA-Z]
 
 unit {word}+(\^{dec}+)?
@@ -46,8 +46,14 @@ unit {word}+(\^{dec}+)?
 ";"  { return token::SEMICOLON; }
 ","  { return token::COMMA; }
 ":"  { return token::COLON; }
+"."  { return token::MEMBER; }
+"`"  { return token::BACKTICK; }
 "==" { return token::EQUAL; }
 "!=" { return token::NEQUAL; }
+">=" { return token::GTEQUAL; }
+"<=" { return token::LTEQUAL; }
+">"  { return token::GREATER; }
+"<"  { return token::LESSER; }
 "="  { return token::ASSIGN; }
 "+"  { return token::PLUS; }
 "-"  { return token::MINUS; }
@@ -55,11 +61,13 @@ unit {word}+(\^{dec}+)?
 "/"  { return token::DIVIDE; }
 "%"  { return token::MOD; }
 "^"  { return token::EXPONENT; }
-">"  { return token::GREATER; }
-"<"  { return token::LESSER; }
-"&&" { return token::AND; }
-"||" { return token::OR; }
-"!"  { return token::NOT; }
+"&"  { return token::BITAND; }
+"|"  { return token::BITOR; }
+"~"  { return token::BITNOT; }
+"&&" { return token::BOOLAND; }
+"||" { return token::BOOLOR; }
+"!"  { return token::BOOLNOT; }
+"@"  { return token::POINTER; }
 "("  { return token::LPAREN; }
 ")"  { return token::RPAREN; }
 "["  { return token::LBRACKET; }
@@ -77,7 +85,7 @@ unit {word}+(\^{dec}+)?
 	yylval->symbol = strdup(yytext); return token::UNIT_ID;
 }
 
-{word}([a-zA-z_0-9])* {
+{word}[a-zA-Z_0-9]* {
 	yylval->symbol = strdup(yytext); return token::ID;
 }
 

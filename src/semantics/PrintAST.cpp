@@ -29,14 +29,37 @@ void PrintAST::visit(AST::Addition& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::Array& v) {
+	printIndent(v);
+	std::cout << "ARRAY";
+	++indent;
+		if(v.length_var != nullptr){
+			v.length_var->accept(*this);
+		}else if(v.expression != nullptr){
+			v.expression->accept(*this);
+		}
+		if(v.array != nullptr){
+			v.array->accept(*this);
+		}
+	--indent;
+}
+
 void PrintAST::visit(AST::Assignment& v) {
 	printIndent(v);
-	std::cout << "ASSIGN " << v.name;
+	std::cout << "ASSIGN";
 	++indent;
+		if(v.var != nullptr){
+			v.var->accept(*this);
+		}
 		if(v.expression != nullptr){
 			v.expression->accept(*this);
 		}
 	--indent;
+}
+
+void PrintAST::visit(AST::BoolLiteral& v) {
+	printIndent(v);
+	std::cout << (v.value ? "true" : "false");
 }
 
 void PrintAST::visit(AST::Conversion& v) {
@@ -127,6 +150,15 @@ void PrintAST::visit(AST::List& v) {
 	}
 }
 
+void PrintAST::visit(AST::Member& v) {
+	printIndent(v);
+	std::cout << "MEMBER";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::Modulo& v) {
 	printIndent(v);
 	std::cout << "MOD";
@@ -145,15 +177,24 @@ void PrintAST::visit(AST::Multiplication& v) {
 	--indent;
 }
 
-void PrintAST::visit(AST::ParameterDeclaration& v) {
+void PrintAST::visit(AST::Pointer& v) {
 	printIndent(v);
-	std::cout << "PARAM ";
-	if(v.constant){
-		std::cout << "CONST ";
-	}else{
-		std::cout << "VAR   ";
-	}
-	std::cout << v.type << " " << v.name << " " << v.unit;
+	std::cout << "POINTER ";
+	++indent;
+		if(v.var != nullptr){
+			v.var->accept(*this);
+		}
+	--indent;
+}
+
+void PrintAST::visit(AST::Property& v) {
+	printIndent(v);
+	std::cout << "PROPERTY " << v.name;
+	++indent;
+		if(v.var != nullptr){
+			v.var->accept(*this);
+		}
+	--indent;
 }
 
 void PrintAST::visit(AST::Return& v) {
@@ -194,6 +235,11 @@ void PrintAST::visit(AST::UnitDeclaration& v) {
 void PrintAST::visit(AST::Variable& v) {
 	printIndent(v);
 	std::cout << "VARIABLE " << v.name;
+	++indent;
+		if(v.array != nullptr){
+			v.array->accept(*this);
+		}
+	--indent;
 }
 
 void PrintAST::visit(AST::VariableDeclaration& v) {
@@ -206,6 +252,9 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 	}
 	std::cout << v.type << " " << v.name << " " << v.unit;
 	++indent;
+		if(v.array != nullptr){
+			v.array->accept(*this);
+		}
 		if(v.initial != nullptr){
 			v.initial->accept(*this);
 		}

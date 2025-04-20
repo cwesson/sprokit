@@ -15,7 +15,17 @@
  */
 class TypeSymbols : public SymbolTable {
 	public:
+		/**
+		 * Constructor.
+		 * @param name Declared type name.
+		 * @param p Parent symbol table.
+		 */
 		TypeSymbols(const std::string& name, SymbolTable* p);
+
+		/**
+		 * Destructor.
+		 */
+		~TypeSymbols();
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 		
@@ -23,6 +33,8 @@ class TypeSymbols : public SymbolTable {
 
 		virtual function* addFunction(const std::string& n) override;
 
-		std::map<std::string, variable*> vars;
-		std::map<std::string, function*> funcs;
+		virtual variable* findVariable(const std::string& n) override;
+
+		std::map<std::string, variable*> vars;  ///< Map of declared member variables.
+		std::map<std::string, function*> funcs; ///< Map of declared member functions.
 };

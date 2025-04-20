@@ -37,6 +37,24 @@ class BinaryOperator : public Expression {
 
 		virtual void accept(Visitor& v) override = 0;
 
+		virtual bool is_constexpr() const override {
+			return left->is_constexpr() && right->is_constexpr();
+		}
+
+		virtual ADT::Type* getType() const override {
+			ADT::Type* ltype = left->getType();
+			ADT::Type* rtype = right->getType();
+			if(ltype == rtype){
+				return ltype;
+			}else if(rtype->convertibleTo(ltype)){
+				return ltype;
+			}else if(ltype->convertibleTo(rtype)){
+				return rtype;
+			}else{
+				return Expression::getType();
+			}
+		}
+
 		Expression* left;  ///< Left-hand side of the operator.
 		Expression* right; ///< Right-hand side of the operator.
 };

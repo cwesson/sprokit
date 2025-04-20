@@ -43,6 +43,13 @@ class Visitor {
 		 */
 		void printError(AST::ASTNode& node, const std::string& msg);
 
+		/**
+		 * Print a warning to stderr.
+		 * @param node AST node in which the warning was found.
+		 * @param msg Warning message.
+		 */
+		void printWarning(AST::ASTNode& node, const std::string& msg);
+
 		unsigned int error_count; ///< Count of errors encountered by the visitor.
 };
 

@@ -10,8 +10,18 @@
 
 namespace AST {
 
+/**
+ * ASTNode for binary `-` operator.
+ * @ingroup ast
+ */
 class Subtraction : public BinaryOperator {
 	public:
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param l Left-hand side of `-`.
+		 * @param r Right-hand side of `-`.
+		 */
 		Subtraction(unsigned int line, Expression* l, Expression* r) :
 			BinaryOperator(line, l, r) {}
 		

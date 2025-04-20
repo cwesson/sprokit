@@ -23,9 +23,11 @@ class Equal : public BinaryOperator {
 		 * @param r Right-hand side of `==`.
 		 */
 		Equal(unsigned int line, Expression* l, Expression* r) :
-			BinaryOperator(line, l, r) {
-				type = "bool";
-			}
+			BinaryOperator(line, l, r) {}
+
+		virtual ADT::Type* getType() const override {
+			return ADT::Type::findType("bool");
+		}
 		
 		virtual void accept(Visitor& v);
 };

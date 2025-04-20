@@ -10,8 +10,18 @@
 
 namespace AST {
 
+/**
+ * ASTNode for `*` operator.
+ * @ingroup ast
+ */
 class Multiplication : public BinaryOperator {
 	public:
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param l Left-hand side of `*`.
+		 * @param r Right-hand side of `*`.
+		 */
 		Multiplication(unsigned int line, Expression* l, Expression* r) :
 			BinaryOperator(line, l, r) {}
 		

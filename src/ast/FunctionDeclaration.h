@@ -13,7 +13,7 @@
 namespace AST {
 
 /**
- * ASTNode for function declarations.
+ * ASTNode for `func` declarations.
  * @ingroup ast
  */
 class FunctionDeclaration : public ASTNode {
@@ -31,7 +31,8 @@ class FunctionDeclaration : public ASTNode {
 			name(n),
 			type(t),
 			unit(u),
-			body(b) {}
+			body(b),
+			pointer(false) {}
 		
 		/**
 		 * Destructor.
@@ -48,6 +49,7 @@ class FunctionDeclaration : public ASTNode {
 		std::string unit; ///< Declared return unit.
 		List* params;     ///< Function parameters.
 		List* body;       ///< Function body.
+		bool pointer;     ///< true if the function returns a pointer.
 };
 
 }

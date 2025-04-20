@@ -10,8 +10,18 @@
 
 namespace AST {
 
+/**
+ * ASTNode for `%` operator.
+ * @ingroup ast
+ */
 class Modulo : public BinaryOperator {
 	public:
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param l Left-hand side of `%`.
+		 * @param r Right-hand side of `%`.
+		 */
 		Modulo(unsigned int line, Expression* l, Expression* r) :
 			BinaryOperator(line, l, r) {}
 		

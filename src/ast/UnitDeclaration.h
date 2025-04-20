@@ -12,19 +12,37 @@
 
 namespace AST {
 
-class List;
-
+/**
+ * ASTNode for `unit` declarations.
+ * @ingroup ast
+ */
 class UnitDeclaration : public ASTNode {
 	public:
-		UnitDeclaration(unsigned int line, const char* u, List* l) :
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param n Unit name.
+		 * @param l List of unit member declarations.
+		 * @param a Long-form unit name.
+		 */
+		UnitDeclaration(unsigned int line, const char* n, List* l, const char* a) :
 			ASTNode(line),
-			unit(u),
+			unit(n),
+			alias(a),
 			list(l) {}
+		
+		/**
+		 * Destructor.
+		 */
+		virtual ~UnitDeclaration() {
+			delete list;
+		}
 		
 		virtual void accept(Visitor& v) override;
 		
-		std::string unit;
-		List* list;
+		std::string unit;  ///< Unit name.
+		std::string alias; ///< Long-form unit name.
+		List* list;        ///< Member declarations.
 };
 
 }

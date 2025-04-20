@@ -3,16 +3,18 @@ BIN := bin
 SCANNER := $(BIN)/lex.yy.c
 PARSER  := $(BIN)/sprokit.tab.cc
 COMPILER := $(BIN)/sprokit
-INCLUDE := -Isrc/parser -Isrc/ast -Isrc/semantics
+INCLUDE := -Isrc/parser -Isrc/ast -Isrc/adt -Isrc/semantics -Isrc/codegen
 
 SRCS := $(shell find src/ -name \*.cpp)
 OBJS := $(addsuffix .o,$(addprefix bin/,$(basename $(SRCS))))
 DEPS := $(OBJS:%.o=%.d)
 
 CPP := g++
-CPPARGS := -std=c++23 -g $(INCLUDE)
+CPPARGS := -std=c++23 -Wall -g $(INCLUDE)
 
-all: $(COMPILER)
+.PHONY: all scanner parser test clean realclean
+
+all: test
 
 bin/%.o: %.cpp
 	@mkdir -p $(dir $@)
@@ -43,3 +45,6 @@ clean:
 
 realclean:
 	rm -rf $(BIN)
+
+test: $(COMPILER)
+	./test/test.sh

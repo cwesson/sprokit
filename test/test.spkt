@@ -2,6 +2,7 @@ const x #m/s^2 : int32 = 123 #m / 456 #s / 789#s;
 const y #N*m : int32 = 123#m * 40#N;
 var z #J : int32 = 0#J;
 const v #V : int32 = 12 #A + 4 #Ohm;
+const PI : int32 = 3;
 
 unit #m {
     operator #km(const x) = x / 1000#m/km;
@@ -9,37 +10,38 @@ unit #m {
     operator #cm(const x) = x * 100#cm/m;
 }
 
+type Device {
+    var a : int32[3];
+}
+
 type GPS {
     var lat #deg : int32;  // Latitude
-    var long #deg : int32; // Longitude
+    var lon #deg : int32;  // Longitude
     var alt #m : int32;    // Altitude
+    var dev : Device@;
+
     func check(var p #m : int32) #m : bool {
-        return 1#m;
+        alt = dev.a`length;
+        return dev.a;
     }
 }
 
-func area(const r #m : int32) #m^2 : int32 {
-    return 2#m/m * PI * r ^ 2#m;
-}
+type Circle {
+    var r #m : int32;
 
-func circumference(const r #m : int32) #m : int32 {
-    return 2#m/m * PI * r;
-}
-
-func volume(const r #m : int32) #m^3 : int32 {
-    return 3#m/m / 4#m/m * PI * r ^ 3#m;
-}
-
-/**
- * Ohm's Law
- * @param i Current
- * @param r Resistance
- * @return Voltage
- */
-func voltage(const i #A : int32, const r #Ohm : int32) #V : int32 {
-    const v #V : int32 = i * r;
-    if v == 12 #V {
-        v = 2#V;
+    func area() #m^2 : int32 {
+        return 2#m/m * PI * r ^ 2;
     }
-    return v;
+
+    func circumference() #m : int32 {
+        return 2#m/m * PI * r;
+    }
+
+    func volume() #m^3 : int32 {
+        return 3#m/m / 4#m/m * PI * r`size ^ 3;
+    }
+}
+
+func test(const argv #1 : char@[][const argd : int32]) : int32 {
+    return argv[0]`length;
 }

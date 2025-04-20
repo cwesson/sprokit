@@ -8,6 +8,7 @@
 
 #include "ASTNode.h"
 #include "dim/Dimensions.h"
+#include "Type.h"
 #include <string>
 
 namespace AST {
@@ -24,7 +25,6 @@ class Expression : public ASTNode {
 		 */
 		Expression(unsigned int line) :
 			ASTNode(line),
-			type(),
 			dim() {}
 		
 		/**
@@ -33,9 +33,24 @@ class Expression : public ASTNode {
 		virtual ~Expression() = default;
 		
 		virtual void accept(Visitor& v) = 0;
-		
-		std::string type;     ///< Resulting type of the operation.
-		Dimensions dim; ///< Resulting unit of the operation.
+
+		/**
+		 * Check if the expression is compile-time constant.
+		 * @return true if expression is compile-time constant, false otherwise.
+		 */
+		virtual bool is_constexpr() const {
+			return false;
+		}
+
+		/**
+		 * Get the resulting type of the expression
+		 * @return ADT type.
+		 */
+		virtual ADT::Type* getType() const {
+			return ADT::Type::findType("$unknown");
+		}
+
+		Dimensions dim;   ///< Resulting unit of the operation.
 };
 
 }

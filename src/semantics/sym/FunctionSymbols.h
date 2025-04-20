@@ -16,7 +16,17 @@
  */
 class FunctionSymbols : public SymbolTable {
 	public:
+		/**
+		 * Constructor.
+		 * @param name Declared function name.
+		 * @param p Parent symbol table.
+		 */
 		FunctionSymbols(const std::string& name, SymbolTable* p);
+
+		/**
+		 * Destructor.
+		 */
+		virtual ~FunctionSymbols();
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 		
@@ -26,6 +36,6 @@ class FunctionSymbols : public SymbolTable {
 
 		virtual variable* findVariable(const std::string& n) override;
 
-		std::vector<parameter*> params;
-		std::map<std::string, variable*> vars;
+		std::vector<parameter*> params;        ///< List of declared function parameters.
+		std::map<std::string, variable*> vars; ///< Map of variables in the function.
 };

@@ -24,6 +24,9 @@ class List : public ASTNode {
 			node(n),
 			next(nullptr) {}
 		
+		/**
+		 * Destructor.
+		 */
 		virtual ~List() {
 			delete node;
 			if(next != nullptr){
@@ -33,8 +36,8 @@ class List : public ASTNode {
 		
 		virtual void accept(Visitor& v) override;
 		
-		ASTNode* node;
-		List* next;
+		ASTNode* node; ///< ASTNode at this position in the list.
+		List* next;    ///< Next link in the list.
 };
 
 }

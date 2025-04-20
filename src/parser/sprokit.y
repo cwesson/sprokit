@@ -3,14 +3,13 @@
 %{
 #include "parser_util.h"
 #include "AST.h"
-#include "PrintAST.h"
-#include "CollectSymbols.h"
-#include "DimensionalAnalysis.h"
+#include <cstdlib>
 using namespace AST;
 #include "sprokit.tab.hh"
 
 extern unsigned int yylineno;
 int yylex(yy::parser::value_type* yylval, yy::parser::location_type* yylloc);
+void yyset_in(FILE*);
 
 AST::List* program_ast = nullptr;
 %}
@@ -31,17 +30,23 @@ AST::List* program_ast = nullptr;
 %token SEMICOLON
 %token COMMA
 %token COLON
+%token BACKTICK
 %token ASSIGN
 
 %token LPAREN RPAREN
 %token LBRACKET RBRACKET
-%left EQUAL NEQUAL GREATER LESSER
-%left OR
-%left AND
-%right NOT
+%left EQUAL NEQUAL GREATER LESSER GTEQUAL LTEQUAL
+%left BOOLOR
+%left BOOLAND
+%right BOOLNOT
+%left BITOR
+%left BITAND
+%right BITNOT
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
 %left EXPONENT
+%left MEMBER
+%right POINTER
 
 %token SCANNERERROR
 
@@ -51,7 +56,11 @@ AST::List* program_ast = nullptr;
 %type <node> if_statement
 %type <list> paramdecl_list
 %type <list> paramdecl_cont
-%type <node> paramdecl
+%type <symbol> unit_id
+%type <var_decl> variable_decl
+%type <var> variable_access
+%type <arr> array_access
+%type <arr> array_decl
 %type <list> member_list
 %type <node> member
 %type <list> unitmember_list
@@ -69,6 +78,9 @@ AST::List* program_ast = nullptr;
 	class ASTNode* node;
 	class Expression* exp;
 	class List* list;
+	class VariableDeclaration* var_decl;
+	class Variable* var;
+	class Array* arr;
 }
 
 %%
@@ -101,9 +113,11 @@ statement_list:
 ;
 
 statement:
-	declaration
-	| ID ASSIGN expression SEMICOLON {
-		$$ = new Assignment(@2.begin.line, $1, $3);
+	declaration {
+		$$ = $1;
+	}
+	| variable_access[var] ASSIGN expression[value] SEMICOLON {
+		$$ = new Assignment(@2.begin.line, $var, $value);
 	}
 	| RETURN SEMICOLON {
 		$$ = new Return(@1.begin.line, nullptr);
@@ -124,7 +138,58 @@ if_statement:
 		$$ = new IfStatement(@1.begin.line, $cond, $body, $alt);
 	}
 	| IF expression[cond] LBRACE statement_list[body] RBRACE ELSE if_statement[alt] {
-		$$ = new IfStatement(@1.begin.line, $cond, $body, $alt);
+		$$ = new IfStatement(@1.begin.line, $cond, $body, new List($alt));
+	}
+;
+
+unit_id:
+	UNIT_ID {
+		$$ = $1;
+	}
+	| /* empty */ {
+		$$ = "";
+	}
+;
+
+variable_decl:
+	CONST ID[name] unit_id[unit] COLON ID[type] array_decl[arr] {
+		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $arr);
+		d->constant = true;
+		$$ = d;
+	}
+	| VAR ID[name] unit_id[unit] COLON ID[type] array_decl[arr] {
+		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $arr);
+		d->constant = false;
+		$$ = d;
+	}
+	| CONST ID[name] unit_id[unit] COLON ID[type] POINTER array_decl[arr] {
+		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $arr);
+		d->constant = true;
+		d->pointer = true;
+		$$ = d;
+	}
+	| VAR ID[name] unit_id[unit] COLON ID[type] POINTER array_decl[arr] {
+		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $arr);
+		d->constant = false;
+		d->pointer = true;
+		$$ = d;
+	}
+;
+
+array_decl:
+	LBRACKET expression[index] RBRACKET array_decl[next] {
+		$$ = new Array(@1.begin.line, $index, $next);
+	}
+	|
+	LBRACKET CONST ID[name] COLON ID[type] RBRACKET array_decl[next] {
+		$$ = new Array(@1.begin.line, new VariableDeclaration(@name.begin.line, $name, $type, "#1", nullptr), $next);
+	}
+	|
+	LBRACKET RBRACKET array_decl[next] {
+		$$ = new Array(@1.begin.line, $next);
+	}
+	| /* empty */ {
+		$$ = nullptr;
 	}
 ;
 
@@ -138,26 +203,13 @@ paramdecl_list:
 ;
 
 paramdecl_cont:
-	paramdecl {
+	variable_decl {
 		$$ = new List($1);
 	}
-	| paramdecl_cont COMMA paramdecl {
+	| paramdecl_cont COMMA variable_decl {
 		$$ = $1;
 		auto l = new List($3);
 		$1->next = l;
-	}
-;
-
-paramdecl:
-	CONST ID UNIT_ID COLON ID {
-		auto d = new ParameterDeclaration(@1.begin.line, $2, $5, $3);
-		d->constant = true;
-		$$ = d;
-	}
-	| VAR ID UNIT_ID COLON ID {
-		auto d = new ParameterDeclaration(@1.begin.line, $2, $5, $3);
-		d->constant = false;
-		$$ = d;
 	}
 ;
 
@@ -172,15 +224,8 @@ member_list:
 ;
 
 member:
-	CONST ID UNIT_ID COLON ID SEMICOLON {
-		auto d = new VariableDeclaration(@1.begin.line, $2, $5, $3, nullptr);
-		$$ = d;
-		d->constant = true;
-	}
-	| VAR ID UNIT_ID COLON ID SEMICOLON {
-		auto d = new VariableDeclaration(@1.begin.line, $2, $5, $3, nullptr);
-		$$ = d;
-		d->constant = false;
+	variable_decl SEMICOLON {
+		$$ = $1;
 	}
 	| funcdecl {
 		$$ = $1;
@@ -198,21 +243,15 @@ unitmember_list:
 ;
 
 unitmember:
-	OPERATOR UNIT_ID LPAREN CONST ID RPAREN ASSIGN expression {
-		$$ = new Conversion(yylineno, $5, $2, $8);
+	OPERATOR UNIT_ID[unit] LPAREN CONST ID[name] RPAREN ASSIGN expression[exp] {
+		$$ = new Conversion(yylineno, $name, $unit, $exp);
 	}
 ;
 
 declaration:
-	CONST ID[name] UNIT_ID[unit] COLON ID[type] ASSIGN expression[init] SEMICOLON {
-		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $init);
-		d->constant = true;
-		$$ = d;
-	}
-	| VAR ID[name] UNIT_ID[unit] COLON ID[type] ASSIGN expression[init] SEMICOLON {
-		auto d = new VariableDeclaration(@1.begin.line, $name, $type, $unit, $init);
-		d->constant = false;
-		$$ = d;
+	variable_decl[var] ASSIGN expression[value] SEMICOLON {
+		$$ = $var;
+		$var->initial = $value;
 	}
 	| funcdecl {
 		$$ = $1;
@@ -221,17 +260,29 @@ declaration:
 		$$ = new TypeDeclaration(@1.begin.line, $type, $list);
 	}
 	| UNIT UNIT_ID[unit] LBRACE unitmember_list[list] RBRACE {
-		$$ = new UnitDeclaration(@1.begin.line, $unit, $list);
+		$$ = new UnitDeclaration(@1.begin.line, $unit, $list, "");
 	}
 	| UNIT UNIT_ID[unit] COLON UNIT_ID[alias] LBRACE unitmember_list[list] RBRACE {
-		$$ = new UnitDeclaration(@1.begin.line, $unit, $list);
+		$$ = new UnitDeclaration(@1.begin.line, $unit, $list, $alias);
 	}
 ;
 
 funcdecl:
-	FUNC ID[name] LPAREN paramdecl_list[param] RPAREN UNIT_ID[unit] COLON ID[type] LBRACE statement_list[body] RBRACE {
+	FUNC ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON ID[type] LBRACE statement_list[body] RBRACE {
 		auto d = new FunctionDeclaration(@1.begin.line, $name, $type, $unit, $body);
 		d->params = $param;
+		$$ = d;
+	}
+	| FUNC ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON ID[type] POINTER LBRACE statement_list[body] RBRACE {
+		auto d = new FunctionDeclaration(@1.begin.line, $name, $type, $unit, $body);
+		d->params = $param;
+		d->pointer = true;
+		$$ = d;
+	}
+	| FUNC ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON CONST ID[type] POINTER LBRACE statement_list[body] RBRACE {
+		auto d = new FunctionDeclaration(@1.begin.line, $name, $type, $unit, $body);
+		d->params = $param;
+		d->pointer = true;
 		$$ = d;
 	}
 ;
@@ -264,14 +315,50 @@ expression:
 			$$ = new IntegerLiteral(@1.begin.line, i, $unit);
 		}
 	}
-	| ID[name] LPAREN expression_list[param] RPAREN {
-		$$ = new FunctionCall(@2.begin.line, $name, $param);
+	| INTEGER[value] {
+		unsigned long long i = 0;
+		if(::parser::parse_int($value, &i)){
+			$$ = new IntegerLiteral(@1.begin.line, i, "#1");
+		}
 	}
-	| ID[name] {
-		$$ = new Variable(@1.begin.line, $name);
+	| TRUE {
+		$$ = new BoolLiteral(@1.begin.line, true);
+	}
+	| FALSE {
+		$$ = new BoolLiteral(@1.begin.line, false);
 	}
 	| expression[l] EQUAL expression[r] {
 		$$ = new Equal(@2.begin.line, $l, $r);
+	}
+	| variable_access {
+		$$ = $1;
+	}
+	| POINTER variable_access[var] {
+		$$ = new Pointer(@1.begin.line, $var);
+	}
+	| variable_access[var] BACKTICK ID[name] {
+		$$ = new Property(@2.begin.line, $var, $name);
+	}
+;
+
+variable_access:
+	ID[name] array_access[arr] {
+		$$ = new Variable(@1.begin.line, $name, $arr);
+	}
+	| ID[name] LPAREN expression_list[param] RPAREN {
+		$$ = new FunctionCall(@2.begin.line, $name, $param);
+	}
+	| variable_access[l] MEMBER variable_access[r] {
+		$$ = new Member(@2.begin.line, $l, $r);
+	}
+;
+
+array_access:
+	LBRACKET expression[index] RBRACKET array_access[next] {
+		$$ = new Array(@1.begin.line, $index, $next);
+	}
+	| /* empty */ {
+		$$ = nullptr;
 	}
 ;
 
@@ -307,26 +394,11 @@ namespace yy
 	}
 }
 
-int main() {
-	yy::parser parse;
-	int ret = parse();
+int parse(const char* file, AST::List** ast){
+	yyset_in(fopen(file, "r"));
+	yy::parser parser;
+	int ret = parser();
 
-	if(program_ast != nullptr){
-		PrintAST p;
-		p.visit(*program_ast);
-		std::cout << std::endl;
-
-		CollectSymbols c;
-		c.visit(*program_ast);
-		ret += c.error_count;
-		std::cout << *c.table;
-
-		DimensionalAnalysis d;
-		d.visit(*program_ast);
-		ret += d.error_count;
-
-		delete program_ast;
-	}
-
+	*ast = program_ast;
 	return ret;
 }

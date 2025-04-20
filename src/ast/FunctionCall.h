@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Expression.h"
+#include "Variable.h"
 #include "List.h"
 #include <string>
 
@@ -16,7 +16,7 @@ namespace AST {
  * ASTNode for function calls.
  * @ingroup ast
  */
-class FunctionCall : public Expression {
+class FunctionCall : public Variable {
 	public:
 		/**
 		 * Constructor.
@@ -25,8 +25,7 @@ class FunctionCall : public Expression {
 		 * @param p Function parameters.
 		 */
 		FunctionCall(unsigned int line, const char* n, List* p) :
-			Expression(line),
-			name(n),
+			Variable(line, n, nullptr),
 			params(p) {}
 		
 		/**
@@ -38,7 +37,6 @@ class FunctionCall : public Expression {
 		
 		virtual void accept(Visitor& v) override;
 		
-		std::string name; ///< Function name.
 		List* params;     ///< Function parameters.
 };
 
