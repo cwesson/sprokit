@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Type.h"
+#include "CodeGen.h"
 #include <sstream>
 
 /**
@@ -21,12 +22,26 @@ namespace ADT {
  */
 class PrimitiveType : public Type {
 	public:
-		virtual bool accept(const Type* t) const = 0;
+		virtual bool accept(const Type& t) const = 0;
 
-		virtual bool visit(const BoolType* t) const override = 0;
-		virtual bool visit(const IntType* t) const = 0;
-		virtual bool visit(const FloatType* t) const = 0;
-		virtual bool visit(const UserType* t) const = 0;
+		virtual bool visit(const BoolType& t) const override = 0;
+		virtual bool visit(const IntType& t) const = 0;
+		virtual bool visit(const FloatType& t) const = 0;
+		virtual bool visit(const UserType& t) const = 0;
+
+		virtual bool isSigned() const override {
+			return false;
+		}
+
+		virtual bool isInt() const override {
+			return false;
+		}
+
+		virtual bool isFloat() const override {
+			return false;
+		}
+
+		virtual std::string translate(const CodeGen& g) const override = 0;
 
 	protected:
 		/**
@@ -45,23 +60,27 @@ class PrimitiveType : public Type {
  */
 class BoolType : public PrimitiveType {
 	public:
-		virtual bool accept(const Type* t) const override {
-			return t->visit(this);
+		virtual bool accept(const Type& t) const override {
+			return t.visit(*this);
 		}
 
-		virtual bool visit(const BoolType* t) const override {
+		virtual std::string translate(const CodeGen& g) const override {
+			return g.translateType(*this);
+		}
+
+		virtual bool visit(const BoolType& t) const override {
 			return true;
 		}
 
-		virtual bool visit(const IntType* t) const override {
+		virtual bool visit(const IntType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const FloatType* t) const override {
+		virtual bool visit(const FloatType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const UserType* t) const override {
+		virtual bool visit(const UserType& t) const override {
 			return false;
 		}
 
@@ -96,24 +115,36 @@ class IntType;
  */
 class FloatType : public PrimitiveType {
 	public:
-		virtual bool accept(const Type* t) const override {
-			return t->visit(this);
+		virtual bool accept(const Type& t) const override {
+			return t.visit(*this);
 		}
 
-		virtual bool visit(const BoolType* t) const override {
+		virtual std::string translate(const CodeGen& g) const override {
+			return g.translateType(*this);
+		}
+
+		virtual bool visit(const BoolType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const IntType* t) const override {
+		virtual bool visit(const IntType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const FloatType* t) const override {
-			return t->significand >= significand;
+		virtual bool visit(const FloatType& t) const override {
+			return t.significand >= significand;
 		}
 
-		virtual bool visit(const UserType* t) const override {
+		virtual bool visit(const UserType& t) const override {
 			return false;
+		}
+
+		virtual bool isSigned() const override {
+			return true;
+		}
+
+		virtual bool isFloat() const override {
+			return true;
 		}
 
 		virtual unsigned int size() const override {
@@ -153,29 +184,44 @@ class FloatType : public PrimitiveType {
  */
 class IntType : public PrimitiveType {
 	public:
-		virtual bool accept(const Type* t) const override {
-			return t->visit(this);
+		unsigned int length; ///< Number of bits in the integer.
+		bool sign;           ///< true if signed, false if unsigned.
+
+		virtual bool accept(const Type& t) const override {
+			return t.visit(*this);
 		}
 
-		virtual bool visit(const BoolType* t) const override {
+		virtual std::string translate(const CodeGen& g) const override {
+			return g.translateType(*this);
+		}
+
+		virtual bool visit(const BoolType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const IntType* t) const override {
-			if(sign && !t->sign){
+		virtual bool visit(const IntType& t) const override {
+			if(sign && !t.sign){
 				// Cannot convert signed to unsigned
 				return false;
 			}else{
-				return t->length >= length;
+				return t.length >= length;
 			}
 		}
 
-		virtual bool visit(const FloatType* t) const override {
-			return t->significand >= length;
+		virtual bool visit(const FloatType& t) const override {
+			return t.significand >= length;
 		}
 
-		virtual bool visit(const UserType* t) const override {
+		virtual bool visit(const UserType& t) const override {
 			return false;
+		}
+
+		virtual bool isSigned() const override {
+			return sign;
+		}
+
+		virtual bool isInt() const override {
+			return true;
 		}
 
 		virtual unsigned int size() const override {
@@ -193,9 +239,6 @@ class IntType : public PrimitiveType {
 			length(len),
 			sign(sign)
 		{}
-
-		unsigned int length; ///< Number of bits in the integer.
-		bool sign;           ///< true if signed, false if unsigned.
 
 		friend class Type;
 };

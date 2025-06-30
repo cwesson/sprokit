@@ -34,4 +34,5 @@ class TypeChecker : public Visitor {
 	
 	private:
 		ADT::Type* func_type; ///< Return type when processing function declarations.
+		SymbolTable::function* func;
 };

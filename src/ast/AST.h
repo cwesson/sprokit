@@ -28,6 +28,7 @@
 	X(Member) \
 	X(Modulo) \
 	X(Multiplication) \
+	X(NotEqual) \
 	X(Pointer) \
 	X(Property) \
 	X(Return) \
@@ -53,6 +54,7 @@
 #include "Member.h"
 #include "Modulo.h"
 #include "Multiplication.h"
+#include "NotEqual.h"
 #include "Pointer.h"
 #include "Property.h"
 #include "Return.h"

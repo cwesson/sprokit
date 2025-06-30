@@ -46,7 +46,7 @@ class Expression : public ASTNode {
 		 * Get the resulting type of the expression
 		 * @return ADT type.
 		 */
-		virtual ADT::Type* getType() const {
+		virtual ADT::Type& getType() const {
 			return ADT::Type::findType("$unknown");
 		}
 

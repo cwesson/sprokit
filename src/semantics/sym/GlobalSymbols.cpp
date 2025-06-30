@@ -6,6 +6,7 @@
 
 #include "GlobalSymbols.h"
 #include "FunctionSymbols.h"
+#include "OrderedSymbol.h"
 #include <iomanip>
 
 GlobalSymbols::GlobalSymbols() :
@@ -13,10 +14,6 @@ GlobalSymbols::GlobalSymbols() :
 {}
 
 GlobalSymbols::~GlobalSymbols() {
-	for(auto v : vars){
-		delete v.second;
-	}
-	vars.clear();
 	for(auto f : funcs){
 		delete f.second;
 	}
@@ -32,15 +29,8 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 	
 	os << "| Name            | Type       | Unit       | const | point | used  | modif |" << std::endl;
 	os << "|-----------------|------------|------------|-------|-------|-------|-------|" << std::endl;
-	for(auto sym : vars) {
-		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
-			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->used ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->modified ? "true " : "false") << " |" << std::endl;
-	}
 	for(auto sym : funcs) {
-		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << sym.second->type << " | " << std::setw(10) << sym.second->unit
+		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
 			<< " | n/a  "
 			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false")
 			<< " | n/a   | n/a   |" << std::endl;
@@ -55,6 +45,10 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 	}
 	os << std::endl;
 
+	for(auto sym : children){
+		sym->print(os, depth+1);
+	}
+
 	for(auto sym : funcs) {
 		sym.second->table->print(os, depth+1);
 	}
@@ -64,15 +58,6 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 	}
 
 	return os;
-}
-
-SymbolTable::variable* GlobalSymbols::addVariable(const std::string& n) {
-	if(vars.contains(n)){
-		return nullptr;
-	}else{
-		vars[n] = new SymbolTable::variable();
-		return vars[n];
-	}
 }
 
 SymbolTable::function* GlobalSymbols::addFunction(const std::string& n) {
@@ -100,14 +85,6 @@ SymbolTable::unit* GlobalSymbols::addUnit(const std::string& name)
 		units[name] = new unit();
 	}
 	return units[name];
-}
-
-SymbolTable::variable* GlobalSymbols::findVariable(const std::string& n) {
-	if(vars.contains(n)){
-		return vars[n];
-	}else{
-		return nullptr;
-	}
 }
 
 SymbolTable::function* GlobalSymbols::findFunction(const std::string& n) {

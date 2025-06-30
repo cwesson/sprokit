@@ -1,0 +1,9 @@
+func test() : int32 {
+	a = 1 + 2;
+	var a : int32 = 12;
+	if true {
+		var b : int32 = 14;
+	}
+	a = b + 6;
+	return 0;
+}

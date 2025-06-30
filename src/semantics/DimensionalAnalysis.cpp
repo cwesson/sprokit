@@ -143,6 +143,15 @@ void DimensionalAnalysis::visit(AST::Multiplication& v) {
 	v.dim = constructed_unit;
 }
 
+void DimensionalAnalysis::visit(AST::NotEqual& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	if(left_unit != constructed_unit){
+		printError(v, "Mismatched units in inequality, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
+	}
+}
+
 void DimensionalAnalysis::visit(AST::Pointer& v) {
 	v.var->accept(*this);
 }

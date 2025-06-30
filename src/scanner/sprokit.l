@@ -64,6 +64,8 @@ unit {word}+(\^{dec}+)?
 "&"  { return token::BITAND; }
 "|"  { return token::BITOR; }
 "~"  { return token::BITNOT; }
+"<<" { return token::LSHIFT; }
+">>" { return token::RSHIFT; }
 "&&" { return token::BOOLAND; }
 "||" { return token::BOOLOR; }
 "!"  { return token::BOOLNOT; }

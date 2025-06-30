@@ -36,6 +36,15 @@ class FunctionCall : public Variable {
 		}
 		
 		virtual void accept(Visitor& v) override;
+
+		virtual ADT::Type& getType() const override {
+			auto f = table->findFunction(name);
+			if(f != nullptr){
+				return *f->type;
+			}else{
+				return ADT::Type::findType("$unknown");
+			}
+		}
 		
 		List* params;     ///< Function parameters.
 };

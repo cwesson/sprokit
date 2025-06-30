@@ -11,6 +11,8 @@
 #include <map>
 #include <string>
 
+class CodeGen;
+
 /**
  * Abstract Data Types.
  */
@@ -32,7 +34,7 @@ class Type {
 		 * @param type Type name.
 		 * @return Type object.
 		 */
-		static Type* findType(const std::string& type);
+		static Type& findType(const std::string& type);
 
 		/**
 		 * Create a new UserType.
@@ -46,8 +48,8 @@ class Type {
 		 * @param other	Type to convert to.
 		 * @return true if this Type can be converted to other.
 		 */
-		bool convertibleTo(const Type* other) const {
-			return other->accept(this);
+		bool convertibleTo(const Type& other) const {
+			return other.accept(*this);
 		}
 
 		/**
@@ -62,7 +64,14 @@ class Type {
 		 * @param t Type being converted from.
 		 * @return true if t is convertible to this Type.
 		 */
-		virtual bool accept(const Type* t) const = 0;
+		virtual bool accept(const Type& t) const = 0;
+
+		/**
+		 * Visitor pattern to allow code generation to generate the type name.
+		 * @param g Code generation visitor.
+		 * @return Type name to be use by the code generator.
+		 */
+		virtual std::string translate(const CodeGen& g) const = 0;
 
 		/**
 		 * Visitor pattern, check is UnknownType is convertible to this.
@@ -70,7 +79,7 @@ class Type {
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to UnknownType.
 		 */
-		virtual bool visit(const UnknownType* t) const final {
+		virtual bool visit(const UnknownType& t) const final {
 			return false;
 		}
 
@@ -80,7 +89,7 @@ class Type {
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to BoolType.
 		 */
-		virtual bool visit(const BoolType* t) const = 0;
+		virtual bool visit(const BoolType& t) const = 0;
 
 		/**
 		 * Visitor pattern, check if IntType is convertible to this.
@@ -88,7 +97,7 @@ class Type {
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to IntType.
 		 */
-		virtual bool visit(const IntType* t) const = 0;
+		virtual bool visit(const IntType& t) const = 0;
 
 		/**
 		 * Visitor pattern, check if FloatType is convertible to this.
@@ -96,7 +105,7 @@ class Type {
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to FloatType.
 		 */
-		virtual bool visit(const FloatType* t) const = 0;
+		virtual bool visit(const FloatType& t) const = 0;
 
 		/**
 		 * Visitor pattern, check if UserType is convertible to this.
@@ -104,7 +113,11 @@ class Type {
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to UserTpe.
 		 */
-		virtual bool visit(const UserType* t) const = 0;
+		virtual bool visit(const UserType& t) const = 0;
+
+		virtual bool isSigned() const = 0;
+		virtual bool isInt() const = 0;
+		virtual bool isFloat() const = 0;
 
 		/**
 		 * Get the string name.

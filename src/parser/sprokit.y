@@ -39,14 +39,16 @@ AST::List* program_ast = nullptr;
 %left BOOLOR
 %left BOOLAND
 %right BOOLNOT
+%left LSHIFT RSHIFT
 %left BITOR
 %left BITAND
 %right BITNOT
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
 %left EXPONENT
-%left MEMBER
 %right POINTER
+%left LBRACKET RBRACKET
+%left MEMBER
 
 %token SCANNERERROR
 
@@ -118,9 +120,6 @@ statement:
 	}
 	| variable_access[var] ASSIGN expression[value] SEMICOLON {
 		$$ = new Assignment(@2.begin.line, $var, $value);
-	}
-	| RETURN SEMICOLON {
-		$$ = new Return(@1.begin.line, nullptr);
 	}
 	| RETURN expression SEMICOLON {
 		$$ = new Return(@1.begin.line, $2);
@@ -209,7 +208,11 @@ paramdecl_cont:
 	| paramdecl_cont COMMA variable_decl {
 		$$ = $1;
 		auto l = new List($3);
-		$1->next = l;
+		auto i = $$;
+		while (i->next != nullptr){
+			i = i->next;
+		}
+		i->next = l;
 	}
 ;
 
@@ -330,6 +333,9 @@ expression:
 	| expression[l] EQUAL expression[r] {
 		$$ = new Equal(@2.begin.line, $l, $r);
 	}
+	| expression[l] NEQUAL expression[r] {
+		$$ = new NotEqual(@2.begin.line, $l, $r);
+	}
 	| variable_access {
 		$$ = $1;
 	}
@@ -378,7 +384,11 @@ expression_cont:
 	| expression_cont COMMA expression {
 		$$ = $1;
 		auto l = new List($3);
-		$1->next = l;
+		auto i = $$;
+		while (i->next != nullptr){
+			i = i->next;
+		}
+		i->next = l;
 	}
 ;
 

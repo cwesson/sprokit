@@ -40,7 +40,7 @@ class IntegerLiteral : public Expression {
 			return true;
 		}
 
-		virtual ADT::Type* getType() const override {
+		virtual ADT::Type& getType() const override {
 			if(value < std::pow(2, 8)){
 				return ADT::Type::findType("int8");
 			}else if(value < std::pow(2, 16)){

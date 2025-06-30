@@ -177,6 +177,15 @@ void PrintAST::visit(AST::Multiplication& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::NotEqual& v) {
+	printIndent(v);
+	std::cout << "NOTEQUAL";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::Pointer& v) {
 	printIndent(v);
 	std::cout << "POINTER ";

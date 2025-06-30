@@ -39,13 +39,13 @@ void Type::init(){
 	}
 }
 
-Type* Type::findType(const std::string& type) {
+Type& Type::findType(const std::string& type) {
 	init();
 
 	if(!table.contains(type)){
 		add(new UserType(type));
 	}
-	return table[type];
+	return *table[type];
 }
 
 UserType* Type::createType(const std::string& type){

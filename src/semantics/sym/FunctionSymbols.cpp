@@ -5,6 +5,7 @@
  */
 
 #include "FunctionSymbols.h"
+#include "OrderedSymbol.h"
 #include <iomanip>
 
 FunctionSymbols::FunctionSymbols(const std::string& name, SymbolTable* p) :
@@ -16,10 +17,6 @@ FunctionSymbols::~FunctionSymbols(){
 		delete params.back();
 		params.pop_back();
 	}
-	for(auto v : vars){
-		delete v.second;
-	}
-	vars.clear();
 }
 
 std::ostream& FunctionSymbols::print(std::ostream& os, unsigned int depth) const {
@@ -36,35 +33,17 @@ std::ostream& FunctionSymbols::print(std::ostream& os, unsigned int depth) const
 			<< " | " << std::setw(5) << (sym->used ? "true " : "false")
 			<< " | " << std::setw(5) << (sym->modified ? "true " : "false") << " |" << std::endl;
 	}
-	for(auto sym : vars) {
-		os << std::left << "|      | " << std::setw(15) << sym.first
-			<< " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
-			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->used ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->modified ? "true " : "false") << " |" << std::endl;
-	}
 	os << std::endl;
+
+	for(auto sym : children){
+		sym->print(os, depth+1);
+	}
 
 	return os;
 }
 
-SymbolTable::variable* FunctionSymbols::addVariable(const std::string& n) {
-	if(vars.contains(n)){
-		return nullptr;
-	}else{
-		for(auto p : params) {
-			if(p->name == n){
-				return nullptr;
-			}
-		}
-		vars[n] = new SymbolTable::variable();
-		return vars[n];
-	}
-}
-
 SymbolTable::parameter* FunctionSymbols::addParameter(const std::string& n) {
-	if(vars.contains(n)){
+	if(findVariable(n) != nullptr){
 		return nullptr;
 	}else{
 		for(auto p : params) {
@@ -84,8 +63,9 @@ SymbolTable::variable* FunctionSymbols::findVariable(const std::string& n) {
 			return p;
 		}
 	}
-	if(vars.contains(n)){
-		return vars[n];
-	}
-	return parent->findVariable(n);
+	return SymbolTable::findVariable(n);
+}
+
+bool FunctionSymbols::isScope() const {
+	return true;
 }

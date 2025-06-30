@@ -14,8 +14,11 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 class FunctionSymbols;
+class OrderedSymbol;
+class ScopedSymbols;
 
 /**
  * Abstract symbol table.
@@ -117,7 +120,9 @@ class SymbolTable {
 		 * @param n Variable name.
 		 * @return The new variable entry, or nullptr if the table already contains a variable of the given name.
 		 */
-		virtual variable* addVariable(const std::string& n);
+		virtual variable* addVariable(const std::string& n, SymbolTable** outtable=nullptr);
+
+		virtual ScopedSymbols* addScope(const std::string& n);
 
 		/**
 		 * Attempt to add a function parameter declaration.
@@ -168,9 +173,12 @@ class SymbolTable {
 		 * @return The type symbol table, or nullptr if no type with the given name was found.
 		 */
 		virtual SymbolTable* findType(const std::string& n);
+
+		virtual bool isScope() const;
 		
 		SymbolTable* parent; ///< Parent symbol table, nullptr if there is no parent.
 		std::string name;    ///< Name of the symbol table.
+		std::vector<OrderedSymbol*> children;
 };
 
 /**

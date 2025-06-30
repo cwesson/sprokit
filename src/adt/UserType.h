@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Type.h"
+#include "CodeGen.h"
 #include <vector>
 
 /**
@@ -21,23 +22,39 @@ namespace ADT {
  */
 class UserType : public Type {
 	public:
-		virtual bool accept(const Type* t) const override {
-			return t->visit(this);
+		virtual bool accept(const Type& t) const override {
+			return t.visit(*this);
 		}
 
-		virtual bool visit(const BoolType* t) const override {
+		virtual std::string translate(const CodeGen& g) const override {
+			return g.translateType(*this);
+		}
+
+		virtual bool visit(const BoolType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const IntType* t) const override {
+		virtual bool visit(const IntType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const FloatType* t) const override {
+		virtual bool visit(const FloatType& t) const override {
 			return false;
 		}
 
-		virtual bool visit(const UserType* t) const override {
+		virtual bool visit(const UserType& t) const override {
+			return false;
+		}
+
+		virtual bool isSigned() const override {
+			return false;
+		}
+
+		virtual bool isInt() const override {
+			return false;
+		}
+
+		virtual bool isFloat() const override {
 			return false;
 		}
 

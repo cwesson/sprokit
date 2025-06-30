@@ -1,0 +1,8 @@
+Error on line 2:
+  Variable a not declared.
+Error on line 7:
+  Variable b not declared.
+Error on line 7:
+  Cannot add unknown type and int8
+Error on line 7:
+  Cannot assign unknown type to int32

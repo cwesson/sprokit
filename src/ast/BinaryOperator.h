@@ -41,14 +41,12 @@ class BinaryOperator : public Expression {
 			return left->is_constexpr() && right->is_constexpr();
 		}
 
-		virtual ADT::Type* getType() const override {
-			ADT::Type* ltype = left->getType();
-			ADT::Type* rtype = right->getType();
-			if(ltype == rtype){
+		virtual ADT::Type& getType() const override {
+			ADT::Type& ltype = left->getType();
+			ADT::Type& rtype = right->getType();
+			if(rtype.convertibleTo(ltype)){
 				return ltype;
-			}else if(rtype->convertibleTo(ltype)){
-				return ltype;
-			}else if(ltype->convertibleTo(rtype)){
+			}else if(ltype.convertibleTo(rtype)){
 				return rtype;
 			}else{
 				return Expression::getType();

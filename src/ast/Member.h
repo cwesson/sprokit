@@ -44,8 +44,17 @@ class Member : public Variable {
 		 * Determine if this is the last member access is a chain of member accesses.
 		 * @return true If this is the last member access, false otherwise.
 		 */
-		bool isLast() {
+		bool isLast() const {
 			return right->name != "$member";
+		}
+
+		virtual ADT::Type& getType() const override {
+			if(isLast()){
+				auto sym = right->table->findVariable(right->name);
+				return *sym->type;
+			}else{
+				return right->getType();
+			}
 		}
 		
 		Variable* left;  ///< Left side of the member.

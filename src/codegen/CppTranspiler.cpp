@@ -207,6 +207,12 @@ void CppTranspiler::visit(AST::Multiplication& v) {
 	v.right->accept(*this);
 }
 
+void CppTranspiler::visit(AST::NotEqual& v) {
+	v.left->accept(*this);
+	os << " != ";
+	v.right->accept(*this);
+}
+
 void CppTranspiler::visit(AST::Pointer& v) {
 	os << "&";
 	v.var->accept(*this);

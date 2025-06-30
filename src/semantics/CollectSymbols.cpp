@@ -8,6 +8,8 @@
 #include "AST.h"
 #include "sym/GlobalSymbols.h"
 #include "sym/FunctionSymbols.h"
+#include "sym/OrderedSymbol.h"
+#include "sym/ScopedSymbols.h"
 #include "UserType.h"
 
 CollectSymbols::CollectSymbols() :
@@ -26,6 +28,9 @@ void CollectSymbols::prepTable(AST::ASTNode& v) {
 }
 
 void CollectSymbols::removeTable() {
+	while(!table->isScope()){
+		table = table->parent;
+	}
 	if(table->parent != nullptr){
 		table = table->parent;
 	}
@@ -53,9 +58,7 @@ void CollectSymbols::visit(AST::Assignment& v) {
 	prepTable(v);
 	v.var->accept(*this);
 	auto sym = table->findVariable(v.var->name);
-	if(sym == nullptr) {
-		printError(v, "Unknown variable " + v.var->name);
-	}else{
+	if(sym != nullptr){
 		sym->modified = true;
 		if(sym->constant){
 			printError(v, "Attempt to modify constant " + v.var->name);
@@ -104,7 +107,7 @@ void CollectSymbols::visit(AST::FunctionDeclaration& v) {
 	if(function == nullptr){
 		printError(v, "Duplicate function declaration " + v.name);
 	}else{
-		function->type = ADT::Type::findType(v.type);
+		function->type = &ADT::Type::findType(v.type);
 		function->unit = v.unit;
 		function->pointer = v.pointer;
 
@@ -120,9 +123,13 @@ void CollectSymbols::visit(AST::FunctionDeclaration& v) {
 void CollectSymbols::visit(AST::IfStatement& v) {
 	prepTable(v);
 	v.condition->accept(*this);
-	v.body->accept(*this);
+	table = table->addScope("$if");
+		v.body->accept(*this);
+	removeTable();
 	if(v.elsebody != nullptr){
-		v.elsebody->accept(*this);
+		table = table->addScope("$else");
+			v.elsebody->accept(*this);
+		removeTable();
 	}
 }
 
@@ -148,8 +155,11 @@ void CollectSymbols::visit(AST::Member& v) {
 	if(type_table != nullptr){
 		sym = type_table->findVariable(v.left->name);
 	}
-	type_table = v.table->findType((std::string)*sym->type);
+	if(sym != nullptr){
+		type_table = v.table->findType((std::string)*sym->type);
+	}
 
+	v.right->table = type_table;
 	v.right->accept(*this);
 	type_table = nullptr;
 }
@@ -161,6 +171,12 @@ void CollectSymbols::visit(AST::Modulo& v) {
 }
 
 void CollectSymbols::visit(AST::Multiplication& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::NotEqual& v) {
 	prepTable(v);
 	v.left->accept(*this);
 	v.right->accept(*this);
@@ -230,7 +246,7 @@ void CollectSymbols::visit(AST::Variable& v) {
 
 	auto sym = v.table->findVariable(v.name);
 	if(sym == nullptr) {
-		printError(v, "Unknown variable " + v.name);
+		printError(v, "Variable " + v.name + " not declared.");
 	}else{
 		sym->used = true;
 	}
@@ -246,25 +262,28 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 	if(collect_param){
 		auto var = table->addParameter(v.name);
 		if(var == nullptr){
-			printError(v, "Duplicate parameter declaration " + v.name);
+			printError(v, "Declaration of parameter " + v.name + " would shadow previous declaration.");
 		}else{
-			var->type = ADT::Type::findType(v.type);
+			var->type = &ADT::Type::findType(v.type);
 			var->unit = v.unit;
 			var->constant = v.constant;
 			var->pointer = v.pointer;
 		}
 	}else{
-		auto sym = table->addVariable(v.name);
+		SymbolTable* updated = nullptr;
+		auto sym = table->addVariable(v.name, &updated);
 		if(sym == nullptr){
-			printError(v, "Duplicate variable declaration " + v.name);
+			printError(v, "Declaration of variable " + v.name + " would shadow previous declaration.");
 		}else{
-			sym->type = ADT::Type::findType(v.type);
+			sym->type = &ADT::Type::findType(v.type);
 			sym->unit = v.unit;
 			sym->constant = v.constant;
 			sym->pointer = v.pointer;
 			if(user_type != nullptr){
 				user_type->addMember(sym->type);
 			}
+			table = updated;
+			v.table = updated;
 		}
 	}
 	

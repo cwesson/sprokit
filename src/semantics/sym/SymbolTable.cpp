@@ -9,6 +9,8 @@
 
 #include "SymbolTable.h"
 #include "FunctionSymbols.h"
+#include "OrderedSymbol.h"
+#include "ScopedSymbols.h"
 #include <string>
 #include <iostream>
 
@@ -30,8 +32,24 @@ std::ostream& SymbolTable::print(std::ostream& os, unsigned int depth) const {
 	return os;
 }
 
-SymbolTable::variable* SymbolTable::addVariable(const std::string& n) {
-	return nullptr;
+SymbolTable::variable* SymbolTable::addVariable(const std::string& n, SymbolTable** outtable) {
+	variable* var = findVariable(n);
+	if(var != nullptr){
+		return nullptr;
+	}else{
+		OrderedSymbol* sym = new OrderedSymbol(n, this);
+		children.push_back(sym);
+		if(outtable != nullptr){
+			*outtable = sym;
+		}
+		return &sym->var;
+	}
+}
+
+ScopedSymbols* SymbolTable::addScope(const std::string& n) {
+	ScopedSymbols* t = new ScopedSymbols(n, this);
+	children.push_back(t);
+	return t;
 }
 
 SymbolTable::parameter* SymbolTable::addParameter(const std::string& n) {
@@ -75,6 +93,10 @@ SymbolTable* SymbolTable::findType(const std::string& n) {
 	}else{
 		return nullptr;
 	}
+}
+
+bool SymbolTable::isScope() const {
+	return false;
 }
 
 std::ostream& operator<<(std::ostream& os, const SymbolTable& table) {

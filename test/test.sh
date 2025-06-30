@@ -28,4 +28,6 @@ run_good_test() {
 
 run_bad_test "test/bad/modified.spkt" 2
 run_bad_test "test/bad/types.spkt" 7
+run_bad_test "test/bad/scope.spkt" 1
+run_bad_test "test/bad/usebeforedecl.spkt" 4
 run_good_test "test/good/simple.spkt"

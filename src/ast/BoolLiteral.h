@@ -37,7 +37,7 @@ class BoolLiteral : public Expression {
 			return true;
 		}
 
-		virtual ADT::Type* getType() const override {
+		virtual ADT::Type& getType() const override {
 			return ADT::Type::findType("bool");
 		}
 

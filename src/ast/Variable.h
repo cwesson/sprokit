@@ -39,10 +39,10 @@ class Variable : public Expression {
 			}
 		}
 
-		virtual ADT::Type* getType() const override {
+		virtual ADT::Type& getType() const override {
 			auto sym = table->findVariable(name);
 			if(sym != nullptr){
-				return sym->type;
+				return *sym->type;
 			}else{
 				return ADT::Type::findType("$unknown");
 			}

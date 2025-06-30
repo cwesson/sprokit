@@ -21,6 +21,28 @@ classDiagram
 	ASTNode ..> SymbolTable
 ```
 
+## Symbol Table
+```
+var a
+var b
+func test() {
+	var c
+	if {
+		var i
+	} else {
+		var j
+	}
+	var k
+	var l
+}
+```
+```mermaid
+flowchart LR
+	Global --> a --> b --> $func_test --> c --> $if --> i
+	c --> $else --> j
+	c --> k --> l
+```
+
 ## Abstract Data Types
 ```mermaid
 classDiagram
