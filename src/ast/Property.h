@@ -42,7 +42,20 @@ class Property : public Expression {
 		virtual bool is_constexpr() const {
 			return true;
 		}
-		
+
+		virtual ADT::Type& getType() const {
+			if(name == "size"){
+				return ADT::Type::findType("uint8");
+			}else if(name == "length"){
+				return ADT::Type::findType("uint32");
+			}else if(name == "max"){
+				return var->getType();
+			}else if(name == "min"){
+				return var->getType();
+			}
+			return ADT::Type::findType("$unknown");
+		}
+
 		Variable*   var;  ///< Variable pointed to.
 		std::string name; ///< Property name.
 };

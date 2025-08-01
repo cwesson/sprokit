@@ -1,0 +1,37 @@
+/**
+ * \file time.spkt
+ * \defgroup time Time Units
+ * \{
+ */
+
+/**
+ * Seconds
+ */
+unit #s {
+	operator #min(const s) = s / 60#s/min;
+}
+
+/**
+ * Minutes
+ */
+unit #min {
+	operator #s(const m) = m * 60#s/min;
+	operator #hr(const m) = m / 60#min/hr;
+}
+
+/**
+ * Hours
+ */
+unit #hr {
+	operator #min(const h) = h * 60#min/hr;
+	operator #day(const h) = h / 24#hr/day;
+}
+
+/**
+ * Days
+ */
+unit #day {
+	operator #hr(const d) = d * 24#hr/day;
+}
+
+/** \} */

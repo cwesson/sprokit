@@ -29,8 +29,14 @@ std::string UnitScanner::token() {
 					++i;
 				}
 				return tok;
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				break;
 			default:
 				tok += sym;
+				break;
 		}
 	}
 

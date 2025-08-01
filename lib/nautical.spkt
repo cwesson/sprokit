@@ -1,0 +1,35 @@
+/**
+ * \file nautical.spkt
+ * \defgroup nautical Nautical Units
+ * \{
+ */
+
+/**
+ * Nautical Miles
+ */
+unit #nmi {
+	operator #m(const n) = n * 1852 #m/nmi;
+	operator #cable(const n) = n * 10 #cable/nmi;
+}
+
+/**
+ * Cables
+ */
+unit #cable {
+	operator #nmi(const c) = c / 10 #cable/nmi;
+}
+
+/**
+ * Fathoms
+ */
+unit #fathom {
+	operator #ft(const f) = f * 6 #ft/fathom;
+}
+
+/**
+ * Knots
+ */
+unit #kn : #nmi/hr {
+}
+
+/** \} */

@@ -58,9 +58,11 @@ std::ostream& CppTranspiler::arrlen(std::ostream& os) {
 }
 
 void CppTranspiler::visit(AST::Addition& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " + ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Array& v) {
@@ -96,9 +98,11 @@ void CppTranspiler::visit(AST::Conversion& v) {
 }
 
 void CppTranspiler::visit(AST::Division& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " / ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Equal& v) {
@@ -113,6 +117,10 @@ void CppTranspiler::visit(AST::Exponent& v) {
 	os << ", ";
 	v.right->accept(*this);
 	os << ")";
+}
+
+void CppTranspiler::visit(AST::FloatLiteral& v) {
+	os << v.value << formatUnit(v.unit);
 }
 
 void CppTranspiler::visit(AST::FunctionCall& v) {
@@ -168,6 +176,9 @@ void CppTranspiler::visit(AST::List& v) {
 		v.node->accept(*this);
 	}
 	if(v.next != nullptr){
+		if(in_params && !is_last){
+			os << ", ";
+		}
 		v.next->accept(*this);
 	}
 }
@@ -196,15 +207,19 @@ void CppTranspiler::visit(AST::Member& v) {
 }
 
 void CppTranspiler::visit(AST::Modulo& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " % ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Multiplication& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " * ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::NotEqual& v) {
@@ -231,6 +246,8 @@ void CppTranspiler::visit(AST::Property& v) {
 			v.var->accept(*this);
 			insert_last = nullptr;
 		}
+	}else if(v.name == "max"){
+	}else if(v.name == "min"){
 	}
 }
 
@@ -244,9 +261,11 @@ void CppTranspiler::visit(AST::Return& v) {
 }
 
 void CppTranspiler::visit(AST::Subtraction& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " - ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::TypeDeclaration& v) {
@@ -314,7 +333,7 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 	if(v.constant){
 		os << "const ";
 	}
-	os << v.type;
+	os << (std::string)v.type;
 	if(v.pointer){
 		os << "*";
 	}
@@ -322,11 +341,7 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 	if(v.array != nullptr){
 		v.array->accept(*this);
 	}
-	if(in_params){
-		if(!is_last) {
-			os << ", ";
-		}
-	}else{
+	if(!in_params){
 		if(v.initial != nullptr){
 			os << " = ";
 			v.initial->accept(*this);

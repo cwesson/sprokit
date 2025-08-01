@@ -22,8 +22,10 @@
 class DimensionalAnalysis : public Visitor {
 	private:
 		Dimensions constructed_unit; ///< Unit dimensions found from recursive visits.
-		UnitParser parser;           ///< Parser for unit names.
+		mutable UnitParser parser;   ///< Parser for unit names.
 		AST::FunctionDeclaration* in_func; ///< Function currently being checked.
+		Dimensions unit;
+		std::string con_symbol;
 
 	public:
 		/**
@@ -37,6 +39,10 @@ class DimensionalAnalysis : public Visitor {
 		#define X(_x) virtual void visit(AST::_x& v) override;
 		AST_LIST
 		#undef X
+	
+	private:
+		bool equal(AST::ASTNode& v, const Dimensions& a, const Dimensions& b) const;
+		Dimensions expand(AST::ASTNode& v, const Dimensions& dim) const;
 };
 
 /** @} */

@@ -38,6 +38,8 @@ class GlobalSymbols : public SymbolTable {
 
 		virtual SymbolTable* findType(const std::string& n) override;
 
+		virtual unit* findUnit(const std::string& n) override;
+
 		std::map<std::string, function*> funcs;    ///< Map of declared global functions.
 		std::map<std::string, TypeSymbols*> types; ///< Map of declared types.
 		std::map<std::string, unit*> units;        ///< Map of declared units.

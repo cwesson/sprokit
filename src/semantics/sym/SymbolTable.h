@@ -91,8 +91,12 @@ class SymbolTable {
 		 * Units are indexed by short name.
 		 */
 		struct unit {
-			std::string alias; ///< Expanded unit name.
-			std::map<std::string, AST::Expression*> conversion; ///< Map of unit conversion expressions.
+			struct conversion {
+				AST::Expression* exp;
+				std::string      var;
+			};
+			std::string expanded; ///< Expanded unit name.
+			std::map<std::string, conversion> conversions; ///< Map of unit conversion expressions.
 		};
 
 		/**
@@ -173,6 +177,13 @@ class SymbolTable {
 		 * @return The type symbol table, or nullptr if no type with the given name was found.
 		 */
 		virtual SymbolTable* findType(const std::string& n);
+
+		/**
+		 * Recursively search for the unit.
+		 * @param n Unit name.
+		 * @return The unit entry, or nullptr if no unit with the given name was found.
+		 */
+		virtual unit* findUnit(const std::string& n);
 
 		virtual bool isScope() const;
 		

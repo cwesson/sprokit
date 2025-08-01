@@ -1,29 +1,43 @@
 /**
- * @file UserType.h
+ * @file TypeDecorator.h
  * @author Conlan Wesson
  * @copyright (c) 2025, Conlan Wesson, GNU General Public License v3
+ * @ingroup adt Abstract Data Types
+ * @{
  */
 
 #pragma once
 
 #include "Type.h"
 #include "CodeGen.h"
-#include <vector>
-
-/**
- * @ingroup adt
- * @{
- */
 
 namespace ADT {
 
-/**
- * Placeholder Type for user defined types.
- */
-class UserType : public Type {
+class TypeDecorator : public Type {
 	public:
+		TypeDecorator(Type& t, const std::string& dec) :
+			Type((std::string)t + dec),
+			type(t) {}
+		
+		virtual ~TypeDecorator() = default;
+		
+		Type& type;
+};
+
+class PointerType : public TypeDecorator {
+	public:
+		PointerType(Type& t) :
+			TypeDecorator(t, "@")
+			{}
+		
+		virtual ~PointerType() = default;
+
+		virtual unsigned int size() const override {
+			return 8;
+		}
+
 		virtual bool accept(const Type& t) const override {
-			return t.visit(*this);
+			return type.accept(*this);
 		}
 
 		virtual std::string translate(const CodeGen& g) const override {
@@ -58,40 +72,17 @@ class UserType : public Type {
 			return false;
 		}
 
-		/**
-		 * Add a member to the type.
-		 * @param type Type of the member to add.
-		 */
-		void addMember(ADT::Type* type) {
-			members.push_back(type);
-		}
-
-		virtual unsigned int size() const override {
-			unsigned int s = 0;
-			for(auto m : members){
-				s += m->size();
-			}
-			return s;
-		}
-
-	protected:
-		/**
-		 * Constructor.
-		 * @param name Type name.
-		 */
-		UserType(const std::string& name) :
-			Type(name),
-			defined(false)
-		{}
-
-		std::vector<ADT::Type*> members; ///< List of members.
-
-		friend class Type;
-	
-	public:
-		bool defined;
 };
 
-}
+class ArrayType : public TypeDecorator {
+	public:
+		ArrayType(Type& t, unsigned int len) :
+			TypeDecorator(t, std::string("[]"))
+			{}
+		
+			virtual ~ArrayType() = default;
+};
+
+} // namespace ADT
 
 /** @} */

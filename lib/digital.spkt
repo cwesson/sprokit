@@ -1,0 +1,157 @@
+/**
+ * \file digital.spkt
+ * \defgroup digital Digital Units
+ * \{
+ */
+
+/**
+ * Bits
+ */
+unit #b {
+	operator #B(const b) = b / 8#b/B;
+}
+
+/**
+ * Kilobits
+ */
+unit #kb {
+	operator #b(const kb) = kb * 1000#b/kb;
+	operator #Mb(const kb) = kb / 1000#kb/Mb;
+}
+
+/**
+ * Megabits
+ */
+unit #Mb {
+	operator #kb(const mb) = mb * 1000#kb/Mb;
+}
+
+/**
+ * Gigabits
+ */
+unit #Gb {
+	operator #Mb(const gb) = gb * 1000#Mb/Gb;
+}
+
+/**
+ * Bytes
+ */
+unit #B {
+	operator #b(const b) = b * 8#b/B;
+	operator #KB(const b) = b / 1000#B/KB;
+	operator #KiB(const b) = b / 1024#B/KiB;
+	operator #Word(const b) = b / 2#B/Word;
+}
+
+/**
+ * Kilobytes
+ */
+unit #kB {
+	operator #B(const kb) = kb * 1000#B/kB;
+	operator #MB(const kb) = kb / 1000#kB/MB;
+}
+
+/**
+ * Kibibytes
+ */
+unit #KiB {
+	operator #B(const kb) = kb * 1024#B/KiB;
+	operator #MiB(const kb) = kb / 1024#KiB/MiB;
+}
+
+/**
+ * Megabytes
+ */
+unit #MB {
+	operator #KB(const mb) = mb * 1000#kB/MB;
+	operator #GB(const mb) = mb / 1000#MB/GB;
+}
+
+/**
+ * Mebibytes
+ */
+unit #MiB {
+	operator #KiB(const mb) = mb * 1024#KiB/MiB;
+	operator #GiB(const mb) = mb / 1000#MiB/GiB;
+}
+
+/**
+ * Gigabytes
+ */
+unit #GB {
+	operator #MB(const gb) = gb * 1000#MB/GB;
+	operator #TB(const gb) = gb / 1000#GB/TB;
+}
+
+/**
+ * Gibibytes
+ */
+unit #GiB {
+	operator #MiB(const gb) = gb * 1024#MiB/GiB;
+	operator #TiB(const gb) = gb / 1000#GiB/TiB;
+}
+
+/**
+ * Terabytes
+ */
+unit #TB {
+	operator #GB(const tb) = tb * 1000#GB/TB;
+	operator #PB(const tb) = tb / 1000#TB/PB;
+}
+
+/**
+ * Tebibytes
+ */
+unit #TiB {
+	operator #GiB(const tb) = tb * 1024#GiB/TiB;
+	operator #PiB(const tb) = tb / 1000#TiB/PiB;
+}
+
+/**
+ * 16 bit word
+ */
+unit #Word {
+	operator #B(const w) = w * 2;
+	operator #DWord(const w) = w / 2#DWord/Word;
+}
+
+/**
+ * 32 bit word
+ */
+unit #DWord {
+	operator #Word(const w) = w * 2#Word/DWord;
+	operator #QWord(const w) = w / 2#QWord/DWord;
+}
+
+/**
+ * 64 bit word
+ */
+unit #QWord {
+	operator #DWord(const w) = w * 2#DWord/QWord;
+}
+
+/**
+ * Kilobits per second
+ */
+unit #kbps : #kb/s {
+}
+
+/**
+ * Megabits per second
+ */
+unit #Mbps : #Mb/s {
+}
+
+/**
+ * Gigabits per second
+ */
+unit #Gbps : #Gb/s {
+}
+
+/**
+ * Teraits per second
+ */
+unit #Tbps : #Tb/s {
+}
+
+/** \} */

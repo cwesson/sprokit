@@ -70,10 +70,33 @@ class Dimensions {
 		int& operator[](const std::string& i);
 
 		/**
+		 * Get the degree of a dimension.
+		 * @param i Dimension to get.
+		 * @return Degree of the given dimension.
+		 */
+		int operator[](const std::string& i) const;
+
+		/**
 		 * Convert to a string.
 		 * @return String representation of the units.
 		 */
 		operator std::string() const;
+
+		std::map<std::string, int>::iterator begin() {
+			return dim.begin();
+		}
+
+		std::map<std::string, int>::iterator end() {
+			return dim.end();
+		}
+
+		std::map<std::string, int>::const_iterator begin() const {
+			return dim.cbegin();
+		}
+
+		std::map<std::string, int>::const_iterator end() const {
+			return dim.cend();
+		}
 
 	private:
 		std::map<std::string, int> dim; ///< Map of unit dimensions.

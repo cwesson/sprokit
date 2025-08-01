@@ -97,6 +97,11 @@ void PrintAST::visit(AST::Exponent& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::FloatLiteral& v) {
+	printIndent(v);
+	std::cout << v.value << " " << v.unit;
+}
+
 void PrintAST::visit(AST::FunctionCall& v) {
 	printIndent(v);
 	std::cout << "CALL " << v.name;
@@ -259,7 +264,7 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 	}else{
 		std::cout << "VAR   ";
 	}
-	std::cout << v.type << " " << v.name << " " << v.unit;
+	std::cout << (std::string)v.type << " " << v.name << " " << v.unit;
 	++indent;
 		if(v.array != nullptr){
 			v.array->accept(*this);

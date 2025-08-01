@@ -18,6 +18,8 @@ class CollectSymbols : public Visitor {
 		SymbolTable* table;       ///< Current symbol table.
 		SymbolTable* type_table;  ///< Symbol table when processing member accesses.
 		ADT::UserType* user_type; ///< ADT type when processing member declarations.
+		SymbolTable::unit* unit;
+		std::string con_symbol;
 
 	private:
 		/**

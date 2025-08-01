@@ -25,6 +25,14 @@ namespace parser {
  */
 bool parse_int(const char* str, unsigned long long* out);
 
+/**
+ * Parse an floating point literal.
+ * @param str Input string.
+ * @param[out] out Parsed floating point value.
+ * @return true if successful, false if an error occurs.
+ */
+bool parse_float(const char* str, double* out);
+
 }
 
 /** @} */

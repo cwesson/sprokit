@@ -1,0 +1,37 @@
+/**
+ * \file astronomical.spkt
+ * \defgroup astronomical Astronomical Units
+ * \{
+ */
+
+/**
+ * Astronomical Units (AU)
+ */
+unit #AU {
+	operator #m(const a) = a * 149_597_870_700#m/AU;
+	operator #pc(const a) = a / 206_265#AU/pc;
+}
+
+/**
+ * Parsecs
+ */
+unit #pc {
+	operator #AU(const p) = p * 206_265#AU/pc;
+}
+
+/**
+ * Lightyears
+ */
+unit #ly {
+	operator #m(const a) = a * 9_460_730_472_580_800#m/ly;
+}
+
+/**
+ * Meters
+ */
+unit #m {
+	operator #AU(const m) = m / 149_597_870_700#m/AU;
+	operator #ly(const m) = m / 9_460_730_472_580_800#m/ly;
+}
+
+/** \} */

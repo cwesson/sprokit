@@ -78,6 +78,9 @@ void TypeChecker::visit(AST::Exponent& v) {
 	}
 }
 
+void TypeChecker::visit(AST::FloatLiteral& v) {
+}
+
 void TypeChecker::visit(AST::FunctionCall& v) {
 	auto f = v.table->findFunction(v.name);
 	if(f == nullptr){

@@ -12,7 +12,9 @@
 DimensionalAnalysis::DimensionalAnalysis() :
 	constructed_unit(),
 	parser(),
-	in_func(nullptr)
+	in_func(nullptr),
+	unit(),
+	con_symbol("")
 {}
 
 void DimensionalAnalysis::visit(AST::Addition& v) {
@@ -20,7 +22,7 @@ void DimensionalAnalysis::visit(AST::Addition& v) {
 	Dimensions left_unit = constructed_unit;
 	v.right->accept(*this);
 	Dimensions right_unit = constructed_unit;
-	if(left_unit != right_unit){
+	if(!equal(v, left_unit, right_unit)){
 		printError(v, "Mismatched units in addition, " + (std::string)left_unit + " and " + (std::string)right_unit);
 	}
 	constructed_unit = left_unit;
@@ -43,14 +45,22 @@ void DimensionalAnalysis::visit(AST::Assignment& v) {
 	v.var->accept(*this);
 	Dimensions left_unit = constructed_unit;
 	v.expression->accept(*this);
-	if(left_unit != constructed_unit){
+	if(!equal(v, left_unit, constructed_unit)){
 		printError(v, "Mismatched units in assignment, was " + (std::string)constructed_unit + ", expected " + (std::string)left_unit);
 	}
 }
 
 void DimensionalAnalysis::visit(AST::BoolLiteral& v) {}
 
-void DimensionalAnalysis::visit(AST::Conversion& v) {}
+void DimensionalAnalysis::visit(AST::Conversion& v) {
+	Dimensions expected = parser.parse(v.to);
+	con_symbol = v.name;
+		v.expression->accept(*this);
+	con_symbol = "";
+	if(!equal(v, constructed_unit, expected)){
+		printError(v, "Mismatched units in conversion, was " + (std::string)constructed_unit + ", expected " + (std::string)expected);
+	}
+}
 
 void DimensionalAnalysis::visit(AST::Division& v) {
 	v.left->accept(*this);
@@ -65,7 +75,7 @@ void DimensionalAnalysis::visit(AST::Equal& v) {
 	v.left->accept(*this);
 	Dimensions left_unit = constructed_unit;
 	v.right->accept(*this);
-	if(left_unit != constructed_unit){
+	if(!equal(v, left_unit, constructed_unit)){
 		printError(v, "Mismatched units in equality, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
 	}
 }
@@ -82,6 +92,10 @@ void DimensionalAnalysis::visit(AST::Exponent& v) {
 	}
 }
 
+void DimensionalAnalysis::visit(AST::FloatLiteral& v) {
+	constructed_unit = parser.parse(v.unit);
+}
+
 void DimensionalAnalysis::visit(AST::FunctionCall& v) {
 	auto func = v.table->findFunction(v.name);
 	if(func != nullptr){
@@ -90,7 +104,7 @@ void DimensionalAnalysis::visit(AST::FunctionCall& v) {
 			if(param->node != nullptr){
 				param->node->accept(*this);
 				Dimensions param_unit = parser.parse(func->table->params[i]->unit);
-				if(constructed_unit != param_unit){
+				if(!equal(v, constructed_unit, param_unit)){
 					printError(v, "Mismatched units in parameter, was " + (std::string)constructed_unit + ", expected " + (std::string)param_unit);
 				}
 			}
@@ -147,7 +161,7 @@ void DimensionalAnalysis::visit(AST::NotEqual& v) {
 	v.left->accept(*this);
 	Dimensions left_unit = constructed_unit;
 	v.right->accept(*this);
-	if(left_unit != constructed_unit){
+	if(!equal(v, left_unit, constructed_unit)){
 		printError(v, "Mismatched units in inequality, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
 	}
 }
@@ -164,7 +178,7 @@ void DimensionalAnalysis::visit(AST::Return& v) {
 	if(v.expression != nullptr){
 		v.expression->accept(*this);
 		Dimensions ret_unit = parser.parse(in_func->unit);
-		if(constructed_unit != ret_unit){
+		if(!equal(v, constructed_unit, ret_unit)){
 			printError(v, "Mismatched units in return, was " + (std::string)constructed_unit + ", expected " + (std::string)ret_unit);
 		}
 	}
@@ -175,21 +189,32 @@ void DimensionalAnalysis::visit(AST::Subtraction& v) {
 	Dimensions left_unit = constructed_unit;
 	v.right->accept(*this);
 	Dimensions right_unit = constructed_unit;
-	if(left_unit != right_unit){
+	if(!equal(v, left_unit, right_unit)){
 		printError(v, "Mismatched units in subtraction, " + (std::string)left_unit + " and " + (std::string)right_unit);
 	}
 	constructed_unit = left_unit;
 	v.dim = constructed_unit;
 }
 
-void DimensionalAnalysis::visit(AST::TypeDeclaration& v) {}
+void DimensionalAnalysis::visit(AST::TypeDeclaration& v) {
+	v.list->accept(*this);
+}
 
-void DimensionalAnalysis::visit(AST::UnitDeclaration& v) {}
+void DimensionalAnalysis::visit(AST::UnitDeclaration& v) {
+	unit = parser.parse(v.unit);
+		v.list->accept(*this);
+	unit = parser.parse("#1");
+}
 
 void DimensionalAnalysis::visit(AST::Variable& v) {
 	if(v.array != nullptr){
 		v.array->accept(*this);
 	}
+
+	if(con_symbol != "" && v.name == con_symbol){
+		constructed_unit = unit;
+	}
+
 	auto sym = v.table->findVariable(v.name);
 	if(sym != nullptr){
 		constructed_unit = parser.parse(sym->unit);
@@ -204,7 +229,7 @@ void DimensionalAnalysis::visit(AST::VariableDeclaration& v) {
 	if(v.initial != nullptr){
 		v.initial->accept(*this);
 		if(v.unit == ""){
-			// Unit was not specifid, derive from initializer
+			// Unit was not specifed, derive from initializer
 			v.unit = (std::string)constructed_unit;
 			auto sym = v.table->findVariable(v.name);
 			if(sym != nullptr){
@@ -214,7 +239,31 @@ void DimensionalAnalysis::visit(AST::VariableDeclaration& v) {
 		if(constructed_unit != parser.parse(v.unit)){
 			printError(v, "Mismatched units in initialization, was " + (std::string)constructed_unit + ", expected " + v.unit);
 		}
-	}else if(v.unit == ""){
-		printError(v, "Units must be specified for function parameters and type members.");
 	}
+}
+
+bool DimensionalAnalysis::equal(AST::ASTNode& v, const Dimensions& a, const Dimensions& b) const {
+	Dimensions a_exp = expand(v, a);
+	Dimensions b_exp = expand(v, b);
+	return a_exp == b_exp;
+}
+
+Dimensions DimensionalAnalysis::expand(AST::ASTNode& v, const Dimensions& dim) const {
+	Dimensions ret;
+	for(auto const& d : dim){
+		std::string e = d.first;
+		SymbolTable::unit* u = v.table->findUnit(std::string("#") + d.first);
+		if(u != nullptr){
+			if(u->expanded != ""){
+				Dimensions exp = parser.parse(u->expanded);
+				for(auto p : exp){
+					int adj = p.second;
+					ret[p.first] += adj*d.second;
+				}
+				continue;
+			}
+		}
+		ret[d.first] += d.second;
+	}
+	return ret;
 }

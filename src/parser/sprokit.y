@@ -5,6 +5,7 @@
 #include "AST.h"
 #include <cstdlib>
 using namespace AST;
+using namespace ADT;
 #include "sprokit.tab.hh"
 
 extern unsigned int yylineno;
@@ -16,31 +17,31 @@ AST::List* program_ast = nullptr;
 
 %locations
 
-%token <literal> INTEGER FLOAT
+%token <literal> INTEGER FLOAT STRING
 %token <symbol> UNIT_ID
 %token <symbol> ID
 
 %token CONST VAR FUNC TYPE UNIT
 %token RETURN
 %token OPERATOR
-%token IF ELSE FOR
+%token IF ELSE FOR BREAK CONTINUE YIELD SWITCH CASE DEFAULT WITH
 %token TRUE FALSE
 
 %token LBRACE RBRACE
 %token SEMICOLON
 %token COMMA
 %token COLON
-%token BACKTICK
+%token PROPERTY
 %token ASSIGN
 
 %token LPAREN RPAREN
-%token LBRACKET RBRACKET
+%left QUESTION COLON
 %left EQUAL NEQUAL GREATER LESSER GTEQUAL LTEQUAL
 %left BOOLOR
 %left BOOLAND
 %right BOOLNOT
 %left LSHIFT RSHIFT
-%left BITOR
+%left BITOR BITXOR
 %left BITAND
 %right BITNOT
 %left PLUS MINUS
@@ -55,7 +56,12 @@ AST::List* program_ast = nullptr;
 %type <list> program
 %type <list> statement_list
 %type <node> statement
+%type <node> block_statement
 %type <node> if_statement
+%type <node> for_statement
+%type <node> switch_statement
+%type <node> case_statement
+%type <list> case_list
 %type <list> paramdecl_list
 %type <list> paramdecl_cont
 %type <symbol> unit_id
@@ -73,6 +79,7 @@ AST::List* program_ast = nullptr;
 %type <exp> expression
 %type <list> expression_list
 %type <list> expression_cont
+%type <type> type_spec
 
 %union{
 	const char* literal;
@@ -83,6 +90,7 @@ AST::List* program_ast = nullptr;
 	class VariableDeclaration* var_decl;
 	class Variable* var;
 	class Array* arr;
+	class Type* type;
 }
 
 %%
@@ -121,13 +129,45 @@ statement:
 	| variable_access[var] ASSIGN expression[value] SEMICOLON {
 		$$ = new Assignment(@2.begin.line, $var, $value);
 	}
+	| variable_access[var] ASSIGN block_statement[value] SEMICOLON {
+		
+	}
+	| block_statement {
+		$$ = $1;
+	}
 	| RETURN expression SEMICOLON {
 		$$ = new Return(@1.begin.line, $2);
 	}
-	| if_statement {
-		$$ = $1;
+	| BREAK SEMICOLON {
+		
+	}
+	| BREAK ID[id] SEMICOLON {
+		
+	}
+	| CONTINUE SEMICOLON {
+		
+	}
+	| CONTINUE ID[id] SEMICOLON {
+		
+	}
+	| YIELD expression[exp] SEMICOLON {
+		
+	}
+	| WITH declaration[dec] LBRACE statement_list[body] RBRACE {
+		
 	}
 ;
+
+block_statement:
+	if_statement {
+		$$ = $1;
+	}
+	| for_statement {
+		$$ = $1;
+	}
+	| switch_statement {
+		$$ = $1;
+	}
 
 if_statement:
 	IF expression[cond] LBRACE statement_list[body] RBRACE {
@@ -141,12 +181,59 @@ if_statement:
 	}
 ;
 
+for_statement:
+	FOR variable_decl[init] SEMICOLON expression[cond] SEMICOLON ID[id] ASSIGN expression[inc] LBRACE statement_list[body] RBRACE {
+
+	}
+	| FOR expression[cond] LBRACE statement_list[body] RBRACE {
+
+	}
+;
+
+switch_statement:
+	SWITCH expression[exp] LBRACE case_list[list] RBRACE {
+
+	}
+;
+
+case_list:
+	case_statement case_list {
+		$$ = new List($1);
+		$$->next = $2;
+	}
+	| /* empty */ {
+		$$ = new List(nullptr);
+	}
+;
+
+case_statement:
+	CASE expression[exp] LBRACE statement_list[list] RBRACE {
+
+	}
+	| DEFAULT LBRACE statement_list[list] RBRACE {
+
+	}
+;
+
+
 unit_id:
 	UNIT_ID {
 		$$ = $1;
 	}
 	| /* empty */ {
 		$$ = "";
+	}
+;
+
+type_spec:
+	type_spec array_decl {
+
+	}
+	| type_spec[ext] POINTER {
+		$$ = ADT::Type::findPointerType($ext->name);
+	}
+	| ID[type] {
+		$$ = ADT::Type::findType($type);
 	}
 ;
 
@@ -256,6 +343,12 @@ declaration:
 		$$ = $var;
 		$var->initial = $value;
 	}
+	| variable_decl[var] ASSIGN statement[value] SEMICOLON {
+		
+	}
+	| variable_decl[var] ASSIGN LBRACE expression_list[value] RBRACE SEMICOLON {
+		
+	}
 	| funcdecl {
 		$$ = $1;
 	}
@@ -324,6 +417,18 @@ expression:
 			$$ = new IntegerLiteral(@1.begin.line, i, "#1");
 		}
 	}
+	| FLOAT[value] UNIT_ID[unit] {
+		double i = 0;
+		if(::parser::parse_float($value, &i)){
+			$$ = new IntegerLiteral(@1.begin.line, i, $unit);
+		}
+	}
+	| FLOAT[value] {
+		double i = 0;
+		if(::parser::parse_float($value, &i)){
+			$$ = new IntegerLiteral(@1.begin.line, i, "#1");
+		}
+	}
 	| TRUE {
 		$$ = new BoolLiteral(@1.begin.line, true);
 	}
@@ -336,13 +441,16 @@ expression:
 	| expression[l] NEQUAL expression[r] {
 		$$ = new NotEqual(@2.begin.line, $l, $r);
 	}
+	| expression[cond] QUESTION expression[t] COLON expression[f]{
+
+	}
 	| variable_access {
 		$$ = $1;
 	}
 	| POINTER variable_access[var] {
 		$$ = new Pointer(@1.begin.line, $var);
 	}
-	| variable_access[var] BACKTICK ID[name] {
+	| variable_access[var] PROPERTY ID[name] {
 		$$ = new Property(@2.begin.line, $var, $name);
 	}
 ;

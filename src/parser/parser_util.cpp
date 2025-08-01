@@ -86,3 +86,8 @@ bool parser::parse_int(const char* str, unsigned long long* out) {
 	}
 	return true;
 }
+
+bool parser::parse_float(const char* str, double* out){
+	*out = atof(str);
+	return true;
+}

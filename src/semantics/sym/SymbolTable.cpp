@@ -95,6 +95,14 @@ SymbolTable* SymbolTable::findType(const std::string& n) {
 	}
 }
 
+SymbolTable::unit* SymbolTable::findUnit(const std::string& n) {
+	if(parent != nullptr){
+		return parent->findUnit(n);
+	}else{
+		return nullptr;
+	}
+}
+
 bool SymbolTable::isScope() const {
 	return false;
 }

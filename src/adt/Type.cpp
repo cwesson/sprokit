@@ -8,6 +8,7 @@
 #include "PrimitiveType.h"
 #include "UnknownType.h"
 #include "UserType.h"
+#include "TypeDecorator.h"
 
 namespace ADT {
 
@@ -46,6 +47,18 @@ Type& Type::findType(const std::string& type) {
 		add(new UserType(type));
 	}
 	return *table[type];
+}
+
+Type& Type::findPointerType(const std::string& type) {
+	init();
+
+	Type& base = findType(type);
+	std::string ptr(base.name + std::string("@"));
+	if(!table.contains(ptr)){
+		add(new PointerType(base));
+	}
+
+	return *table[ptr];
 }
 
 UserType* Type::createType(const std::string& type){

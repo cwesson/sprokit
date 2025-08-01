@@ -23,6 +23,7 @@ class UserType;
 class BoolType;
 class FloatType;
 class IntType;
+class PointerType;
 
 /**
  * Base class for ADT.
@@ -35,6 +36,13 @@ class Type {
 		 * @return Type object.
 		 */
 		static Type& findType(const std::string& type);
+
+		/**
+		 * Look up the specified type.
+		 * @param type Type name.
+		 * @return Type object.
+		 */
+		static Type& findPointerType(const std::string& type);
 
 		/**
 		 * Create a new UserType.

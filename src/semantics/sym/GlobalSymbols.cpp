@@ -37,11 +37,11 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 	}
 	os << std::endl;
 
-	os << "| Name            | Alias           |" << std::endl;
+	os << "| Name            | Expanded        |" << std::endl;
 	os << "|-----------------|-----------------|" << std::endl;
 
 	for(auto sym : units) {
-		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(15) << sym.second->alias << " |" << std::endl;
+		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(15) << sym.second->expanded << " |" << std::endl;
 	}
 	os << std::endl;
 
@@ -55,6 +55,19 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 
 	for(auto sym : types) {
 		sym.second->print(os, depth+1);
+	}
+
+	for(auto sym : units) {
+		for(unsigned int i = 0; i < depth+1; ++i){
+			os << "#";
+		}
+		os << " " << sym.first << std::endl;
+		os << "| To              | Symbol          |" << std::endl;
+		os << "|-----------------|-----------------|" << std::endl;
+		for(auto con : sym.second->conversions){
+			os << "| " << std::setw(15) << con.first << " | " << std::setw(15) << con.second.var << " |" << std::endl;
+		}
+		os << std::endl;
 	}
 
 	return os;
@@ -98,6 +111,14 @@ SymbolTable::function* GlobalSymbols::findFunction(const std::string& n) {
 SymbolTable* GlobalSymbols::findType(const std::string& n) {
 	if(types.contains(n)){
 		return types[n];
+	}else{
+		return nullptr;
+	}
+}
+
+SymbolTable::unit* GlobalSymbols::findUnit(const std::string& n) {
+	if(units.contains(n)){
+		return units[n];
 	}else{
 		return nullptr;
 	}

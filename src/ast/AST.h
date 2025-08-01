@@ -20,6 +20,7 @@
 	X(Division) \
 	X(Equal) \
 	X(Exponent) \
+	X(FloatLiteral) \
 	X(FunctionCall) \
 	X(FunctionDeclaration) \
 	X(IfStatement) \
@@ -46,6 +47,7 @@
 #include "Division.h"
 #include "Equal.h"
 #include "Exponent.h"
+#include "FloatLiteral.h"
 #include "FunctionCall.h"
 #include "FunctionDeclaration.h"
 #include "IfStatement.h"

@@ -1,0 +1,196 @@
+/**
+ * \file si.spkt
+ * \defgroup si International System of Units
+ * \{
+ */
+
+/**
+ * \defgroup si_base SI base units
+ * \{
+ */
+
+/**
+ * Meters
+ */
+unit #m {
+
+}
+
+/**
+ * Kilograms
+ */
+unit #kg {
+
+}
+
+/**
+ * Amperes
+ */
+unit #A {
+
+}
+
+/**
+ * Kelvin
+ */
+unit #K {
+	operator #degC(const k) = k - 273.15;
+}
+
+/**
+ * Moles
+ */
+unit #mol {
+
+}
+
+/**
+ * Candela
+ */
+unit #cd {
+
+}
+
+/**
+ * Radians
+ */
+unit #rad {
+
+}
+
+/**
+ * Steradian
+ */
+unit #sr {
+
+}
+
+/** \} */
+
+/**
+ * \defgroup si_derived SI derived units
+ * \{
+ */
+
+/**
+ * Hertz
+ */
+unit #Hz : #1/s {
+
+}
+
+/**
+ * Newtons
+ */
+unit #N : #kg*m/s^2 {
+
+}
+
+/**
+ * Pascal
+ */
+unit #Pa : #N/m^2 {
+
+}
+
+/**
+ * Joules
+ */
+unit #J : #N*m {
+
+}
+
+/**
+ * Watt
+ */
+unit #W : #J/s {
+
+}
+
+/**
+ * Coulombs
+ */
+unit #C : #s*A {
+
+}
+
+/**
+ * Volts
+ */
+unit #V : #W/A {
+
+}
+
+/**
+ * Farad
+ */
+unit #F : #C/V {
+
+}
+
+/**
+ * Ohms
+ */
+unit #Ohm : #V/A {
+
+}
+
+/**
+ * Siemens
+ */
+unit #S : #1/Ohm {
+
+}
+
+/**
+ * Webers
+ */
+unit #Wb : #V*s {
+
+}
+
+/**
+ * Tesla
+ */
+unit #T : #Wb/m^2 {
+
+}
+
+/**
+ * Henry
+ */
+unit #H : #Wb/A {
+
+}
+
+/**
+ * Lumen
+ */
+unit #lm : #cd*sr {
+
+}
+
+/**
+ * Lux
+ */
+unit #lx : #lm/m^2 {
+
+}
+
+/**
+ * Celsius
+ */
+unit #degC {
+	operator #K(const c) = c + 273.15;
+}
+
+/** \} */
+
+/**
+ * Kilometers
+ */
+unit #km {
+	operator #m(const k) = k * 1000#m/km;
+}
+
+/** \} */

@@ -15,6 +15,7 @@ extern yy::parser::value_type yylval;
 /* Definitions */
 
 %option noyywrap
+%option nounput
 %option yylineno
 %option bison-locations
 
@@ -28,18 +29,25 @@ unit {word}+(\^{dec}+)?
 /* Rules */
 %%
 
-"const"  { return token::CONST; }
-"var"    { return token::VAR; }
-"func"   { return token::FUNC; }
-"type"   { return token::TYPE; }
-"unit"   { return token::UNIT; }
-"return" { return token::RETURN; }
+"const"    { return token::CONST; }
+"var"      { return token::VAR; }
+"func"     { return token::FUNC; }
+"type"     { return token::TYPE; }
+"unit"     { return token::UNIT; }
+"return"   { return token::RETURN; }
 "operator" { return token::OPERATOR; }
-"if"     { return token::IF; }
-"else"   { return token::ELSE; }
-"for"    { return token::FOR; }
-"true"   { return token::TRUE; }
-"false"  { return token::FALSE; }
+"if"       { return token::IF; }
+"else"     { return token::ELSE; }
+"for"      { return token::FOR; }
+"break"    { return token::BREAK; }
+"continue" { return token::CONTINUE; }
+"yield"    { return token::YIELD; }
+"switch"   { return token::SWITCH; }
+"case"     { return token::CASE; }
+"default"  { return token::DEFAULT; }
+"true"     { return token::TRUE; }
+"false"    { return token::FALSE; }
+"with"     { return token::WITH; }
 
 "{"  { return token::LBRACE; }
 "}"  { return token::RBRACE; }
@@ -47,7 +55,8 @@ unit {word}+(\^{dec}+)?
 ","  { return token::COMMA; }
 ":"  { return token::COLON; }
 "."  { return token::MEMBER; }
-"`"  { return token::BACKTICK; }
+"?"  { return token::QUESTION; }
+"`"  { return token::PROPERTY; }
 "==" { return token::EQUAL; }
 "!=" { return token::NEQUAL; }
 ">=" { return token::GTEQUAL; }
@@ -63,6 +72,7 @@ unit {word}+(\^{dec}+)?
 "^"  { return token::EXPONENT; }
 "&"  { return token::BITAND; }
 "|"  { return token::BITOR; }
+"^|" { return token::BITXOR; }
 "~"  { return token::BITNOT; }
 "<<" { return token::LSHIFT; }
 ">>" { return token::RSHIFT; }
@@ -79,11 +89,11 @@ unit {word}+(\^{dec}+)?
 	yylval->literal = strdup(yytext); return token::FLOAT;
 }
 
-([1-9]{dec}*)|0(b[0-1]+|o{oct}+|x{hex}+|0+)? {
+([0-9]{dec}*)|0(b[0-1]+|o{oct}+|x{hex}+)? {
 	yylval->literal = strdup(yytext); return token::INTEGER;
 }
 
-\#({unit}(\*{unit})*|1)(\/{unit}(\*{unit})*)? {
+\#([ \t\r\n]+)?({unit}(\*{unit})*|1)(\/{unit}(\*{unit})*)? {
 	yylval->symbol = strdup(yytext); return token::UNIT_ID;
 }
 
@@ -91,7 +101,11 @@ unit {word}+(\^{dec}+)?
 	yylval->symbol = strdup(yytext); return token::ID;
 }
 
-[ \t\n\r]+ ;
+\"([^\"]|(\\\"))*\" {
+	yylval->literal = strdup(yytext); return token::STRING;
+}
+
+[ \t\n\r\f\v]+ ;
 
 \/\/.* ;
 \/\*([^\*]|(\*+[^\*/]))*\*+\/ ;

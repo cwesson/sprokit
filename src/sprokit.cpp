@@ -11,7 +11,9 @@
 #include "DimensionalAnalysis.h"
 #include "TypeChecker.h"
 #include "CppTranspiler.h"
+#include "LLCodeGen.h"
 #include <fstream>
+#include <filesystem>
 #include <unistd.h>
 #include "sprokit.h"
 
@@ -40,7 +42,7 @@ static void printHelp(bool all){
  * @return Number of errors encountered.
  */
 int main(int argc, char* argv[]) {
-	const char* outfile = "out.cpp";
+	const char* outfile = "out.ll";
 	bool print_ast = false;
 	bool print_sym = false;
 	int opt;
@@ -103,9 +105,18 @@ int main(int argc, char* argv[]) {
 		t.visit(*ast);
 		ret += t.error_count;
 
-		std::ofstream cpp(outfile, std::ios::out);
-		CppTranspiler g(cpp);
-		g.visit(*ast);
+		std::filesystem::path path(outfile);
+		std::string ext = path.extension();
+
+		if(ext == ".cpp"){
+			std::ofstream cpp(outfile, std::ios::out);
+			CppTranspiler g(cpp);
+			g.visit(*ast);
+		}else if(ext == ".ll"){
+			std::ofstream ll(outfile, std::ios::out);
+			LLCodeGen g(ll);
+			g.visit(*ast);
+		}
 
 		delete ast;
 	}

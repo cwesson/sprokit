@@ -9,6 +9,7 @@
 #include "ASTNode.h"
 #include "Expression.h"
 #include "Array.h"
+#include "Type.h"
 #include <string>
 
 namespace AST {
@@ -30,6 +31,24 @@ class VariableDeclaration : public ASTNode {
 		VariableDeclaration(unsigned int line, const char* n, const char* t, const char* u, Array* a) :
 			ASTNode(line),
 			name(n),
+			type(ADT::Type::findType(t)),
+			unit(u),
+			array(a),
+			initial(nullptr),
+			constant(true),
+			pointer(false) {}
+		
+		/**
+		 * Constructor.
+		 * @param line Line number.
+		 * @param n Variable name.
+		 * @param t Variable type.
+		 * @param u Variable unit.
+		 * @param a Array dimensions.
+		 */
+		VariableDeclaration(unsigned int line, const char* n, ADT::Type& t, const char* u, Array* a) :
+			ASTNode(line),
+			name(n),
 			type(t),
 			unit(u),
 			array(a),
@@ -49,7 +68,7 @@ class VariableDeclaration : public ASTNode {
 		virtual void accept(Visitor& v) override;
 		
 		std::string name;    ///< Variable name.
-		std::string type;    ///< Variable type.
+		ADT::Type& type;     ///< Variable type.
 		std::string unit;    ///< Variable unit.
 		Array* array;        ///< Array dimensions.
 		Expression* initial; ///< Variable initializer.

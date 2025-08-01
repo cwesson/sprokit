@@ -16,6 +16,8 @@ CollectSymbols::CollectSymbols() :
 	table(new GlobalSymbols()),
 	type_table(nullptr),
 	user_type(nullptr),
+	unit(nullptr),
+	con_symbol(""),
 	collect_param(false)
 {}
 
@@ -74,7 +76,10 @@ void CollectSymbols::visit(AST::BoolLiteral& v) {
 
 void CollectSymbols::visit(AST::Conversion& v) {
 	prepTable(v);
+	auto con = unit->conversions.emplace(v.to, SymbolTable::unit::conversion{v.expression, v.name});
+	con_symbol = con.first->second.var;
 	v.expression->accept(*this);
+	con_symbol = "";
 }
 
 void CollectSymbols::visit(AST::Division& v) {
@@ -93,6 +98,10 @@ void CollectSymbols::visit(AST::Exponent& v) {
 	prepTable(v);
 	v.left->accept(*this);
 	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::FloatLiteral& v) {
+	prepTable(v);
 }
 
 void CollectSymbols::visit(AST::FunctionCall& v) {
@@ -216,12 +225,13 @@ void CollectSymbols::visit(AST::TypeDeclaration& v) {
 	if(t == nullptr){
 		printError(v, "Duplicate type declaration " + v.name);
 	}else{
-		ADT::UserType* type = ADT::Type::createType(v.name);
-		if(type != nullptr){
-			user_type = type;
+		ADT::UserType& type = dynamic_cast<ADT::UserType&>(ADT::Type::findType(v.name));
+		if(!type.defined){
+			user_type = &type;
 			table = t;
 				v.list->accept(*this);
 			removeTable();
+			type.defined = true;
 			user_type = nullptr;
 		}else{
 			printError(v, "Duplicate type declaration " + v.name);
@@ -232,16 +242,22 @@ void CollectSymbols::visit(AST::TypeDeclaration& v) {
 void CollectSymbols::visit(AST::UnitDeclaration& v) {
 	prepTable(v);
 	auto sym = table->addUnit(v.unit);
-	if(sym != nullptr){
-		sym->alias = v.alias;
-	}
-	v.list->accept(*this);
+	sym->expanded = v.alias;
+	unit = sym;
+		v.list->accept(*this);
+	unit = nullptr;
 }
 
 void CollectSymbols::visit(AST::Variable& v) {
 	prepTable(v);
 	if(type_table != nullptr){
 		v.table = type_table;
+	}
+
+	if(con_symbol != ""){
+		if(v.name == con_symbol){
+			return;
+		}
 	}
 
 	auto sym = v.table->findVariable(v.name);

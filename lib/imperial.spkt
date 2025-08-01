@@ -1,0 +1,101 @@
+/**
+ * \file imperial.spkt
+ * \defgroup imperial Imperial System of Units
+ * \{
+ */
+
+/**
+ * Inches
+ */
+unit #in {
+	operator #ft(const i) = i / 12#in/ft;
+}
+
+/**
+ * Feet
+ */
+unit #ft {
+	operator #in(const f) = f * 12#in/ft;
+	operator #yd(const f) = f / 3#ft/yd;
+	operator #mi(const f) = f / 5280#ft/mi;
+}
+
+/**
+ * Yards
+ */
+unit #yd {
+	operator #ft(const y) = y * 3#ft/yd;
+}
+
+/**
+ * Miles
+ */
+unit #mi {
+	operator #ft(const m) = m * 5280#ft/mi;
+}
+
+/**
+ * Miles per hour
+ */
+unit #mph : #mi/hr {
+}
+
+/**
+ * Acres
+ */
+unit #acre {
+	operator #ft^2(const a) = a * 43560 #ft^2/acre;
+}
+
+/**
+ * Square miles
+ */
+unit #sqmi : #mi^2 {
+	operator #ft^2(const s) = s * 27878400 #ft^2/sqmi;
+}
+
+/**
+ * Fluid ounces
+ */
+unit #floz {
+
+}
+
+/**
+ * Pints
+ */
+unit #pt {
+	operator #floz(const p) = p * 20 #floz/pt;
+	operator #qt(const p) = p / 2 #pt/qt;
+}
+
+/**
+ * Quarts
+ */
+unit #qt {
+	operator #pt(const q) = q * 2 #pt/qt;
+	operator #gal(const q) = q / 4 #qt/gal;
+}
+
+/**
+ * Gallons
+ */
+unit #gal {
+	operator #qt(const g) = g * 4 #qt/gal;
+}
+
+/**
+ * ounces
+ */
+unit #oz {
+	operator #lb(const o) = o / 16 #oz/lb;
+}
+
+/**
+ * Pounds
+ */
+unit #lb {
+	operator #oz(const l) = l * 16 #oz/lb;
+}
+
+/** \} */
