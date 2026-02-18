@@ -18,12 +18,12 @@ class Exponent : public BinaryOperator {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param l Left-hand side of `^`.
 		 * @param r Right-hand side of `^`.
 		 */
-		Exponent(unsigned int line, Expression* l, Expression* r) :
-			BinaryOperator(line, l, r) {}
+		Exponent(yy::position pos, Expression* l, Expression* r) :
+			BinaryOperator(pos, l, r) {}
 		
 		virtual void accept(Visitor& v);
 };

@@ -1,8 +1,4 @@
-Error on line 2:
-  Variable a not declared.
-Error on line 7:
-  Variable b not declared.
-Error on line 7:
-  Cannot add unknown type and int8
-Error on line 7:
-  Cannot assign unknown type to int32
+Error at test/bad/usebeforedecl.spkt:2.2: Variable `a` not declared.
+Error at test/bad/usebeforedecl.spkt:7.6: Variable `b` not declared.
+Error at test/bad/usebeforedecl.spkt:7.8: Cannot add unknown type and int8
+Error at test/bad/usebeforedecl.spkt:7.4: Cannot assign unknown type to int32

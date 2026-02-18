@@ -19,12 +19,12 @@ class Property : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Variable pointed to.
 		 * @param n Property name.
 		 */
-		Property(unsigned int line, Variable* v, const char* n) :
-			Expression(line),
+		Property(yy::position pos, Variable* v, const char* n) :
+			Expression(pos),
 			var(v),
 			name(n) {}
 		
@@ -52,6 +52,8 @@ class Property : public Expression {
 				return var->getType();
 			}else if(name == "min"){
 				return var->getType();
+			}else if(name == "align"){
+				return ADT::Type::findType("uint8");
 			}
 			return ADT::Type::findType("$unknown");
 		}

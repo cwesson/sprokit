@@ -19,11 +19,11 @@ class BoolLiteral : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Boolean value.
 		 */
-		BoolLiteral(unsigned int line, bool v) :
-			Expression(line),
+		BoolLiteral(yy::position pos, bool v) :
+			Expression(pos),
 			value(!!v) {}
 
 		/**

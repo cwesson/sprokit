@@ -1,0 +1,11 @@
+func add3(const a : int32, const b : int32, const c : int32) : int32 {
+	return a + b + c;
+}
+
+func average4(const a : int32, const b : int32, const c : int32, const d : int32) : int32 {
+	return (a + b + c + d)/4;
+}
+
+func main() : int32 {
+	return add3(5, 3, 2);
+}

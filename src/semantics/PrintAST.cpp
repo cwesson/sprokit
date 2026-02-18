@@ -14,7 +14,7 @@ PrintAST::PrintAST() :
 {}
 
 void PrintAST::printIndent(AST::ASTNode& v) {
-	std::cout << std::endl << std::setw(4) << v.lineno << std::setw(1) << ": ";
+	std::cout << std::endl << std::setw(4) << v.pos.line << std::setw(1) << ": ";
 	for(unsigned int i = 0; i < indent; ++i){
 		std::cout << "  ";
 	}
@@ -130,11 +130,10 @@ void PrintAST::visit(AST::IfStatement& v) {
 	std::cout << "IF ";
 	++indent;
 		v.condition->accept(*this);
-	--indent;
-	++indent;
 		v.body->accept(*this);
 	--indent;
 	if(v.elsebody != nullptr){
+		std::cout << "ELSE ";
 		++indent;
 			v.elsebody->accept(*this);
 		--indent;

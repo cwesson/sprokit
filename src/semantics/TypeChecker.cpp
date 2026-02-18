@@ -204,7 +204,7 @@ void TypeChecker::visit(AST::VariableDeclaration& v) {
 			ADT::Type& left = *var->type;
 			ADT::Type& right = v.initial->getType();
 			if(!right.convertibleTo(left)){
-				printError(v, std::string("Cannot assign ") + std::string(right) + " to " + std::string(left));
+				printError(*v.initial, std::string("Cannot initialize ") + std::string(left) + " with " + std::string(right));
 			}
 		}
 	}

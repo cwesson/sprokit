@@ -20,12 +20,12 @@ class Member : public Variable {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param l Left-hand side of `.`.
 		 * @param r Right-hand side of `.`.
 		 */
-		Member(unsigned int line, Variable* l, Variable* r) :
-			Variable(line, "$member", nullptr),
+		Member(yy::position pos, Variable* l, Variable* r) :
+			Variable(pos, "$member", nullptr),
 			left(l),
 			right(r) {}
 

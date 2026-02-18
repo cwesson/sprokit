@@ -19,13 +19,12 @@ std::ostream& OrderedSymbol::print(std::ostream& os, unsigned int depth) const {
 	}
 	os << " " << name << std::endl;
 
-	os << "| Name            | Type       | Unit       | const | point | used  | modif |" << std::endl;
-	os << "|-----------------|------------|------------|-------|-------|-------|-------|" << std::endl;
+	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
+	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
 	
 	os << std::left << "| " << std::setw(15) << name
 		<< " | " << std::setw(10) << (std::string)*var.type << " | " << std::setw(10) << var.unit
 		<< " | " << std::setw(5) << (var.constant ? "true " : "false")
-		<< " | " << std::setw(5) << (var.pointer ? "true " : "false")
 		<< " | " << std::setw(5) << (var.used ? "true " : "false")
 		<< " | " << std::setw(5) << (var.modified ? "true " : "false") << " |" << std::endl;
 	os << std::endl;

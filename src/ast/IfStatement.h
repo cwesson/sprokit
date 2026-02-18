@@ -19,13 +19,13 @@ class IfStatement : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param c `if` condition.
 		 * @param b `if` body.
 		 * @param e `else` body.
 		 */
-		IfStatement(unsigned int line, Expression* c, List* b, List* e) :
-			ASTNode(line),
+		IfStatement(yy::position pos, Expression* c, List* b, List* e) :
+			ASTNode(pos),
 			condition(c),
 			body(b),
 			elsebody(e) {}

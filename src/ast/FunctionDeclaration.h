@@ -20,14 +20,14 @@ class FunctionDeclaration : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Function name.
 		 * @param t Declared return type.
 		 * @param u Declared return unit.
 		 * @param b Function body.
 		 */
-		FunctionDeclaration(unsigned int line, const char* n, const char* t, const char* u, List* b) :
-			ASTNode(line),
+		FunctionDeclaration(yy::position pos, const char* n, const char* t, const char* u, List* b) :
+			ASTNode(pos),
 			name(n),
 			type(t),
 			unit(u),

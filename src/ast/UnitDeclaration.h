@@ -20,13 +20,13 @@ class UnitDeclaration : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Unit name.
 		 * @param l List of unit member declarations.
 		 * @param a Long-form unit name.
 		 */
-		UnitDeclaration(unsigned int line, const char* n, List* l, const char* a) :
-			ASTNode(line),
+		UnitDeclaration(yy::position pos, const char* n, List* l, const char* a) :
+			ASTNode(pos),
 			unit(n),
 			alias(a),
 			list(l) {}

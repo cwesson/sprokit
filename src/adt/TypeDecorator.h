@@ -20,6 +20,7 @@ class TypeDecorator : public Type {
 			type(t) {}
 		
 		virtual ~TypeDecorator() = default;
+		virtual Type& baseType() override = 0;
 		
 		Type& type;
 };
@@ -32,12 +33,16 @@ class PointerType : public TypeDecorator {
 		
 		virtual ~PointerType() = default;
 
+		virtual Type& baseType() override{
+			return type.baseType();
+		}
+
 		virtual unsigned int size() const override {
 			return 8;
 		}
 
 		virtual bool accept(const Type& t) const override {
-			return type.accept(*this);
+			return type.accept(t);
 		}
 
 		virtual std::string translate(const CodeGen& g) const override {
@@ -77,10 +82,13 @@ class PointerType : public TypeDecorator {
 class ArrayType : public TypeDecorator {
 	public:
 		ArrayType(Type& t, unsigned int len) :
-			TypeDecorator(t, std::string("[]"))
+			TypeDecorator(t, std::string("[]")),
+			length(len)
 			{}
 		
 			virtual ~ArrayType() = default;
+	
+	unsigned int length;
 };
 
 } // namespace ADT

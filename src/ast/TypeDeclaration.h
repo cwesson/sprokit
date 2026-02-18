@@ -20,12 +20,12 @@ class TypeDeclaration : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Type name.
 		 * @param l List of type member declarations.
 		 */
-		TypeDeclaration(unsigned int line, const char* n, List* l) :
-			ASTNode(line),
+		TypeDeclaration(yy::position pos, const char* n, List* l) :
+			ASTNode(pos),
 			name(n),
 			list(l) {}
 		

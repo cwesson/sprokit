@@ -20,13 +20,13 @@ class Conversion : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Name of the variable.
 		 * @param t Unit this converts to.
 		 * @param e Right-hand side.
 		 */
-		Conversion(unsigned int line, const char* n, const char* t, Expression* e) :
-			ASTNode(line),
+		Conversion(yy::position pos, const char* n, const char* t, Expression* e) :
+			ASTNode(pos),
 			name(n),
 			to(t),
 			expression(e) {}

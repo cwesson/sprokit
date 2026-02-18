@@ -63,7 +63,7 @@ void CollectSymbols::visit(AST::Assignment& v) {
 	if(sym != nullptr){
 		sym->modified = true;
 		if(sym->constant){
-			printError(v, "Attempt to modify constant " + v.var->name);
+			printError(v, "Attempt to modify constant `" + v.var->name + "`.");
 		}
 	}
 
@@ -165,7 +165,9 @@ void CollectSymbols::visit(AST::Member& v) {
 		sym = type_table->findVariable(v.left->name);
 	}
 	if(sym != nullptr){
-		type_table = v.table->findType((std::string)*sym->type);
+		type_table = v.table->findType((std::string)sym->type->baseType());
+		if(type_table != nullptr)
+		printError(v, std::string("Using type table ") + type_table->name);
 	}
 
 	v.right->table = type_table;
@@ -262,7 +264,7 @@ void CollectSymbols::visit(AST::Variable& v) {
 
 	auto sym = v.table->findVariable(v.name);
 	if(sym == nullptr) {
-		printError(v, "Variable " + v.name + " not declared.");
+		printError(v, "Variable `" + v.name + "` not declared.");
 	}else{
 		sym->used = true;
 	}
@@ -283,7 +285,6 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 			var->type = &ADT::Type::findType(v.type);
 			var->unit = v.unit;
 			var->constant = v.constant;
-			var->pointer = v.pointer;
 		}
 	}else{
 		SymbolTable* updated = nullptr;
@@ -294,7 +295,6 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 			sym->type = &ADT::Type::findType(v.type);
 			sym->unit = v.unit;
 			sym->constant = v.constant;
-			sym->pointer = v.pointer;
 			if(user_type != nullptr){
 				user_type->addMember(sym->type);
 			}

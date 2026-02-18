@@ -21,10 +21,10 @@ class Expression : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 */
-		Expression(unsigned int line) :
-			ASTNode(line),
+		Expression(yy::position pos) :
+			ASTNode(pos),
 			dim() {}
 		
 		/**

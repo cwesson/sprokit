@@ -6,6 +6,9 @@
 
 #include "CppTranspiler.h"
 #include "sym/SymbolTable.h"
+#include "PrimitiveType.h"
+#include "UserType.h"
+#include "TypeDecorator.h"
 #include <functional>
 #include <sstream>
 
@@ -16,6 +19,7 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	is_last(false),
 	is_member(false),
 	array_depth(0),
+	ptr_count(0),
 	insert_last(nullptr)
 {
 	os << "/**************************************************" << std::endl;
@@ -35,6 +39,32 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	os << "typedef double float64;" << std::endl;
 	os << "// End Sprokit preamble" << std::endl;
 	os << std::endl;
+}
+std::string CppTranspiler::translateType(const ADT::BoolType& t) const {
+	return "bool";
+}
+
+std::string CppTranspiler::translateType(const ADT::IntType& t) const {
+	std::stringstream s;
+	s << "int" << t.length;
+	return s.str();
+}
+
+std::string CppTranspiler::translateType(const ADT::FloatType& t) const {
+	std::stringstream s;
+	s << "float" << t.size()*8;
+	return s.str();
+}
+
+std::string CppTranspiler::translateType(const ADT::UserType& t) const {
+	return (std::string)t;
+}
+
+std::string CppTranspiler::translateType(const ADT::PointerType& t) const {
+	++ptr_count;
+	std::stringstream s;
+	s << (std::string)t.type.translate(*this) << "*";
+	return s.str();
 }
 
 std::ostream& operator<<(std::ostream& o, CppTranspiler::Indent indent) {
@@ -189,7 +219,9 @@ void CppTranspiler::visit(AST::Member& v) {
 	v.left->accept(*this);
 	auto sym = v.table->findVariable(v.left->name);
 	if(sym != nullptr){
-		if(sym->pointer){
+		ptr_count = 0;
+		sym->type->translate(*this);
+		if(ptr_count > 0){
 			os << "->";
 		}else{
 			os << ".";
@@ -248,6 +280,10 @@ void CppTranspiler::visit(AST::Property& v) {
 		}
 	}else if(v.name == "max"){
 	}else if(v.name == "min"){
+	}else if(v.name == "align"){
+		os << "alignof(";
+		v.var->accept(*this);
+		os << ")";
 	}
 }
 
@@ -291,7 +327,9 @@ void CppTranspiler::visit(AST::UnitDeclaration& v) {
 void CppTranspiler::visit(AST::Variable& v) {
 	auto sym = v.table->findVariable(v.name);
 	if(sym != nullptr){
-		if(sym->pointer && !is_member && insert_last == nullptr){
+		ptr_count = 0;
+		sym->type->translate(*this);
+		if(ptr_count > 0 && !is_member && insert_last == nullptr){
 			os << "*";
 		}
 	}
@@ -333,10 +371,7 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 	if(v.constant){
 		os << "const ";
 	}
-	os << (std::string)v.type;
-	if(v.pointer){
-		os << "*";
-	}
+	os << v.type.translate(*this);
 	os << " " << v.name << formatUnit(v.unit);
 	if(v.array != nullptr){
 		v.array->accept(*this);

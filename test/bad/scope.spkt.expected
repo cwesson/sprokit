@@ -1,2 +1,1 @@
-Error on line 17:
-  Variable d not declared.
+Error at test/bad/scope.spkt:17.3: Variable `d` not declared.

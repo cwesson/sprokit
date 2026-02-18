@@ -22,14 +22,13 @@ FunctionSymbols::~FunctionSymbols(){
 std::ostream& FunctionSymbols::print(std::ostream& os, unsigned int depth) const {
 	SymbolTable::print(os, depth);
 	
-	os << "|    # | Name            | Type       | Unit       | const | point | used  | modif |" << std::endl;
-	os << "|-----:|-----------------|------------|------------|-------|-------|-------|-------|" << std::endl;
+	os << "|    # | Name            | Type       | Unit       | const | used  | modif |" << std::endl;
+	os << "|-----:|-----------------|------------|------------|-------|-------|-------|" << std::endl;
 	unsigned int index = 1;
 	for(auto sym : params) {
 		os << "| " << std::right << std::setw(4) << index++ << " | " << std::left << std::setw(15) << sym->name
 			<< " | " << std::setw(10) << (std::string)*sym->type << " | " << std::setw(10) << sym->unit
 			<< " | " << std::setw(5) << (sym->constant ? "true " : "false")
-			<< " | " << std::setw(5) << (sym->pointer ? "true " : "false")
 			<< " | " << std::setw(5) << (sym->used ? "true " : "false")
 			<< " | " << std::setw(5) << (sym->modified ? "true " : "false") << " |" << std::endl;
 	}

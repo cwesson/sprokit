@@ -21,35 +21,35 @@ class Array : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param e Array index.
 		 * @param a Nested array access
 		 */
-		Array(unsigned int line, Expression* e, Array* a) :
-			ASTNode(line),
+		Array(yy::position pos, Expression* e, Array* a) :
+			ASTNode(pos),
 			expression(e),
 			length_var(nullptr),
 			array(a) {}
 
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Array index.
 		 * @param a Nested array access
 		 */
-		Array(unsigned int line, VariableDeclaration* v, Array* a) :
-			ASTNode(line),
+		Array(yy::position pos, VariableDeclaration* v, Array* a) :
+			ASTNode(pos),
 			expression(nullptr),
 			length_var(v),
 			array(a) {}
 
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param a Nested array access
 		 */
-		Array(unsigned int line, Array* a) :
-			ASTNode(line),
+		Array(yy::position pos, Array* a) :
+			ASTNode(pos),
 			expression(nullptr),
 			length_var(nullptr),
 			array(a) {}

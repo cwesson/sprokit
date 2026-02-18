@@ -24,20 +24,23 @@
 ## Types
 
 ### Built-in Types
-| Name      | Description             | Size (B) | Range                     |
-|-----------|-------------------------|---------:|---------------------------|
-| `bool`    | Boolean                 |        1 | `false` `true`            |
-| `int8`    | 8-bit signed integer    |        1 | [-128, 127]               |
-| `int16`   | 16-bit signed integer   |        2 | [-32768, 32767]           |
-| `int32`   | 32-bit signed integer   |        4 | [−2147483648, 2147483647] |
-| `int64`   | 64-bit signed integer   |        8 | [] |
-| `uint8`   | 8-bit unsigned integer  |        1 | [] |
-| `uint16`  | 16-bit unsigned integer |        2 | [] |
-| `uint32`  | 32-bit unsigned integer |        4 | [] |
-| `uint64`  | 64-bit unsigned integer |        8 | [] |
-| `float16` | 16-bit floating-point   |        2 | [] |
-| `float32` | 32-bit floating-point   |        4 | [] |
-| `float64` | 64-bit floating-point   |        8 | [] |
+| Name       | Description              | Size (B) | Range                     |
+|------------|--------------------------|---------:|---------------------------|
+| `bool`     | Boolean                  |        1 | `false` `true`            |
+| `int8`     | 8-bit signed integer     |        1 | [-128, 127]               |
+| `int16`    | 16-bit signed integer    |        2 | [-32768, 32767]           |
+| `int32`    | 32-bit signed integer    |        4 | [−2147483648, 2147483647] |
+| `int64`    | 64-bit signed integer    |        8 | [-9223372036854775809, 9223372036854775807] |
+| `int128`   | 128-bit signed integer   |       16 |  |
+| `uint8`    | 8-bit unsigned integer   |        1 | [0, 255]                  |
+| `uint16`   | 16-bit unsigned integer  |        2 | [0, 65535]                |
+| `uint32`   | 32-bit unsigned integer  |        4 | [0, 4294967295]           |
+| `uint64`   | 64-bit unsigned integer  |        8 | [0, 18446744073709551615] |
+| `uint128`  | 128-bit unsigned integer |       16 |  |
+| `float16`  | 16-bit floating-point    |        2 |  |
+| `float32`  | 32-bit floating-point    |        4 |  |
+| `float64`  | 64-bit floating-point    |        8 |  |
+| `float128` | 128-bit floating-point   |       16 |  |
 
 ### User Types
 
@@ -106,7 +109,8 @@ var x: float64 = x0 + (v0 * t) + (0.5 * a * t^2);
 ## Properties
 | Name     | Description                      |
 |----------|----------------------------------|
-| `size`   | Size of a variable in bytes      |
+| `align`  | Alignment of the type in bytes   |
 | `length` | Number of entries in an array    |
 | `max`    | Maximum supported value for type |
 | `min`    | Minimum supported value for type |
+| `size`   | Size of a variable in bytes      |

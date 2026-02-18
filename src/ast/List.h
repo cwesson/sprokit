@@ -20,7 +20,7 @@ class List : public ASTNode {
 		 * @param n ASTNode at this position in the list.
 		 */
 		List(ASTNode* n) :
-			ASTNode(0),
+			ASTNode(yy::position()),
 			node(n),
 			next(nullptr) {}
 		

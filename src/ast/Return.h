@@ -19,11 +19,11 @@ class Return : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param e Return value.
 		 */
-		Return(unsigned int line, Expression* e) :
-			ASTNode(line),
+		Return(yy::position pos, Expression* e) :
+			ASTNode(pos),
 			expression(e) {}
 		
 		/**

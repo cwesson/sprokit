@@ -1,0 +1,8 @@
+type Test {
+	var a: int32;
+}
+
+func test(): int32{
+	var t: Test@ = 0;
+	return t.a;
+}

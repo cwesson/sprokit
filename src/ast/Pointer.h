@@ -19,11 +19,11 @@ class Pointer : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Variable pointed to.
 		 */
-		Pointer(unsigned int line, Variable* v) :
-			Expression(line),
+		Pointer(yy::position pos, Variable* v) :
+			Expression(pos),
 			var(v) {}
 		
 		/**

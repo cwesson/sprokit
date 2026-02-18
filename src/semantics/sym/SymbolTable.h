@@ -33,7 +33,6 @@ class SymbolTable {
 			ADT::Type* type;  ///< Declared type.
 			std::string unit; ///< Declared unit.
 			bool constant;    ///< True if declared constant.
-			bool pointer;     ///< True if declared as a pointer.
 			bool used;        ///< True if the variable is accessed.
 			bool modified;    ///< True if the variable is modified.
 
@@ -44,7 +43,6 @@ class SymbolTable {
 				type(),
 				unit(),
 				constant(true),
-				pointer(false),
 				used(false),
 				modified(false) {}
 		};

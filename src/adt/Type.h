@@ -51,6 +51,10 @@ class Type {
 		 */
 		static UserType* createType(const std::string& type);
 
+		virtual Type& baseType() {
+			return *this;
+		}
+
 		/**
 		 * Determine if this Type can be converted to another type.
 		 * @param other	Type to convert to.

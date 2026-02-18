@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "location.hh"
+
 class Visitor;
 class SymbolTable;
 
@@ -27,10 +29,10 @@ class ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param l Line number.
+		 * @param pos Node position in source file.
 		 */
-		ASTNode(unsigned int l) :
-			lineno(l),
+		ASTNode(yy::position pos) :
+			pos(pos),
 			table(nullptr) {}
 		
 		/**
@@ -52,7 +54,7 @@ class ASTNode {
 		 */
 		virtual void accept(Visitor& v) = 0;
 		
-		unsigned int lineno; ///< Line number.
+		yy::position pos;    ///< Line number.
 		SymbolTable* table;  ///< Symbol table at the time this node is executed.
 };
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Visitor.h"
+#include "CodeGen.h"
 #include <functional>
 #include <iostream>
 
@@ -18,7 +18,7 @@
 /**
  * C++ Transpiler Visitor.
  */
-class CppTranspiler : public Visitor {
+class CppTranspiler : public CodeGen {
 public:
 		/**
 		 * Constructor.
@@ -37,6 +37,12 @@ public:
 		#define X(_x) virtual void visit(AST::_x& v) override;
 		AST_LIST
 		#undef X
+
+		virtual std::string translateType(const ADT::BoolType& t) const override;
+		virtual std::string translateType(const ADT::IntType& t) const override;
+		virtual std::string translateType(const ADT::FloatType& t) const override;
+		virtual std::string translateType(const ADT::UserType& t) const override;
+		virtual std::string translateType(const ADT::PointerType& t) const override;
 
 		/**
 		 * Helper class to handle indentation in C++ output.
@@ -83,6 +89,7 @@ public:
 		bool is_last;        ///< true if processing the last element of a List.
 		bool is_member;      ///< true if processing member accesses.
 		unsigned int array_depth; ///< Number of array indicies deep.
+		mutable unsigned int ptr_count;   ///< Number of pointer dereferences.
 		/// Function to insert code before the last member access in a chain.
 		std::function<std::ostream&(std::ostream&)> insert_last;
 

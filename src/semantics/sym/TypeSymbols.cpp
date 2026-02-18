@@ -27,13 +27,12 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 		sym->print(os, depth+1);
 	}
 
-	os << "| Name            | Type       | Unit       | const | point | used  | modif |" << std::endl;
-	os << "|-----------------|------------|------------|-------|-------|-------|-------|" << std::endl;
+	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
+	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
 	for(auto sym : vars){
 		os << std::left << "| " << std::setw(15) << sym.first
 			<< " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
 			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false")
 			<< " | " << std::setw(5) << (sym.second->used ? "true " : "false")
 			<< " | " << std::setw(5) << (sym.second->modified ? "true " : "false") << " |" << std::endl;
 		os << std::endl;

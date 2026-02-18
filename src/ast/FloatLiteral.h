@@ -20,12 +20,12 @@ class FloatLiteral : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Floating point value.
 		 * @param u Floating point unit.
 		 */
-		FloatLiteral(unsigned int line, double v, const char* u) :
-			Expression(line),
+		FloatLiteral(yy::position pos, double v, const char* u) :
+			Expression(pos),
 			value(v),
 			unit(u) {}
 

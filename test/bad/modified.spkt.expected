@@ -1,4 +1,2 @@
-Error on line 4:
-  Attempt to modify constant con
-Error on line 6:
-  Attempt to modify constant v
+Error at test/bad/modified.spkt:4.7: Attempt to modify constant `con`.
+Error at test/bad/modified.spkt:6.5: Attempt to modify constant `v`.

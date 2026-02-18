@@ -20,12 +20,12 @@ class IntegerLiteral : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Integer value.
 		 * @param u Integer unit.
 		 */
-		IntegerLiteral(unsigned int line, unsigned long long v, const char* u) :
-			Expression(line),
+		IntegerLiteral(yy::position pos, unsigned long long v, const char* u) :
+			Expression(pos),
 			value(v),
 			unit(u) {}
 

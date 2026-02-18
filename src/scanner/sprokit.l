@@ -4,19 +4,22 @@
 #include "ASTNode.h"
 #include <string.h>
 
+extern std::string yyfilename;
 using token = yy::parser::token;
 extern yy::parser::value_type yylval;
+unsigned int yycolumn = 0;
 #define YY_DECL int yylex(yy::parser::value_type* yylval_param, yy::parser::location_type* yylloc_param)
 #define YYSTYPE yy::parser::value_type
 #define YYLTYPE yy::parser::location_type
-#define YY_USER_ACTION yylloc->begin.line = yylineno;
-#define YY_BREAL yylloc->end.line = yylineno; break;
+#define YY_USER_ACTION yylloc->begin.filename = &yyfilename; yylloc->begin.line = yylineno; yylloc->begin.column = yycolumn; yycolumn += yyleng;
+#define YY_BREAL yylloc->end.line = yylineno; yylloc->end.column = yycolumn; yycolumn = 1; break;
 %}
 /* Definitions */
 
 %option noyywrap
 %option nounput
 %option yylineno
+%option bison-bridge
 %option bison-locations
 
 dec  [0-9_]
@@ -32,7 +35,8 @@ unit {word}+(\^{dec}+)?
 "const"    { return token::CONST; }
 "var"      { return token::VAR; }
 "func"     { return token::FUNC; }
-"type"     { return token::TYPE; }
+"struct"   { return token::STRUCT; }
+"enum"     { return token::ENUM; }
 "unit"     { return token::UNIT; }
 "return"   { return token::RETURN; }
 "operator" { return token::OPERATOR; }
@@ -55,6 +59,7 @@ unit {word}+(\^{dec}+)?
 ","  { return token::COMMA; }
 ":"  { return token::COLON; }
 "."  { return token::MEMBER; }
+"::" { return token::SCOPE; }
 "?"  { return token::QUESTION; }
 "`"  { return token::PROPERTY; }
 "==" { return token::EQUAL; }
@@ -85,7 +90,7 @@ unit {word}+(\^{dec}+)?
 "["  { return token::LBRACKET; }
 "]"  { return token::RBRACKET; }
 
-({dec}+\.{dec}*)|({dec}*\.{dec}+)(e[\+\-]?{dec}+)? {
+(({dec}+\.{dec}*)|({dec}*\.{dec}+))(e[\+\-]?{dec}+)? {
 	yylval->literal = strdup(yytext); return token::FLOAT;
 }
 
@@ -105,7 +110,8 @@ unit {word}+(\^{dec}+)?
 	yylval->literal = strdup(yytext); return token::STRING;
 }
 
-[ \t\n\r\f\v]+ ;
+[ \t\f\v]+ ;
+[\n\r]+ { yycolumn = 1; }
 
 \/\/.* ;
 \/\*([^\*]|(\*+[^\*/]))*\*+\/ ;

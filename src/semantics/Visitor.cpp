@@ -15,12 +15,10 @@ Visitor::Visitor() :
 
 void Visitor::printError(AST::ASTNode& node, const std::string& msg) {
 	++error_count;
-	std::cerr << "Error on line " << node.lineno << ":" << std::endl;
-	std::cerr << "  " << msg << std::endl;
+	std::cerr << "Error at " << node.pos << ": " << msg << std::endl;
 }
 
 void Visitor::printWarning(AST::ASTNode& node, const std::string& msg) {
 	++error_count;
-	std::cerr << "Warning on line " << node.lineno << ":" << std::endl;
-	std::cerr << "  " << msg << std::endl;
+	std::cerr << "Warning at " << node.pos << ": " << msg << std::endl;
 }

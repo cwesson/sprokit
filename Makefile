@@ -3,7 +3,7 @@ BIN := bin
 SCANNER := $(BIN)/lex.yy.c
 PARSER  := $(BIN)/sprokit.tab.cc
 COMPILER := $(BIN)/sprokit
-INCLUDE := -Isrc/parser -Isrc/ast -Isrc/adt -Isrc/semantics -Isrc/codegen
+INCLUDE := -Ibin/ -Isrc/parser -Isrc/ast -Isrc/adt -Isrc/semantics -Isrc/codegen
 
 SRCS := $(shell find src/ -name \*.cpp)
 OBJS := $(addsuffix .o,$(addprefix bin/,$(basename $(SRCS))))
@@ -16,7 +16,7 @@ CPPARGS := -std=c++23 -Wall -g $(INCLUDE)
 
 all: test
 
-bin/%.o: %.cpp
+bin/%.o: %.cpp $(SCANNER)
 	@mkdir -p $(dir $@)
 	$(CPP) $(CPPARGS) -MMD -o $@ -c $<
 

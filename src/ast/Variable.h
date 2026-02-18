@@ -21,12 +21,12 @@ class Variable : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Variable name.
 		 * @param a Array access.
 		 */
-		Variable(unsigned int line, const char* n, Array* a) :
-			Expression(line),
+		Variable(yy::position pos, const char* n, Array* a) :
+			Expression(pos),
 			name(n),
 			array(a) {}
 

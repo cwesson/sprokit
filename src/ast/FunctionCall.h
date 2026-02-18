@@ -20,12 +20,12 @@ class FunctionCall : public Variable {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Function name.
 		 * @param p Function parameters.
 		 */
-		FunctionCall(unsigned int line, const char* n, List* p) :
-			Variable(line, n, nullptr),
+		FunctionCall(yy::position pos, const char* n, List* p) :
+			Variable(pos, n, nullptr),
 			params(p) {}
 		
 		/**

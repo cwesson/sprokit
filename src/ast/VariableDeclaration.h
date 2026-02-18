@@ -22,39 +22,20 @@ class VariableDeclaration : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param n Variable name.
 		 * @param t Variable type.
 		 * @param u Variable unit.
 		 * @param a Array dimensions.
 		 */
-		VariableDeclaration(unsigned int line, const char* n, const char* t, const char* u, Array* a) :
-			ASTNode(line),
-			name(n),
-			type(ADT::Type::findType(t)),
-			unit(u),
-			array(a),
-			initial(nullptr),
-			constant(true),
-			pointer(false) {}
-		
-		/**
-		 * Constructor.
-		 * @param line Line number.
-		 * @param n Variable name.
-		 * @param t Variable type.
-		 * @param u Variable unit.
-		 * @param a Array dimensions.
-		 */
-		VariableDeclaration(unsigned int line, const char* n, ADT::Type& t, const char* u, Array* a) :
-			ASTNode(line),
+		VariableDeclaration(yy::position pos, const char* n, ADT::Type& t, const char* u, Array* a) :
+			ASTNode(pos),
 			name(n),
 			type(t),
 			unit(u),
 			array(a),
 			initial(nullptr),
-			constant(true),
-			pointer(false) {}
+			constant(true) {}
 		
 		/**
 		 * Destructor.
@@ -73,7 +54,6 @@ class VariableDeclaration : public ASTNode {
 		Array* array;        ///< Array dimensions.
 		Expression* initial; ///< Variable initializer.
 		bool constant;       ///< true if declared `const`.
-		bool pointer;        ///< true if the variable is a pointer.
 };
 
 }

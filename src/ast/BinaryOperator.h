@@ -18,12 +18,12 @@ class BinaryOperator : public Expression {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param l Left-hand side of the operator.
 		 * @param r Right-hand side of the operator.
 		 */
-		BinaryOperator(unsigned int line, Expression* l, Expression* r) :
-			Expression(line),
+		BinaryOperator(yy::position pos, Expression* l, Expression* r) :
+			Expression(pos),
 			left(l),
 			right(r) {}
 

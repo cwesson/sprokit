@@ -20,12 +20,12 @@ class Assignment : public ASTNode {
 	public:
 		/**
 		 * Constructor.
-		 * @param line Line number.
+		 * @param pos Position in source file.
 		 * @param v Variable on left-hand side.
 		 * @param e Right-hand side.
 		 */
-		Assignment(unsigned int line, Variable* v, Expression* e) :
-			ASTNode(line),
+		Assignment(yy::position pos, Variable* v, Expression* e) :
+			ASTNode(pos),
 			var(v),
 			expression(e) {}
 
