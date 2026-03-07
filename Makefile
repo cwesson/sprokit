@@ -9,8 +9,9 @@ SRCS := $(shell find src/ -name \*.cpp)
 OBJS := $(addsuffix .o,$(addprefix bin/,$(basename $(SRCS))))
 DEPS := $(OBJS:%.o=%.d)
 
-CPP := g++
+CPP := clang++
 CPPARGS := -std=c++23 -Wall -g $(INCLUDE)
+LDFLAGS := $(shell llvm-config --cxxflags --ldflags --system-libs --libs core)
 
 .PHONY: all scanner parser test clean realclean
 
@@ -23,7 +24,7 @@ bin/%.o: %.cpp $(SCANNER)
 -include $(DEPS)
 
 $(COMPILER): $(SCANNER) $(PARSER) $(OBJS)
-	$(CPP) $(CPPARGS) -o $@ $^
+	$(CPP) $(CPPARGS) $(LDFLAGS) -o $@ $^
 
 scanner: $(SCANNER)
 

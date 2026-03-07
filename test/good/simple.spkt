@@ -2,7 +2,12 @@
 func test(const con : int32, const v : bool) : int32 {
 	if v == true {
 		return con;
-	} else {
-		return 0;
+	} else if con == 42 {
+		return 12;
 	}
+	return 0;
+}
+
+func main(): int32 {
+	return test(42, true);
 }

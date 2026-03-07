@@ -29,7 +29,7 @@ class NotEqual : public BinaryOperator {
 			return ADT::Type::findType("bool");
 		}
 		
-		virtual void accept(Visitor& v);
+		virtual void accept(Visitor& v) override;
 };
 
 }

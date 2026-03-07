@@ -98,6 +98,9 @@ void TypeChecker::visit(AST::FunctionDeclaration& v) {
 	func_type = table->type;
 	v.body->accept(*this);
 	func_type = nullptr;
+	if(!v.body->allPathsReturn()){
+		printError(v, std::string("Reached end of function `") + std::string(v.name) + "` without return");
+	}
 }
 
 void TypeChecker::visit(AST::IfStatement& v) {

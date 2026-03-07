@@ -7,7 +7,12 @@
 #pragma once
 
 #include "CodeGen.h"
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/Support/raw_os_ostream.h>
 #include <iostream>
+#include <memory>
 #include <string>
 
 /**
@@ -24,12 +29,12 @@ class LLCodeGen : public CodeGen {
 		 * Constructor.
 		 * @param o Output stream to write code to.
 		 */
-		LLCodeGen(std::ostream& o);
+		LLCodeGen(std::ostream& o, const char* filename);
 
 		/**
 		 * Destructor.
 		 */
-		virtual ~LLCodeGen() = default;
+		virtual ~LLCodeGen();
 
 		/**
 		 * X-macro declaring visit functions for each ASTNode.
@@ -45,13 +50,33 @@ class LLCodeGen : public CodeGen {
 		virtual std::string translateType(const ADT::PointerType& t) const override;
 
 	private:
-		std::ostream& os; ///< Output stream to write code to.
-		unsigned int temp_count; ///< Counter for generating temporaries.
-		std::string last_temp;
+		llvm::raw_os_ostream os; ///< Output stream to write code to.
 		bool inparams;
 		bool islast;
+		bool collect_values;
 
-		std::string getTemporary();
+		std::unique_ptr<llvm::LLVMContext> context;
+		std::unique_ptr<llvm::Module> module;
+		std::unique_ptr<llvm::IRBuilder<>> builder;
+		std::map<std::string, llvm::Value*> namedValues;
+		llvm::Value* last_value;
+		mutable llvm::Type* translated_type;
+		std::vector<llvm::Type*> arg_types;
+		std::vector<std::string> arg_names;
+		std::map<std::string, unsigned int> counters;
+		std::vector<llvm::Value*> values_list;
+		ADT::Type* ret_type;
+
+		unsigned int getCount(const char* name);
+
+		llvm::Value* typePromotion(llvm::Value* val, llvm::Type* type, bool isSigned);
+
+		struct operands {
+			llvm::Value* left;
+			llvm::Value* right;
+		};
+
+		operands visitBinaryOp(AST::Expression* l, AST::Expression* r, ADT::Type& type);
 };
 
 /** @} */

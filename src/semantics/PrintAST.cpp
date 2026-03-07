@@ -133,6 +133,7 @@ void PrintAST::visit(AST::IfStatement& v) {
 		v.body->accept(*this);
 	--indent;
 	if(v.elsebody != nullptr){
+		printIndent(v);
 		std::cout << "ELSE ";
 		++indent;
 			v.elsebody->accept(*this);

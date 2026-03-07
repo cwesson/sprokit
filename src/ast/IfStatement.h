@@ -42,6 +42,14 @@ class IfStatement : public ASTNode {
 		}
 		
 		virtual void accept(Visitor& v) override;
+
+		virtual bool allPathsReturn() const override {
+			bool ret = false;
+			if(elsebody != nullptr){
+				ret = body->allPathsReturn() && elsebody->allPathsReturn();
+			}
+			return ret;
+		}
 		
 		Expression* condition; ///< `if` condition.
 		List* body;            ///< Body of the `if` statement.

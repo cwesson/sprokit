@@ -81,7 +81,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	AST::List* ast;
-	int ret = parse(argv[optind], &ast);
+	const char* infile = argv[optind];
+	int ret = parse(infile, &ast);
 
 	if(ast != nullptr){
 		if(print_ast){
@@ -105,17 +106,19 @@ int main(int argc, char* argv[]) {
 		t.visit(*ast);
 		ret += t.error_count;
 
-		std::filesystem::path path(outfile);
-		std::string ext = path.extension();
+		if(ret == 0){
+			std::filesystem::path path(outfile);
+			std::string ext = path.extension();
 
-		if(ext == ".cpp"){
-			std::ofstream cpp(outfile, std::ios::out);
-			CppTranspiler g(cpp);
-			g.visit(*ast);
-		}else if(ext == ".ll"){
-			std::ofstream ll(outfile, std::ios::out);
-			LLCodeGen g(ll);
-			g.visit(*ast);
+			if(ext == ".cpp"){
+				std::ofstream cpp(outfile, std::ios::out);
+				CppTranspiler g(cpp);
+				g.visit(*ast);
+			}else if(ext == ".ll"){
+				std::ofstream ll(outfile, std::ios::out);
+				LLCodeGen g(ll, infile);
+				g.visit(*ast);
+			}
 		}
 
 		delete ast;

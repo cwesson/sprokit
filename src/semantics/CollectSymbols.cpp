@@ -166,8 +166,8 @@ void CollectSymbols::visit(AST::Member& v) {
 	}
 	if(sym != nullptr){
 		type_table = v.table->findType((std::string)sym->type->baseType());
-		if(type_table != nullptr)
-		printError(v, std::string("Using type table ") + type_table->name);
+		//if(type_table != nullptr)
+		//printError(v, std::string("Using type table ") + type_table->name);
 	}
 
 	v.right->table = type_table;

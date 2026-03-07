@@ -35,6 +35,16 @@ class List : public ASTNode {
 		}
 		
 		virtual void accept(Visitor& v) override;
+
+		virtual bool allPathsReturn() const override {
+			if(node != nullptr && node->allPathsReturn()){
+				return true;
+			}else if(next != nullptr){
+				return next->allPathsReturn();
+			}else{
+				return false;
+			}
+		}
 		
 		ASTNode* node; ///< ASTNode at this position in the list.
 		List* next;    ///< Next link in the list.

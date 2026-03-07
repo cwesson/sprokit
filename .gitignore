@@ -4,3 +4,4 @@ doxygen_warnings.log
 out.cpp
 out.ll
 out.s
+out.bc

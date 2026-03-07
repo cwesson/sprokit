@@ -64,6 +64,10 @@ class Type {
 			return other.accept(*this);
 		}
 
+		bool operator!=(const Type& other) const {
+			return &other != this;
+		}
+
 		/**
 		 * Get the size of the type.
 		 * @return Size in bytes.

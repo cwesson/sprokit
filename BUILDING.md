@@ -2,13 +2,13 @@
 The Sprokit compiler
 
 ## Dependencies
-The Sprokit compiler requires `make`, `g++`, `flex`, and `bison` to be compiled.
+The Sprokit compiler requires `make`, `clang++`, `flex`, and `bison` to be compiled and uses the `llvm-dev` library.
 ```shell
-sudo apt install make g++ flex bison
+sudo apt install make clang++ flex bison llvm-dev
 ```
 
 ## Building
-After the dependencies are installed, sprokit can be compiled useing `make`:
+After the dependencies are installed, sprokit can be compiled using `make`:
 ```shell
 make all -j 8
 ```

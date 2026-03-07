@@ -3,9 +3,11 @@ func add3(const a : int32, const b : int32, const c : int32) : int32 {
 }
 
 func average4(const a : int32, const b : int32, const c : int32, const d : int32) : int32 {
-	return (a + b + c + d)/4;
+	var sum : int32 = add3(a, b, c);
+	sum = sum + d;
+	return sum/4;
 }
 
 func main() : int32 {
-	return add3(5, 3, 2);
+	return average4(5, 3, 2, 9);
 }

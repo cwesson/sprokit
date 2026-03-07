@@ -39,11 +39,11 @@ class Property : public Expression {
 		
 		virtual void accept(Visitor& v) override;
 
-		virtual bool is_constexpr() const {
+		virtual bool is_constexpr() const override {
 			return true;
 		}
 
-		virtual ADT::Type& getType() const {
+		virtual ADT::Type& getType() const override {
 			if(name == "size"){
 				return ADT::Type::findType("uint8");
 			}else if(name == "length"){

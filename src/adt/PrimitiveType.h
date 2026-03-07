@@ -22,12 +22,12 @@ namespace ADT {
  */
 class PrimitiveType : public Type {
 	public:
-		virtual bool accept(const Type& t) const = 0;
+		virtual bool accept(const Type& t) const override = 0;
 
 		virtual bool visit(const BoolType& t) const override = 0;
-		virtual bool visit(const IntType& t) const = 0;
-		virtual bool visit(const FloatType& t) const = 0;
-		virtual bool visit(const UserType& t) const = 0;
+		virtual bool visit(const IntType& t) const override = 0;
+		virtual bool visit(const FloatType& t) const override = 0;
+		virtual bool visit(const UserType& t) const override = 0;
 
 		virtual bool isSigned() const override {
 			return false;

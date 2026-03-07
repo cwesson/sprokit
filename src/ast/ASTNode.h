@@ -53,6 +53,10 @@ class ASTNode {
 		 * @endcode
 		 */
 		virtual void accept(Visitor& v) = 0;
+
+		virtual bool allPathsReturn() const {
+			return false;
+		}
 		
 		yy::position pos;    ///< Line number.
 		SymbolTable* table;  ///< Symbol table at the time this node is executed.

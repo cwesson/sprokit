@@ -36,6 +36,10 @@ class Return : public ASTNode {
 		}
 		
 		virtual void accept(Visitor& v) override;
+
+		virtual bool allPathsReturn() const override {
+			return true;
+		}
 		
 		Expression* expression; ///< Return value.
 };
