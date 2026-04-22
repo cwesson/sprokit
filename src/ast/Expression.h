@@ -30,9 +30,9 @@ class Expression : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Expression() = default;
+		virtual ~Expression() override = default;
 		
-		virtual void accept(Visitor& v) = 0;
+		virtual void accept(Visitor& v) override = 0;
 
 		/**
 		 * Check if the expression is compile-time constant.

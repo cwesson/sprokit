@@ -82,18 +82,34 @@ class Dimensions {
 		 */
 		operator std::string() const;
 
+		/**
+		 * Begin an iterator.
+		 * @return Iterator over dimension components.
+		 */
 		std::map<std::string, int>::iterator begin() {
 			return dim.begin();
 		}
 
+		/**
+		 * End an iterator.
+		 * @return Iterator over dimension components.
+		 */
 		std::map<std::string, int>::iterator end() {
 			return dim.end();
 		}
 
+		/**
+		 * Begin a constant iterator.
+		 * @return Iterator over dimension components.
+		 */
 		std::map<std::string, int>::const_iterator begin() const {
 			return dim.cbegin();
 		}
 
+		/**
+		 * End a constant iterator.
+		 * @return Iterator over dimension components.
+		 */
 		std::map<std::string, int>::const_iterator end() const {
 			return dim.cend();
 		}

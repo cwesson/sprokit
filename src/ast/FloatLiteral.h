@@ -32,7 +32,7 @@ class FloatLiteral : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~FloatLiteral() = default;
+		virtual ~FloatLiteral() override = default;
 		
 		virtual void accept(Visitor& v) override;
 

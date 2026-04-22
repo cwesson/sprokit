@@ -49,7 +49,7 @@ classDiagram
 	class Type
 	<<abstract>> Type
 	Type <|-- UnknownType
-	Type <-- UserType
+	Type <-- StructType
 	Type <|-- PrimitiveType
 	<<abstract>> PrimitiveType
 	PrimitiveType <|-- BoolType

@@ -32,7 +32,7 @@ class TypeDeclaration : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~TypeDeclaration() {
+		virtual ~TypeDeclaration() override {
 			delete list;
 		}
 		

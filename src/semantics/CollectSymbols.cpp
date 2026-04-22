@@ -10,7 +10,7 @@
 #include "sym/FunctionSymbols.h"
 #include "sym/OrderedSymbol.h"
 #include "sym/ScopedSymbols.h"
-#include "UserType.h"
+#include "StructType.h"
 
 CollectSymbols::CollectSymbols() :
 	table(new GlobalSymbols()),
@@ -227,7 +227,7 @@ void CollectSymbols::visit(AST::TypeDeclaration& v) {
 	if(t == nullptr){
 		printError(v, "Duplicate type declaration " + v.name);
 	}else{
-		ADT::UserType& type = dynamic_cast<ADT::UserType&>(ADT::Type::findType(v.name));
+		ADT::StructType& type = dynamic_cast<ADT::StructType&>(ADT::Type::findType(v.name));
 		if(!type.defined){
 			user_type = &type;
 			table = t;

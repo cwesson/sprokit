@@ -2,6 +2,6 @@ bin/
 doc/html/
 doxygen_warnings.log
 out.cpp
-out.ll
-out.s
-out.bc
+*.ll
+*.s
+*.bc

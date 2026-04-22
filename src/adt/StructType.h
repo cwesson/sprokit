@@ -1,5 +1,5 @@
 /**
- * @file UserType.h
+ * @file StructType.h
  * @author Conlan Wesson
  * @copyright (c) 2025, Conlan Wesson, GNU General Public License v3
  */
@@ -20,7 +20,7 @@ namespace ADT {
 /**
  * Placeholder Type for user defined types.
  */
-class UserType : public Type {
+class StructType : public Type {
 	public:
 		virtual bool accept(const Type& t) const override {
 			return t.visit(*this);
@@ -42,7 +42,7 @@ class UserType : public Type {
 			return false;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 
@@ -79,7 +79,7 @@ class UserType : public Type {
 		 * Constructor.
 		 * @param name Type name.
 		 */
-		UserType(const std::string& name) :
+		explicit StructType(const std::string& name) :
 			Type(name),
 			defined(false)
 		{}
@@ -89,7 +89,7 @@ class UserType : public Type {
 		friend class Type;
 	
 	public:
-		bool defined;
+		bool defined; ///< true if the user type has been defined.
 };
 
 }

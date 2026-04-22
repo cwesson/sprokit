@@ -27,7 +27,7 @@ class PrimitiveType : public Type {
 		virtual bool visit(const BoolType& t) const override = 0;
 		virtual bool visit(const IntType& t) const override = 0;
 		virtual bool visit(const FloatType& t) const override = 0;
-		virtual bool visit(const UserType& t) const override = 0;
+		virtual bool visit(const StructType& t) const override = 0;
 
 		virtual bool isSigned() const override {
 			return false;
@@ -80,7 +80,7 @@ class BoolType : public PrimitiveType {
 			return false;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 
@@ -135,7 +135,7 @@ class FloatType : public PrimitiveType {
 			return t.significand >= significand;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 
@@ -212,7 +212,7 @@ class IntType : public PrimitiveType {
 			return t.significand >= length;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 

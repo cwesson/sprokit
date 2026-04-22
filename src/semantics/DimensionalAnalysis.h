@@ -17,15 +17,14 @@
 
 /**
  * Visitor to perform dimensional analysis.
- * @ingroup dim
  */
 class DimensionalAnalysis : public Visitor {
 	private:
-		Dimensions constructed_unit; ///< Unit dimensions found from recursive visits.
-		mutable UnitParser parser;   ///< Parser for unit names.
+		Dimensions constructed_unit;       ///< Unit dimensions found from recursive visits.
+		mutable UnitParser parser;         ///< Parser for unit names.
 		AST::FunctionDeclaration* in_func; ///< Function currently being checked.
-		Dimensions unit;
-		std::string con_symbol;
+		Dimensions unit;                   ///< Dimensions of unit declaration being processed.
+		std::string con_symbol;            ///< Unit conversion variable name.
 
 	public:
 		/**
@@ -41,7 +40,20 @@ class DimensionalAnalysis : public Visitor {
 		#undef X
 	
 	private:
+		/**
+		 * Check if two units are equivalent at the given AST node.
+		 * @param v AST node to check at.
+		 * @param a,b Units to check.
+		 * @return true if the two units are equivalent, false otherwise.
+		 */
 		bool equal(AST::ASTNode& v, const Dimensions& a, const Dimensions& b) const;
+
+		/**
+		 * Expand a unit to its base units.
+		 * @param v AST node to check at.
+		 * @param dim Unit to expand.
+		 * @return Expanded unit.
+		 */
 		Dimensions expand(AST::ASTNode& v, const Dimensions& dim) const;
 };
 

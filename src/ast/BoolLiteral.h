@@ -29,7 +29,7 @@ class BoolLiteral : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~BoolLiteral() = default;
+		virtual ~BoolLiteral() override = default;
 		
 		virtual void accept(Visitor& v) override;
 

@@ -13,7 +13,7 @@ PrintAST::PrintAST() :
 	indent(0)
 {}
 
-void PrintAST::printIndent(AST::ASTNode& v) {
+void PrintAST::printIndent(const AST::ASTNode& v) {
 	std::cout << std::endl << std::setw(4) << v.pos.line << std::setw(1) << ": ";
 	for(unsigned int i = 0; i < indent; ++i){
 		std::cout << "  ";

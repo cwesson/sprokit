@@ -34,11 +34,11 @@ class Conversion : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Conversion() {
+		virtual ~Conversion() override {
 			delete expression;
 		}
 		
-		virtual void accept(Visitor& v);
+		virtual void accept(Visitor& v) override;
 		
 		std::string name;       ///< Name of the variable in the expression.
 		std::string to;         ///< Unit this converts to.

@@ -32,7 +32,7 @@ class IntegerLiteral : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~IntegerLiteral() = default;
+		virtual ~IntegerLiteral() override = default;
 		
 		virtual void accept(Visitor& v) override;
 

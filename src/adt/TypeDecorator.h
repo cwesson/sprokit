@@ -2,7 +2,7 @@
  * @file TypeDecorator.h
  * @author Conlan Wesson
  * @copyright (c) 2025, Conlan Wesson, GNU General Public License v3
- * @ingroup adt Abstract Data Types
+ * @ingroup adt
  * @{
  */
 
@@ -13,25 +13,47 @@
 
 namespace ADT {
 
+/**
+ * Decorator for Types.
+ */
 class TypeDecorator : public Type {
 	public:
+		/**
+		 * Constructor.
+		 * @param t Next type down.
+		 * @param dec Decorator string.
+		 */
 		TypeDecorator(Type& t, const std::string& dec) :
 			Type((std::string)t + dec),
 			type(t) {}
 		
-		virtual ~TypeDecorator() = default;
+		/**
+		 * Destructor.
+		 */
+		virtual ~TypeDecorator() override = default;
+
 		virtual Type& baseType() override = 0;
 		
-		Type& type;
+		Type& type;  ///< Next type down.
 };
 
+/**
+ * Pointer Types.
+ */
 class PointerType : public TypeDecorator {
 	public:
-		PointerType(Type& t) :
+		/**
+		 * Constructor.
+		 * @param t Type pointed to.
+		 */
+		explicit PointerType(Type& t) :
 			TypeDecorator(t, "@")
 			{}
 		
-		virtual ~PointerType() = default;
+		/**
+		 * Destructor.
+		 */
+		virtual ~PointerType() override = default;
 
 		virtual Type& baseType() override{
 			return type.baseType();
@@ -61,7 +83,7 @@ class PointerType : public TypeDecorator {
 			return false;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 
@@ -79,16 +101,27 @@ class PointerType : public TypeDecorator {
 
 };
 
+/**
+ * Array types.
+ */
 class ArrayType : public TypeDecorator {
 	public:
+		/**
+		 * Constructor.
+		 * @param t Type contained in array.
+		 * @param len Array length.
+		 */
 		ArrayType(Type& t, unsigned int len) :
 			TypeDecorator(t, std::string("[]")),
 			length(len)
 			{}
 		
-			virtual ~ArrayType() = default;
+		/**
+		 * Destructor.
+		 */
+		virtual ~ArrayType() override = default;
 	
-	unsigned int length;
+		unsigned int length;  ///< Array length.
 };
 
 } // namespace ADT

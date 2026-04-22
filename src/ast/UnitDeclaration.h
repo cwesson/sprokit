@@ -34,7 +34,7 @@ class UnitDeclaration : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~UnitDeclaration() {
+		virtual ~UnitDeclaration() override {
 			delete list;
 		}
 		

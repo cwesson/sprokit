@@ -25,7 +25,7 @@ class Exponent : public BinaryOperator {
 		Exponent(yy::position pos, Expression* l, Expression* r) :
 			BinaryOperator(pos, l, r) {}
 		
-		virtual void accept(Visitor& v);
+		virtual void accept(Visitor& v) override;
 };
 
 }

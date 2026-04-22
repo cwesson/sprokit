@@ -31,7 +31,7 @@ class FunctionCall : public Variable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~FunctionCall() {
+		virtual ~FunctionCall() override {
 			delete params;
 		}
 		

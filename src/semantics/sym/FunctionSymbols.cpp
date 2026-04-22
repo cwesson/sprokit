@@ -34,7 +34,7 @@ std::ostream& FunctionSymbols::print(std::ostream& os, unsigned int depth) const
 	}
 	os << std::endl;
 
-	for(auto sym : children){
+	for(const auto* sym : children){
 		sym->print(os, depth+1);
 	}
 
@@ -45,7 +45,7 @@ SymbolTable::parameter* FunctionSymbols::addParameter(const std::string& n) {
 	if(findVariable(n) != nullptr){
 		return nullptr;
 	}else{
-		for(auto p : params) {
+		for(const auto* p : params) {
 			if(p->name == n){
 				return nullptr;
 			}

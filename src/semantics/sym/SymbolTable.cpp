@@ -19,6 +19,13 @@ SymbolTable::SymbolTable(const std::string& n, SymbolTable* p) :
 	name(n)
 {}
 
+SymbolTable::~SymbolTable() {
+	while(!children.empty()){
+		auto del = children.back();
+		children.pop_back();
+		delete del;
+	}
+}
 
 SymbolTable::function::~function() {
 	delete table;
@@ -33,7 +40,7 @@ std::ostream& SymbolTable::print(std::ostream& os, unsigned int depth) const {
 }
 
 SymbolTable::variable* SymbolTable::addVariable(const std::string& n, SymbolTable** outtable) {
-	variable* var = findVariable(n);
+	const variable* var = findVariable(n);
 	if(var != nullptr){
 		return nullptr;
 	}else{

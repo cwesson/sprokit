@@ -30,7 +30,7 @@ class BinaryOperator : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~BinaryOperator() {
+		virtual ~BinaryOperator() override {
 			delete left;
 			delete right;
 		}

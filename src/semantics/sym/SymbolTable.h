@@ -58,7 +58,7 @@ class SymbolTable {
 			 * Constructor.
 			 * @param n Parameter name.
 			 */
-			parameter(const std::string& n) :
+			explicit parameter(const std::string& n) :
 				variable(),
 				name(n) {}
 		};
@@ -79,9 +79,13 @@ class SymbolTable {
 			function() :
 				type(),
 				unit(),
-				table(nullptr) {}
+				table(nullptr),
+				pointer(false) {}
 			
 			~function();
+
+			function(const function&) = delete;
+			function& operator=(const function&) = delete;
 		};
 
 		/**
@@ -89,9 +93,12 @@ class SymbolTable {
 		 * Units are indexed by short name.
 		 */
 		struct unit {
+			/**
+			 * Unit conversions.
+			 */
 			struct conversion {
-				AST::Expression* exp;
-				std::string      var;
+				AST::Expression* exp;  ///< Conversion expression.
+				std::string      var;  ///< Variable name.
 			};
 			std::string expanded; ///< Expanded unit name.
 			std::map<std::string, conversion> conversions; ///< Map of unit conversion expressions.
@@ -107,7 +114,10 @@ class SymbolTable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~SymbolTable() = default;
+		virtual ~SymbolTable();
+
+		SymbolTable(const SymbolTable&) = delete;
+		SymbolTable& operator=(const SymbolTable&) = delete;
 
 		/**
 		 * Print the symbol table.
@@ -120,10 +130,16 @@ class SymbolTable {
 		/**
 		 * Attempt to add a variable declaration.
 		 * @param n Variable name.
+		 * @param [out] outtable Updated symbol table after the variable declaration.
 		 * @return The new variable entry, or nullptr if the table already contains a variable of the given name.
 		 */
 		virtual variable* addVariable(const std::string& n, SymbolTable** outtable=nullptr);
 
+		/**
+		 * Create a nested scope.
+		 * @param n Scope name.
+		 * @return Symbol table for the nested scope.
+		 */
 		virtual ScopedSymbols* addScope(const std::string& n);
 
 		/**
@@ -183,11 +199,15 @@ class SymbolTable {
 		 */
 		virtual unit* findUnit(const std::string& n);
 
+		/**
+		 * Check if the table is scoped.
+		 * @return true if the table is scoped, false otherwise.
+		 */
 		virtual bool isScope() const;
 		
 		SymbolTable* parent; ///< Parent symbol table, nullptr if there is no parent.
 		std::string name;    ///< Name of the symbol table.
-		std::vector<OrderedSymbol*> children;
+		std::vector<OrderedSymbol*> children; ///< Ordered list of symbol tables created by variable declarations.
 };
 
 /**

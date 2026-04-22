@@ -2,6 +2,10 @@
  * @file TypeChecker.h
  * @author Conlan Wesson
  * @copyright (c) 2025, Conlan Wesson, GNU General Public License v3
+ * 
+ * @defgroup tc Type Checker
+ * @ingroup semantics
+ * @{
  */
 
 #pragma once
@@ -23,7 +27,7 @@ class TypeChecker : public Visitor {
 		/**
 		 * Destructor.
 		 */
-		virtual ~TypeChecker() = default;
+		virtual ~TypeChecker() override = default;
 
 		/**
 		 * X-macro declaring visit functions for each ASTNode.
@@ -33,6 +37,8 @@ class TypeChecker : public Visitor {
 		#undef X
 	
 	private:
-		ADT::Type* func_type; ///< Return type when processing function declarations.
-		SymbolTable::function* func;
+		ADT::Type* func_type;        ///< Return type when processing function declarations.
+		SymbolTable::function* func; ///< Symbol table when processing member accesses.
 };
+
+/** @} */

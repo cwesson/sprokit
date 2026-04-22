@@ -33,7 +33,7 @@ class Variable : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Variable() {
+		virtual ~Variable() override {
 			if(array != nullptr){
 				delete array;
 			}

@@ -26,7 +26,7 @@ class PrintAST : public Visitor {
 		 * Print the line number and appropriate indentation.
 		 * @param v ASTNode being visited.
 		 */
-		void printIndent(AST::ASTNode& v);
+		void printIndent(const AST::ASTNode& v);
 
 	public:
 		/**

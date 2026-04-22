@@ -14,15 +14,47 @@
  * @{
  */
 
+/**
+ * Code generation visitor.
+ */
 class CodeGen : public Visitor {
 	public:
 		CodeGen() = default;
 		virtual ~CodeGen() = default;
 
+		/**
+		 * Visitor callback for translating ADT types to codegen types.
+		 * @param t Type to translate.
+		 * @return Translation string.
+		 */
 		virtual std::string translateType(const ADT::BoolType& t) const = 0;
+
+		/**
+		 * Visitor callback for translating ADT types to codegen types.
+		 * @param t Type to translate.
+		 * @return Translation string.
+		 */
 		virtual std::string translateType(const ADT::IntType& t) const = 0;
+
+		/**
+		 * Visitor callback for translating ADT types to codegen types.
+		 * @param t Type to translate.
+		 * @return Translation string.
+		 */
 		virtual std::string translateType(const ADT::FloatType& t) const = 0;
-		virtual std::string translateType(const ADT::UserType& t) const = 0;
+
+		/**
+		 * Visitor callback for translating ADT types to codegen types.
+		 * @param t Type to translate.
+		 * @return Translation string.
+		 */
+		virtual std::string translateType(const ADT::StructType& t) const = 0;
+
+		/**
+		 * Visitor callback for translating ADT types to codegen types.
+		 * @param t Type to translate.
+		 * @return Translation string.
+		 */
 		virtual std::string translateType(const ADT::PointerType& t) const = 0;
 };
 

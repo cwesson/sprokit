@@ -57,7 +57,7 @@ class Array : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Array() {
+		virtual ~Array() override {
 			delete expression;
 			if(array != nullptr){
 				delete array;

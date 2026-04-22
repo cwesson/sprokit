@@ -19,7 +19,7 @@ class UnitScanner {
 		 * Constructor.
 		 * @param u Unit string.
 		 */
-		UnitScanner(const std::string& u);
+		explicit UnitScanner(const std::string& u);
 		
 		/**
 		 * Get the next token in the unit string.

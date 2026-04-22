@@ -40,7 +40,7 @@ class UnknownType : public Type {
 			return false;
 		}
 
-		virtual bool visit(const UserType& t) const override {
+		virtual bool visit(const StructType& t) const override {
 			return false;
 		}
 

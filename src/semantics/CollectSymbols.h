@@ -17,9 +17,9 @@ class CollectSymbols : public Visitor {
 	public:
 		SymbolTable* table;       ///< Current symbol table.
 		SymbolTable* type_table;  ///< Symbol table when processing member accesses.
-		ADT::UserType* user_type; ///< ADT type when processing member declarations.
-		SymbolTable::unit* unit;
-		std::string con_symbol;
+		ADT::StructType* user_type; ///< ADT type when processing member declarations.
+		SymbolTable::unit* unit;  ///< Symbol table when processing a unit declaration.
+		std::string con_symbol;   ///< Unit conversion variable name.
 
 	private:
 		/**
@@ -44,7 +44,10 @@ class CollectSymbols : public Visitor {
 		/**
 		 * Destructor.
 		 */
-		virtual ~CollectSymbols();
+		virtual ~CollectSymbols() override;
+
+		CollectSymbols(const CollectSymbols&) = delete;
+		CollectSymbols& operator=(const CollectSymbols&) = delete;
 
 		/**
 		 * X-macro declaring visit functions for each ASTNode.

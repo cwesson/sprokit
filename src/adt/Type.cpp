@@ -7,36 +7,67 @@
 #include "Type.h"
 #include "PrimitiveType.h"
 #include "UnknownType.h"
-#include "UserType.h"
+#include "StructType.h"
 #include "TypeDecorator.h"
 
 namespace ADT {
 
-std::map<std::string, Type*> Type::table;
+Type::TypeTable Type::table;
+
+Type::TypeTable::TypeTable() :
+	table()
+{}
+
+Type::TypeTable::~TypeTable(){
+	for(std::pair<std::string, Type*> t : table){
+		delete t.second;
+	}
+}
+
+template<typename TYPE, typename... ARGS>
+void Type::TypeTable::insert(ARGS... args){
+	Type* type = new TYPE(args...);
+	table[type->name] = type;
+}
+
+bool Type::TypeTable::empty(){
+	return table.empty();
+}
+
+bool Type::TypeTable::contains(const std::string& name){
+	return table.contains(name);
+}
+
+Type* Type::TypeTable::at(const std::string& name){
+	if(table.contains(name)){
+		return table.at(name);
+	}else{
+		return nullptr;
+	}
+}
 
 Type::Type(const std::string& n) :
 	name(n)
 {}
 
-void Type::add(Type* type){
-	table[type->name] = type;
-}
-
 void Type::init(){
 	if(table.empty()){
-		add(new UnknownType());
-		add(new BoolType());
-		add(new IntType( 8, true));
-		add(new IntType(16, true));
-		add(new IntType(32, true));
-		add(new IntType(64, true));
-		add(new IntType( 8, false));
-		add(new IntType(16, false));
-		add(new IntType(32, false));
-		add(new IntType(64, false));
-		add(new FloatType( 5, 11));
-		add(new FloatType( 8, 24));
-		add(new FloatType(11, 53));
+		table.insert<UnknownType>();
+		table.insert<BoolType>();
+		table.insert<IntType>(  8, true);
+		table.insert<IntType>( 16, true);
+		table.insert<IntType>( 32, true);
+		table.insert<IntType>( 64, true);
+		table.insert<IntType>(128, true);
+		table.insert<IntType>(  8, false);
+		table.insert<IntType>( 16, false);
+		table.insert<IntType>( 32, false);
+		table.insert<IntType>( 64, false);
+		table.insert<IntType>(128, false);
+		table.insert<FloatType>( 5,  11); // float16
+		table.insert<FloatType>( 8,  24); // float32
+		table.insert<FloatType>(11,  53); // float64
+		table.insert<FloatType>(15, 113); // float128
 	}
 }
 
@@ -44,9 +75,9 @@ Type& Type::findType(const std::string& type) {
 	init();
 
 	if(!table.contains(type)){
-		add(new UserType(type));
+		table.insert<StructType>(type);
 	}
-	return *table[type];
+	return *table.at(type);
 }
 
 Type& Type::findPointerType(const std::string& type) {
@@ -55,19 +86,18 @@ Type& Type::findPointerType(const std::string& type) {
 	Type& base = findType(type);
 	std::string ptr(base.name + std::string("@"));
 	if(!table.contains(ptr)){
-		add(new PointerType(base));
+		table.insert<PointerType, Type&>(base);
 	}
 
-	return *table[ptr];
+	return *table.at(ptr);
 }
 
-UserType* Type::createType(const std::string& type){
+StructType* Type::createType(const std::string& type){
 	init();
 
 	if(!table.contains(type)){
-		UserType* u = new UserType(type);
-		add(u);
-		return u;
+		table.insert<StructType>(type);
+		return static_cast<StructType*>(table.at(type));
 	}else{
 		return nullptr;
 	}

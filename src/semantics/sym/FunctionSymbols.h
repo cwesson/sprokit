@@ -26,7 +26,7 @@ class FunctionSymbols : public SymbolTable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~FunctionSymbols();
+		virtual ~FunctionSymbols() override;
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 

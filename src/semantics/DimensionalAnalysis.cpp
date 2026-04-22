@@ -87,7 +87,9 @@ void DimensionalAnalysis::visit(AST::Exponent& v) {
 	if(constructed_unit != Dimensions{}){
 		printError(v, "Exponent must be dimensionless, was " + (std::string)constructed_unit);
 	}
-	if(!v.right->is_constexpr()){
+	if(v.right->is_constexpr()){
+		/// @todo Evaluate the exponent
+	}else{
 		printWarning(v, "Cannot evaluate dimensions with non-constant exponent");
 	}
 }
@@ -251,8 +253,7 @@ bool DimensionalAnalysis::equal(AST::ASTNode& v, const Dimensions& a, const Dime
 Dimensions DimensionalAnalysis::expand(AST::ASTNode& v, const Dimensions& dim) const {
 	Dimensions ret;
 	for(auto const& d : dim){
-		std::string e = d.first;
-		SymbolTable::unit* u = v.table->findUnit(std::string("#") + d.first);
+		const SymbolTable::unit* u = v.table->findUnit(std::string("#") + d.first);
 		if(u != nullptr){
 			if(u->expanded != ""){
 				Dimensions exp = parser.parse(u->expanded);

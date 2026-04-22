@@ -32,7 +32,7 @@ class Member : public Variable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Member() {
+		virtual ~Member() override {
 			if(array != nullptr){
 				delete array;
 			}

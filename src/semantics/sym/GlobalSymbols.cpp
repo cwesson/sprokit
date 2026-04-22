@@ -45,19 +45,19 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 	}
 	os << std::endl;
 
-	for(auto sym : children){
+	for(const auto* sym : children){
 		sym->print(os, depth+1);
 	}
 
-	for(auto sym : funcs) {
+	for(const auto& sym : funcs) {
 		sym.second->table->print(os, depth+1);
 	}
 
-	for(auto sym : types) {
+	for(const auto& sym : types) {
 		sym.second->print(os, depth+1);
 	}
 
-	for(auto sym : units) {
+	for(const auto& sym : units) {
 		for(unsigned int i = 0; i < depth+1; ++i){
 			os << "#";
 		}

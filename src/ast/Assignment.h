@@ -32,12 +32,12 @@ class Assignment : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Assignment() {
+		virtual ~Assignment() override {
 			delete var;
 			delete expression;
 		}
 
-		virtual void accept(Visitor& v);
+		virtual void accept(Visitor& v) override;
 
 		Variable* var;          ///< Left-hand side of assignment.
 		Expression* expression; ///< Right-hand side of assignment.

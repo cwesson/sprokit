@@ -29,7 +29,7 @@ class Return : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Return() {
+		virtual ~Return() override {
 			if(expression != nullptr){
 				delete expression;
 			}

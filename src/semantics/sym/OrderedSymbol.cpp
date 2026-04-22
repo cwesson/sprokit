@@ -29,7 +29,7 @@ std::ostream& OrderedSymbol::print(std::ostream& os, unsigned int depth) const {
 		<< " | " << std::setw(5) << (var.modified ? "true " : "false") << " |" << std::endl;
 	os << std::endl;
 
-	for(auto sym : children){
+	for(const auto* sym : children){
 		sym->print(os, depth+1);
 	}
 

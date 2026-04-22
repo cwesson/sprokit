@@ -23,13 +23,13 @@ TypeSymbols::~TypeSymbols() {
 std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 	SymbolTable::print(os, depth);
 
-	for(auto sym : children){
+	for(const auto* sym : children){
 		sym->print(os, depth+1);
 	}
 
 	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
 	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
-	for(auto sym : vars){
+	for(const auto& sym : vars){
 		os << std::left << "| " << std::setw(15) << sym.first
 			<< " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
 			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
@@ -40,14 +40,14 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 	
 	os << "| Name            | Type       | Unit       | const | point |" << std::endl;
 	os << "|-----------------|------------|------------|-------|-------|" << std::endl;
-	for(auto sym : funcs) {
+	for(const auto& sym : funcs) {
 		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << sym.second->type << " | " << std::setw(10) << sym.second->unit
 			<< " | " << std::setw(5) << "n/a"
 			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false") << " |" << std::endl;
 	}
 	os << std::endl;
 
-	for(auto sym : funcs) {
+	for(const auto& sym : funcs) {
 		sym.second->table->print(os, depth+1);
 	}
 

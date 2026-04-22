@@ -31,7 +31,7 @@ class Property : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Property() {
+		virtual ~Property() override {
 			if(var != nullptr){
 				delete var;
 			}

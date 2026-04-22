@@ -33,7 +33,7 @@ class IfStatement : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~IfStatement() {
+		virtual ~IfStatement() override {
 			delete condition;
 			delete body;
 			if(elsebody != nullptr){

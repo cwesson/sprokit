@@ -19,7 +19,7 @@ class CodeGen;
 namespace ADT {
 
 class UnknownType;
-class UserType;
+class StructType;
 class BoolType;
 class FloatType;
 class IntType;
@@ -45,12 +45,16 @@ class Type {
 		static Type& findPointerType(const std::string& type);
 
 		/**
-		 * Create a new UserType.
+		 * Create a new StructType.
 		 * @param type Type name.
 		 * @return Type object, or nullptr if the type already exists.
 		 */
-		static UserType* createType(const std::string& type);
+		static StructType* createType(const std::string& type);
 
+		/**
+		 * Get the base type.
+		 * @return Reference to the base type.
+		 */
 		virtual Type& baseType() {
 			return *this;
 		}
@@ -64,6 +68,11 @@ class Type {
 			return other.accept(*this);
 		}
 
+		/**
+		 * Check if types are not equivalent.
+		 * @param other Other type to check.
+		 * @return true if the two types are not equivalent, false otherwise.
+		 */
 		bool operator!=(const Type& other) const {
 			return &other != this;
 		}
@@ -124,15 +133,29 @@ class Type {
 		virtual bool visit(const FloatType& t) const = 0;
 
 		/**
-		 * Visitor pattern, check if UserType is convertible to this.
+		 * Visitor pattern, check if StructType is convertible to this.
 		 * @warning Do not call this directly, call @ref convertibleTo().
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to UserTpe.
 		 */
-		virtual bool visit(const UserType& t) const = 0;
+		virtual bool visit(const StructType& t) const = 0;
 
+		/**
+		 * Check if the type can hold a signed value.
+		 * @return true if the type can hold a signed value, false otherwise.
+		 */
 		virtual bool isSigned() const = 0;
+
+		/**
+		 * Check if the type holds an integer value.
+		 * @return true if the type holds an integer value, false otherwise.
+		 */
 		virtual bool isInt() const = 0;
+
+		/**
+		 * Check if the type holds a floating-point value.
+		 * @return true if the type holds a floating-point value, false otherwise.
+		 */
 		virtual bool isFloat() const = 0;
 
 		/**
@@ -140,6 +163,53 @@ class Type {
 		 * @return String rname of the type.
 		 */
 		virtual operator std::string() const;
+		
+		/**
+		 * Table to hold types.
+		 */
+		class TypeTable {
+			public:
+				/**
+				 * Constructor.
+				 */
+				TypeTable();
+
+				/**
+				 * Destructor.
+				 */
+				~TypeTable();
+
+				/**
+				 * Add a type to the table.
+				 * @tparam TYPE Type to construct.
+				 * @tparam ARGS Arguments for TYPE constructor.
+				 * @param args Arguments for TYPE constructor.
+				 */
+				template<typename TYPE, typename... ARGS>
+				void insert(ARGS... args);
+
+				/**
+				 * Check if the table is empty.
+				 * @return true if the table is empty, false otherwise.
+				 */
+				bool empty();
+
+				/**
+				 * Check if the table contains the specified type.
+				 * @param name Type name to check.
+				 * @return true if the table contains the specified type, false otherwise.
+				 */
+				bool contains(const std::string& name);
+
+				/**
+				 * Get the specified type.
+				 * @param name Type name ot get.
+				 * @return Type or nullptr if the type does not exist.
+				 */
+				Type* at(const std::string& name);
+			private:
+				std::map<std::string, Type*> table; ///< Map of names to Type objects.
+		};
 	
 	protected:
 		/**
@@ -147,11 +217,16 @@ class Type {
 		 * @param n Type name.
 		 */
 		Type(const std::string& n);
+
+		/**
+		 * Destructor.
+		 */
+		virtual ~Type() = default;
 	
 		std::string name; ///< Type name.
 	
 	private:
-		static std::map<std::string, Type*> table; ///< Map of names to Type objects.
+		static TypeTable table; ///< Table of known types.
 
 		/**
 		 * Add a type to the table.

@@ -6,7 +6,7 @@
 
 #include "LLCodeGen.h"
 #include "PrimitiveType.h"
-#include "UserType.h"
+#include "StructType.h"
 #include "TypeDecorator.h"
 #include <llvm/IR/Verifier.h>
 #include <sstream>
@@ -16,17 +16,19 @@ LLCodeGen::LLCodeGen(std::ostream& o, const char* filename) :
 	inparams(false),
 	islast(false),
 	collect_values(false),
-	context(),
+	context(std::make_unique<llvm::LLVMContext>()),
 	module(),
 	builder(),
 	namedValues(),
 	last_value(nullptr),
 	translated_type(nullptr),
 	arg_types(),
-	arg_names()
+	arg_names(),
+	counters(),
+	values_list(),
+	ret_type(nullptr)
 {
 	// Open a new context and module.
-	context = std::make_unique<llvm::LLVMContext>();
 	module = std::make_unique<llvm::Module>(filename, *context);
 
 	// Create a new builder for the module.
@@ -70,7 +72,7 @@ std::string LLCodeGen::translateType(const ADT::FloatType& t) const {
 	}
 }
 
-std::string LLCodeGen::translateType(const ADT::UserType& t) const {
+std::string LLCodeGen::translateType(const ADT::StructType& t) const {
 	std::stringstream s;
 	s << "%" << (std::string)t;
 	translated_type = llvm::StructType::getTypeByName(*context, (std::string)t);

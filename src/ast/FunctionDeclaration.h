@@ -31,14 +31,17 @@ class FunctionDeclaration : public ASTNode {
 			name(n),
 			type(t),
 			unit(u),
+			params(nullptr),
 			body(b),
 			pointer(false) {}
 		
 		/**
 		 * Destructor.
 		 */
-		virtual ~FunctionDeclaration() {
-			delete params;
+		virtual ~FunctionDeclaration() override {
+			if(params != nullptr){
+				delete params;
+			}
 			delete body;
 		}
 		

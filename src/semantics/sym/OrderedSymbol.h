@@ -24,7 +24,7 @@ class OrderedSymbol : public SymbolTable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~OrderedSymbol() = default;
+		virtual ~OrderedSymbol() override = default;
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 

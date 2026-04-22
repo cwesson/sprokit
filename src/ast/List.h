@@ -19,7 +19,7 @@ class List : public ASTNode {
 		 * Constructor.
 		 * @param n ASTNode at this position in the list.
 		 */
-		List(ASTNode* n) :
+		explicit List(ASTNode* n) :
 			ASTNode(yy::position()),
 			node(n),
 			next(nullptr) {}
@@ -27,7 +27,7 @@ class List : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~List() {
+		virtual ~List() override {
 			delete node;
 			if(next != nullptr){
 				delete next;

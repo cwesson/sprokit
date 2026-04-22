@@ -40,6 +40,9 @@ class ASTNode {
 		 */
 		virtual ~ASTNode() {}
 		
+		ASTNode(const ASTNode&) = delete;
+		ASTNode& operator=(const ASTNode&) = delete;
+		
 		/**
 		 * Call from semantic Visitor.
 		 * @param v Visitor that is calling.
@@ -54,6 +57,10 @@ class ASTNode {
 		 */
 		virtual void accept(Visitor& v) = 0;
 
+		/**
+		 * Check if all paths through the AST return.
+		 * @return true if all paths return, false otherwise.
+		 */
 		virtual bool allPathsReturn() const {
 			return false;
 		}

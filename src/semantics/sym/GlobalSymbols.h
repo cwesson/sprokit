@@ -24,7 +24,7 @@ class GlobalSymbols : public SymbolTable {
 		/**
 		 * Destructor.
 		 */
-		virtual ~GlobalSymbols();
+		virtual ~GlobalSymbols() override;
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 

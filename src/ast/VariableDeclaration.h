@@ -40,7 +40,7 @@ class VariableDeclaration : public ASTNode {
 		/**
 		 * Destructor.
 		 */
-		virtual ~VariableDeclaration() {
+		virtual ~VariableDeclaration() override {
 			if(initial != nullptr) {
 				delete initial;
 			}

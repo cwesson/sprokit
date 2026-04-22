@@ -7,7 +7,7 @@
 #include "CppTranspiler.h"
 #include "sym/SymbolTable.h"
 #include "PrimitiveType.h"
-#include "UserType.h"
+#include "StructType.h"
 #include "TypeDecorator.h"
 #include <functional>
 #include <sstream>
@@ -56,7 +56,7 @@ std::string CppTranspiler::translateType(const ADT::FloatType& t) const {
 	return s.str();
 }
 
-std::string CppTranspiler::translateType(const ADT::UserType& t) const {
+std::string CppTranspiler::translateType(const ADT::StructType& t) const {
 	return (std::string)t;
 }
 
@@ -74,7 +74,7 @@ std::ostream& operator<<(std::ostream& o, CppTranspiler::Indent indent) {
 	return o;
 }
 
-std::string CppTranspiler::formatUnit(std::string u) {
+std::string CppTranspiler::formatUnit(const std::string& u) {
 	if(u == "" || u == "#1"){
 		return "";
 	}else{

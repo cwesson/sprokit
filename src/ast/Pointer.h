@@ -29,7 +29,7 @@ class Pointer : public Expression {
 		/**
 		 * Destructor.
 		 */
-		virtual ~Pointer() {
+		virtual ~Pointer() override {
 			if(var != nullptr){
 				delete var;
 			}

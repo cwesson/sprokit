@@ -24,7 +24,7 @@ class ScopedSymbols : public OrderedSymbol {
 		/**
 		 * Destructor.
 		 */
-		virtual ~ScopedSymbols() = default;
+		virtual ~ScopedSymbols() override = default;
 		
 		virtual std::ostream& print(std::ostream& os, unsigned int depth) const override;
 

@@ -24,12 +24,12 @@ public:
 		 * Constructor.
 		 * @param o Output stream to write code to.
 		 */
-		CppTranspiler(std::ostream& o);
+		explicit CppTranspiler(std::ostream& o);
 
 		/**
 		 * Destructor.
 		 */
-		virtual ~CppTranspiler() = default;
+		virtual ~CppTranspiler() override = default;
 
 		/**
 		 * X-macro declaring visit functions for each ASTNode.
@@ -41,7 +41,7 @@ public:
 		virtual std::string translateType(const ADT::BoolType& t) const override;
 		virtual std::string translateType(const ADT::IntType& t) const override;
 		virtual std::string translateType(const ADT::FloatType& t) const override;
-		virtual std::string translateType(const ADT::UserType& t) const override;
+		virtual std::string translateType(const ADT::StructType& t) const override;
 		virtual std::string translateType(const ADT::PointerType& t) const override;
 
 		/**
@@ -98,7 +98,7 @@ public:
 		 * @param u Unit string to format.
 		 * @return Comment string or empty string.
 		 */
-		std::string formatUnit(std::string u);
+		std::string formatUnit(const std::string& u);
 
 		/**
 		 * Print the arrlen variable prefix.
