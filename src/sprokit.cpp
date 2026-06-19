@@ -15,7 +15,34 @@
 #include <fstream>
 #include <filesystem>
 #include <unistd.h>
+#include <sys/wait.h>
 #include "sprokit.h"
+
+/**
+ * Run a command via exec.
+ * @param _cmd Command to run.
+ * @param _args Arguments to the command.
+ * @note This is a macro in order to pass variadic arguments without expanding.
+ * `execvp()` doesn't work because the argv parameter is not const, as is
+ * necessary to allow `c_str()`.
+ */
+#define runToolchain(_cmd, _args...) do {   \
+	pid_t _p = fork();                      \
+	if(_p == 0){                            \
+		execlp(_cmd, _cmd, _args, nullptr); \
+	}else if(_p > 0){                       \
+		int _s = 0;                         \
+		waitpid(_p, &_s, 0);                \
+		if(WEXITSTATUS(_s) != 0){           \
+			std::cerr << "Error running " << _cmd << ": " << WEXITSTATUS(_s) << "." << std::endl; \
+			return 1;                       \
+		}                                   \
+	}else{                                  \
+		std::cerr << "Error running " << _cmd << "." << std::endl; \
+		printHelp(false);                   \
+		return 1;                           \
+	}                                       \
+} while(0)
 
 /**
  * Print help message to stdout.
@@ -42,7 +69,7 @@ static void printHelp(bool all){
  * @return Number of errors encountered.
  */
 int main(int argc, char* argv[]) {
-	const char* outfile = "out.ll";
+	const char* outfile = "a.out";
 	bool print_ast = false;
 	bool print_sym = false;
 	int opt;
@@ -95,7 +122,7 @@ int main(int argc, char* argv[]) {
 		c.visit(*ast);
 		ret += c.error_count;
 		if(print_sym){
-			std::cout << *c.table;
+			std::cout << *c.global;
 		}
 
 		DimensionalAnalysis d;
@@ -114,10 +141,41 @@ int main(int argc, char* argv[]) {
 				std::ofstream cpp(outfile, std::ios::out);
 				CppTranspiler g(cpp);
 				g.visit(*ast);
-			}else if(ext == ".ll"){
-				std::ofstream ll(outfile, std::ios::out);
-				LLCodeGen g(ll, infile);
-				g.visit(*ast);
+			}else{
+				enum {
+					STAGE_LL,
+					STAGE_ASM,
+					STAGE_COMP,
+				} stages;
+
+				std::filesystem::path llfile;
+				std::filesystem::path sfile;
+				std::filesystem::path compfile;
+				if(ext == ".ll"){
+					stages = STAGE_LL;
+					llfile = outfile;
+				}else if(ext == ".s" || ext == ".S"){
+					stages = STAGE_ASM;
+					llfile = std::string(outfile) + ".ll";
+					sfile = outfile;
+				}else{
+					stages = STAGE_COMP;
+					llfile = std::string(outfile) + ".ll";
+					sfile = std::string(outfile) + ".s";
+					compfile = outfile;
+				}
+
+				if(stages >= STAGE_LL){
+					std::ofstream ll(llfile, std::ios::out);
+					LLCodeGen g(ll, infile);
+					g.visit(*ast);
+				}
+				if(stages >= STAGE_ASM){
+					runToolchain("llc", "-o", sfile.c_str(), llfile.c_str());
+				}
+				if(stages >= STAGE_COMP){
+					runToolchain("clang", "-o", compfile.c_str(), sfile.c_str());
+				}
 			}
 		}
 

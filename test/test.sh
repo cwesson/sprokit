@@ -25,6 +25,12 @@ run_good_test() {
 		echo FAIL $1
 		return
 	fi
+	./a.out
+	e=$?
+	if [ "$e" -ne "$2" ]; then
+		echo FAIL $1 $e
+		return
+	fi
 	echo PASS $1
 }
 
@@ -32,5 +38,6 @@ run_bad_test "test/bad/modified.spkt"
 run_bad_test "test/bad/types.spkt"
 run_bad_test "test/bad/scope.spkt"
 run_bad_test "test/bad/usebeforedecl.spkt"
-run_good_test "test/good/simple.spkt"
-run_good_test "test/good/arith.spkt"
+run_good_test "test/good/simple.spkt" 42
+run_good_test "test/good/arith.spkt" 4
+run_good_test "test/good/scope.spkt" 29

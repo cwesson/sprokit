@@ -9,6 +9,7 @@
 #include "StructType.h"
 #include "TypeDecorator.h"
 #include <llvm/IR/Verifier.h>
+#include <llvm/Transforms/Utils/ModuleUtils.h>
 #include <sstream>
 
 LLCodeGen::LLCodeGen(std::ostream& o, const char* filename) :
@@ -20,12 +21,15 @@ LLCodeGen::LLCodeGen(std::ostream& o, const char* filename) :
 	module(),
 	builder(),
 	namedValues(),
+	globalValues(),
+	allocaValues(),
 	last_value(nullptr),
 	translated_type(nullptr),
 	arg_types(),
 	arg_names(),
 	counters(),
 	values_list(),
+	in_func(nullptr),
 	ret_type(nullptr)
 {
 	// Open a new context and module.
@@ -33,6 +37,8 @@ LLCodeGen::LLCodeGen(std::ostream& o, const char* filename) :
 
 	// Create a new builder for the module.
 	builder = std::make_unique<llvm::IRBuilder<>>(*context);
+	llvm::BasicBlock *bb = llvm::BasicBlock::Create(*context, "$global");
+	builder->SetInsertPoint(bb);
 }
 
 LLCodeGen::~LLCodeGen() {
@@ -143,9 +149,14 @@ void LLCodeGen::visit(AST::Array& v) {
 }
 
 void LLCodeGen::visit(AST::Assignment& v) {
-	v.var->accept(*this);
 	v.expression->accept(*this);
-	namedValues[v.var->name] = last_value;
+	if(allocaValues.contains(v.var->name)){
+		builder->CreateStore(last_value, allocaValues[v.var->name]);
+	}else if(namedValues.contains(v.var->name)){
+		namedValues[v.var->name] = last_value;
+	}else{
+		builder->CreateStore(last_value, globalValues[v.var->name]);
+	}
 }
 
 void LLCodeGen::visit(AST::BoolLiteral& v) {
@@ -238,11 +249,13 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	// Create a new basic block to start insertion into.
 	llvm::BasicBlock *bb = llvm::BasicBlock::Create(*context, "$entry", func);
 	builder->SetInsertPoint(bb);
-	v.body->accept(*this);
-	//builder->CreateUnreachable();
+	in_func = func;
+		v.body->accept(*this);
+		builder->CreateUnreachable();
 
-	// Validate the generated code, checking for consistency.
-	llvm::verifyFunction(*func);
+		// Validate the generated code, checking for consistency.
+		llvm::verifyFunction(*func);
+	in_func = nullptr;
 }
 
 void LLCodeGen::visit(AST::IfStatement& v) {
@@ -391,17 +404,30 @@ void LLCodeGen::visit(AST::UnitDeclaration& v) {
 }
 
 void LLCodeGen::visit(AST::Variable& v) {
-	last_value = namedValues[v.name];
+	if(allocaValues.contains(v.name)){
+		llvm::AllocaInst* alloca = allocaValues[v.name];
+		last_value = builder->CreateLoad(alloca->getAllocatedType(), alloca, v.name);
+	}else if(namedValues.contains(v.name)){
+		last_value = namedValues[v.name];
+	}else{
+		llvm::GlobalVariable* value = globalValues[v.name];
+		last_value = builder->CreateLoad(value->getValueType(), value, v.name);
+	}
 }
 
 void LLCodeGen::visit(AST::VariableDeclaration& v) {
+	ADT::Type& t = *v.table->findVariable(v.name)->type;
+	t.translate(*this);
 	if(inparams){
-		ADT::Type& t = *v.table->findVariable(v.name)->type;
-		t.translate(*this);
 		arg_types.push_back(translated_type);
 		arg_names.push_back(v.name);
-	}else if(v.initial != nullptr){
+	}else if(in_func != nullptr){
 		v.initial->accept(*this);
-		namedValues[v.name] = last_value;
+		allocaValues[v.name] = builder->CreateAlloca(translated_type, nullptr, v.name);
+		builder->CreateStore(last_value, allocaValues[v.name]);
+	}else if(v.initial != nullptr){
+		llvm::GlobalVariable* global = module->getOrInsertGlobal(v.name, translated_type);
+		globalValues[v.name] = global;
+		/// @todo initialize global variables
 	}
 }

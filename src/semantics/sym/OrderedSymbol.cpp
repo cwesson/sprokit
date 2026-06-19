@@ -37,7 +37,11 @@ std::ostream& OrderedSymbol::print(std::ostream& os, unsigned int depth) const {
 }
 
 SymbolTable::function* OrderedSymbol::addFunction(const std::string& n) {
-	return parent->addFunction(n);
+	return parent->addFunction(n, this);
+}
+
+SymbolTable::function* OrderedSymbol::addFunction(const std::string& n, SymbolTable* p) {
+	return parent->addFunction(n, p);
 }
 
 SymbolTable* OrderedSymbol::addType(const std::string& n) {

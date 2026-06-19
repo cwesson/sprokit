@@ -67,6 +67,13 @@ SymbolTable::function* SymbolTable::addFunction(const std::string& n) {
 	return nullptr;
 }
 
+SymbolTable::function* SymbolTable::addFunction(const std::string& n, SymbolTable* p) {
+	if(parent != nullptr){
+		return parent->addFunction(n, p);
+	}
+	return nullptr;
+}
+
 SymbolTable::unit* SymbolTable::addUnit(const std::string& n) {
 	if(parent != nullptr){
 		return parent->addUnit(n);

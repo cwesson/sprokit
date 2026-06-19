@@ -1,0 +1,24 @@
+
+func test(const con : int32, const v : bool) : int32 {
+	var a : int32 = 12;
+	var b : int32 = 12;
+	var c : int32 = 12;
+	if v == true {
+		var d : int32 = 12;
+		if con == 2 {
+			c = 4;
+			d = 6;
+		}else{
+			c = 13;
+			b = 4;
+		}
+	} else {
+		c = 14;
+		a = 15;
+	}
+	return a + b + c;
+}
+
+func main() : int32 {
+	return test(5, true);
+}

@@ -14,6 +14,7 @@
 
 CollectSymbols::CollectSymbols() :
 	table(new GlobalSymbols()),
+	global(table),
 	type_table(nullptr),
 	user_type(nullptr),
 	unit(nullptr),

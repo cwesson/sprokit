@@ -157,6 +157,14 @@ class SymbolTable {
 		virtual function* addFunction(const std::string& n);
 
 		/**
+		 * Attempt to add a function declaration.
+		 * @param n Function name.
+		 * @param p Parent symbol table.
+		 * @return The new function entry, or nullptr if the table already contains a function of the given name.
+		 */
+		virtual function* addFunction(const std::string& n, SymbolTable* p);
+
+		/**
 		 * Attempt to add a type declaration.
 		 * @param n Type name.
 		 * @return The new symbol table, or nullptr if the table already contains a type of the given name.

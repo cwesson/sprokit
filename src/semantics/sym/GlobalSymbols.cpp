@@ -83,6 +83,16 @@ SymbolTable::function* GlobalSymbols::addFunction(const std::string& n) {
 	}
 }
 
+SymbolTable::function* GlobalSymbols::addFunction(const std::string& n, SymbolTable* p) {
+	if(funcs.contains(n)){
+		return nullptr;
+	}else{
+		funcs[n] = new SymbolTable::function();
+		funcs[n]->table = new FunctionSymbols(n, p);
+		return funcs[n];
+	}
+}
+
 SymbolTable* GlobalSymbols::addType(const std::string& n) {
 	if(types.contains(n)){
 		return nullptr;

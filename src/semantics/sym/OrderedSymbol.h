@@ -30,6 +30,8 @@ class OrderedSymbol : public SymbolTable {
 
 		virtual function* addFunction(const std::string& n) override;
 
+		virtual function* addFunction(const std::string& n, SymbolTable* p) override;
+
 		virtual SymbolTable* addType(const std::string& n) override;
 
 		virtual unit* addUnit(const std::string& name) override;
