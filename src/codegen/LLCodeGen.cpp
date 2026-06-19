@@ -426,8 +426,26 @@ void LLCodeGen::visit(AST::VariableDeclaration& v) {
 		allocaValues[v.name] = builder->CreateAlloca(translated_type, nullptr, v.name);
 		builder->CreateStore(last_value, allocaValues[v.name]);
 	}else if(v.initial != nullptr){
-		llvm::GlobalVariable* global = module->getOrInsertGlobal(v.name, translated_type);
+		llvm::GlobalVariable* global = new llvm::GlobalVariable(translated_type, v.constant, llvm::GlobalValue::InternalLinkage, llvm::Constant::getNullValue(translated_type), v.name);
+		module->insertGlobalVariable(global);
 		globalValues[v.name] = global;
-		/// @todo initialize global variables
+
+		std::stringstream ss;
+		ss << "$ctor$" << v.name;
+		llvm::FunctionType *ft = llvm::FunctionType::get(llvm::Type::getVoidTy(*context), false);
+		llvm::Function* ctor = llvm::Function::Create(ft, llvm::Function::InternalLinkage, ss.str(), module.get());
+		llvm::BasicBlock *bb = llvm::BasicBlock::Create(*context, "$entry", ctor);
+		builder->SetInsertPoint(bb);
+
+		in_func = ctor;
+			v.initial->accept(*this);
+			builder->CreateStore(last_value, globalValues[v.name]);
+			builder->CreateRetVoid();
+			builder->CreateUnreachable();
+
+			// Validate the generated code, checking for consistency.
+			llvm::verifyFunction(*ctor);
+		in_func = nullptr;
+		llvm::appendToGlobalCtors(*module, ctor, 0);
 	}
 }

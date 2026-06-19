@@ -1,7 +1,8 @@
 
+var a : int32 = 12;
+var b : int32 = 12;
+
 func test(const con : int32, const v : bool) : int32 {
-	var a : int32 = 12;
-	var b : int32 = 12;
 	var c : int32 = 12;
 	if v == true {
 		var d : int32 = 12;
