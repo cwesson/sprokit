@@ -81,6 +81,21 @@ void TypeChecker::visit(AST::Exponent& v) {
 void TypeChecker::visit(AST::FloatLiteral& v) {
 }
 
+void TypeChecker::visit(AST::ForStatement& v) {
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
+	v.condition->accept(*this);
+	ADT::Type& cond = v.condition->getType();
+	if(!cond.convertibleTo(ADT::Type::findType("bool"))){
+		printError(v, std::string("Cannot convert ") + std::string(cond) + " to bool");
+	}
+	if(v.increment != nullptr){
+		v.increment->accept(*this);
+	}
+	v.body->accept(*this);
+}
+
 void TypeChecker::visit(AST::FunctionCall& v) {
 	auto f = v.table->findFunction(v.name);
 	if(f == nullptr){
@@ -104,6 +119,9 @@ void TypeChecker::visit(AST::FunctionDeclaration& v) {
 }
 
 void TypeChecker::visit(AST::IfStatement& v) {
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
 	v.condition->accept(*this);
 	ADT::Type& cond = v.condition->getType();
 	if(!cond.convertibleTo(ADT::Type::findType("bool"))){
@@ -211,4 +229,9 @@ void TypeChecker::visit(AST::VariableDeclaration& v) {
 			}
 		}
 	}
+}
+
+void TypeChecker::visit(AST::WithStatement& v) {
+	v.init->accept(*this);
+	v.body->accept(*this);
 }

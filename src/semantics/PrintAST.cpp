@@ -102,6 +102,21 @@ void PrintAST::visit(AST::FloatLiteral& v) {
 	std::cout << v.value << " " << v.unit;
 }
 
+void PrintAST::visit(AST::ForStatement& v) {
+	printIndent(v);
+	std::cout << "FOR ";
+	++indent;
+		if(v.init != nullptr){
+			v.init->accept(*this);
+		}
+		v.condition->accept(*this);
+		if(v.increment != nullptr){
+			v.increment->accept(*this);
+		}
+		v.body->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::FunctionCall& v) {
 	printIndent(v);
 	std::cout << "CALL " << v.name;
@@ -129,6 +144,9 @@ void PrintAST::visit(AST::IfStatement& v) {
 	printIndent(v);
 	std::cout << "IF ";
 	++indent;
+		if(v.init != nullptr){
+			v.init->accept(*this);
+		}
 		v.condition->accept(*this);
 		v.body->accept(*this);
 	--indent;
@@ -272,5 +290,14 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 		if(v.initial != nullptr){
 			v.initial->accept(*this);
 		}
+	--indent;
+}
+
+void PrintAST::visit(AST::WithStatement& v) {
+	printIndent(v);
+	std::cout << "WITH ";
+	++indent;
+		v.init->accept(*this);
+		v.body->accept(*this);
 	--indent;
 }

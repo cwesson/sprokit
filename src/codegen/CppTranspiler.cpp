@@ -18,6 +18,7 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	in_params(false),
 	is_last(false),
 	is_member(false),
+	in_loop(false),
 	array_depth(0),
 	ptr_count(0),
 	insert_last(nullptr)
@@ -110,11 +111,15 @@ void CppTranspiler::visit(AST::Array& v) {
 }
 
 void CppTranspiler::visit(AST::Assignment& v) {
-	os << indent;
+	if(!in_loop){
+		os << indent;
+	}
 	v.var->accept(*this);
 	os << " = ";
 	v.expression->accept(*this);
-	os << ";" << std::endl;
+	if(!in_loop){
+		os << ";" << std::endl;
+	}
 }
 
 void CppTranspiler::visit(AST::BoolLiteral& v) {
@@ -151,6 +156,28 @@ void CppTranspiler::visit(AST::Exponent& v) {
 
 void CppTranspiler::visit(AST::FloatLiteral& v) {
 	os << v.value << formatUnit(v.unit);
+}
+
+void CppTranspiler::visit(AST::ForStatement& v) {
+	os << indent << "for(";
+	in_loop = true;
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
+	os << "; ";
+	v.condition->accept(*this);
+	os << "; ";
+	if(v.increment != nullptr){
+		v.increment->accept(*this);
+	}
+	in_loop = false;
+	os << "){" << std::endl;
+
+	++indent;
+		v.body->accept(*this);
+	--indent;
+
+	os << indent << "}" << std::endl;
 }
 
 void CppTranspiler::visit(AST::FunctionCall& v) {
@@ -344,7 +371,7 @@ void CppTranspiler::visit(AST::Variable& v) {
 
 void CppTranspiler::visit(AST::VariableDeclaration& v) {
 	array_depth = 0;
-	if(!in_params){
+	if(!in_params && !in_loop){
 		os << indent;
 	}
 
@@ -381,6 +408,20 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 			os << " = ";
 			v.initial->accept(*this);
 		}
-		os << ";" << std::endl;
+		if(!in_loop){
+			os << ";" << std::endl;
+		}
 	}
+}
+
+void CppTranspiler::visit(AST::WithStatement& v) {
+	os << indent << "// with" << std::endl;
+	os << indent << "{" << std::endl;
+
+	++indent;
+		v.init->accept(*this);
+		v.body->accept(*this);
+	--indent;
+
+	os << indent << "}" << std::endl;
 }

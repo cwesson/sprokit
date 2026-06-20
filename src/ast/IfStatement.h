@@ -20,12 +20,14 @@ class IfStatement : public ASTNode {
 		/**
 		 * Constructor.
 		 * @param pos Position in source file.
+		 * @param i `if` initializer.
 		 * @param c `if` condition.
 		 * @param b `if` body.
 		 * @param e `else` body.
 		 */
-		IfStatement(yy::position pos, Expression* c, List* b, List* e) :
+		IfStatement(yy::position pos, VariableDeclaration* i, Expression* c, List* b, List* e) :
 			ASTNode(pos),
+			init(i),
 			condition(c),
 			body(b),
 			elsebody(e) {}
@@ -51,9 +53,10 @@ class IfStatement : public ASTNode {
 			return ret;
 		}
 		
-		Expression* condition; ///< `if` condition.
-		List* body;            ///< Body of the `if` statement.
-		List* elsebody;        ///< Body of the `else`.
+		VariableDeclaration* init; ///< `if` initializer.
+		Expression* condition;     ///< `if` condition.
+		List* body;                ///< Body of the `if` statement.
+		List* elsebody;            ///< Body of the `else`.
 };
 
 }

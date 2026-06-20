@@ -7,11 +7,11 @@
 | `case`     | Switch case statement               |
 | `const`    | Constant declaration, see [Variables](#variables)            |
 | `continue` | Continue to next loop iteration     |
-| `else`     | Else component of an `if` statement |
+| `else`     | Else component of an `if` statement, see [If Statements](#if-statements) |
 | `false`    | Boolean FALSE literal, see [Built-in Types](#built-in-types) |
 | `for`      | Loop statement                      |
-| `func`     | Function declaration                |
-| `if`       | Conditional statement               |
+| `func`     | Function declaration, see [Functions](#functions)            |
+| `if`       | Conditional statement, see [If Statements](#if-statements)   |
 | `operator` | Operator declaration                |
 | `return`   | Function return statement           |
 | `switch`   | Switch statement                    |
@@ -19,6 +19,7 @@
 | `type`     | Type declaration, see [User Types](#user-types)              |
 | `unit`     | Unit declaration, see [Units](#units)                        |
 | `var`      | Variable declaration, see [Variables](#variables)            |
+| `with`     | With variable statement                                      |
 | `yield`    | Return result from initializer statement                     |
 
 ## Types
@@ -114,3 +115,43 @@ var x: float64 = x0 + (v0 * t) + (0.5 * a * t^2);
 | `max`    | Maximum supported value for type |
 | `min`    | Minimum supported value for type |
 | `size`   | Size of a variable in bytes      |
+
+## Functions
+Functions in Sprokit are declared with `func`.  Similar to variable, parameters must be declared either `var` or `const` and may include a unit.  The function declaration specifies a return type and unit.
+
+```sprokit
+func velocity(const v0 #m/s: int32, const a #m/s^2: int32, const t #s: int32) #m/s: int32 {
+	return v0 + a * t;
+}
+```
+
+## Statements
+
+### If Statements
+The condition of `if` statements in Sprokit must evaluate to a `bool`.  The condition may also be preceded by an initializer, this variable is accessible in the condition and both the `if` and the `else` blocks.  The body of the `if` and `else` blocks is surrounded by curly braces.
+
+```sprokit
+if a == 100 {
+	return 0;
+}
+
+if b > 0 {
+	return b;
+} else {
+	return 0;
+}
+
+if b > 100 {
+	return b;
+} else if b > 0 {
+	return 0;
+} else {
+	return -b;
+}
+
+if const c = a + b; c > 100 {
+	return 100;
+} else {
+	return c;
+}
+```

@@ -98,6 +98,17 @@ void DimensionalAnalysis::visit(AST::FloatLiteral& v) {
 	constructed_unit = parser.parse(v.unit);
 }
 
+void DimensionalAnalysis::visit(AST::ForStatement& v) {
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
+	v.condition->accept(*this);
+	if(v.increment != nullptr){
+		v.increment->accept(*this);
+	}
+	v.body->accept(*this);
+}
+
 void DimensionalAnalysis::visit(AST::FunctionCall& v) {
 	auto func = v.table->findFunction(v.name);
 	if(func != nullptr){
@@ -123,6 +134,9 @@ void DimensionalAnalysis::visit(AST::FunctionDeclaration& v) {
 }
 
 void DimensionalAnalysis::visit(AST::IfStatement& v) {
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
 	v.condition->accept(*this);
 	v.body->accept(*this);
 	if(v.elsebody != nullptr){
@@ -242,6 +256,11 @@ void DimensionalAnalysis::visit(AST::VariableDeclaration& v) {
 			printError(v, "Mismatched units in initialization, was " + (std::string)constructed_unit + ", expected " + v.unit);
 		}
 	}
+}
+
+void DimensionalAnalysis::visit(AST::WithStatement& v) {
+	v.init->accept(*this);
+	v.body->accept(*this);
 }
 
 bool DimensionalAnalysis::equal(AST::ASTNode& v, const Dimensions& a, const Dimensions& b) const {

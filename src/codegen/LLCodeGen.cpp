@@ -214,6 +214,44 @@ void LLCodeGen::visit(AST::FloatLiteral& v) {
 	last_value = llvm::ConstantFP::get(*context, llvm::APFloat(v.value));
 }
 
+void LLCodeGen::visit(AST::ForStatement& v) {
+	// Emit the start code first, without 'variable' in scope.
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
+
+	unsigned int count = getCount("for");
+	std::stringstream ss;
+	ss << count;
+	// Make the new basic block for the loop header, inserting after current block.
+	llvm::Function *func = builder->GetInsertBlock()->getParent();
+	llvm::BasicBlock *loopBB = llvm::BasicBlock::Create(*context, std::string("for$")+ss.str(), func);
+	llvm::BasicBlock *contBB = llvm::BasicBlock::Create(*context, std::string("for$cont")+ss.str(), func);
+	// Create the "after loop" block and insert it.
+	llvm::BasicBlock *afterBB = llvm::BasicBlock::Create(*context, std::string("for$end")+ss.str(), func);
+
+	// Insert an explicit fall through from the current block to the loop.
+	builder->CreateBr(loopBB);
+
+	// Start insertion in loop.
+	builder->SetInsertPoint(loopBB);
+
+	v.condition->accept(*this);
+	builder->CreateCondBr(last_value, contBB, afterBB);
+
+	builder->SetInsertPoint(contBB);
+	v.body->accept(*this);
+	if(!v.body->allPathsReturn()){
+		if(v.increment != nullptr){
+			v.increment->accept(*this);
+		}
+		builder->CreateBr(loopBB);
+	}
+
+	// Any new code will be inserted in AfterBB.
+	builder->SetInsertPoint(afterBB);
+}
+
 void LLCodeGen::visit(AST::FunctionCall& v) {
 	collect_values = true;
 		v.params->accept(*this);
@@ -250,6 +288,12 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	llvm::BasicBlock *bb = llvm::BasicBlock::Create(*context, "$entry", func);
 	builder->SetInsertPoint(bb);
 	in_func = func;
+		for (auto &arg : func->args()){
+			std::string name(arg.getName().str());
+			allocaValues[name] = builder->CreateAlloca(namedValues[name]->getType(), nullptr, name);
+			builder->CreateStore(namedValues[name], allocaValues[name]);
+		}
+
 		v.body->accept(*this);
 		builder->CreateUnreachable();
 
@@ -259,6 +303,10 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 }
 
 void LLCodeGen::visit(AST::IfStatement& v) {
+	if(v.init != nullptr){
+		v.init->accept(*this);
+	}
+
 	v.condition->accept(*this);
 	llvm::Value* condv = last_value;
 	
@@ -271,7 +319,7 @@ void LLCodeGen::visit(AST::IfStatement& v) {
 	ss << count;
 	llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*context, std::string("if$")+ss.str(), func);
 	llvm::BasicBlock *elseBB = llvm::BasicBlock::Create(*context, std::string("else$")+ss.str());
-	llvm::BasicBlock *mergeBB = llvm::BasicBlock::Create(*context, std::string("if$cont")+ss.str());
+	llvm::BasicBlock *mergeBB = llvm::BasicBlock::Create(*context, std::string("if$end")+ss.str());
 
 	if(v.elsebody != nullptr){
 		builder->CreateCondBr(condv, thenBB, elseBB);
@@ -304,9 +352,11 @@ void LLCodeGen::visit(AST::IfStatement& v) {
 	// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
 	elseBB = builder->GetInsertBlock();
 
-	// Emit merge block.
-	func->insert(func->end(), mergeBB);
-	builder->SetInsertPoint(mergeBB);
+	if(!v.allPathsReturn()){
+		// Emit merge block.
+		func->insert(func->end(), mergeBB);
+		builder->SetInsertPoint(mergeBB);
+	}
 }
 
 void LLCodeGen::visit(AST::IntegerLiteral& v) {
@@ -448,4 +498,27 @@ void LLCodeGen::visit(AST::VariableDeclaration& v) {
 		in_func = nullptr;
 		llvm::appendToGlobalCtors(*module, ctor, 0);
 	}
+}
+
+void LLCodeGen::visit(AST::WithStatement& v) {
+	unsigned int count = getCount("with");
+	std::stringstream ss;
+	ss << count;
+	// Make the new basic block for the loop header, inserting after current block.
+	llvm::Function *func = builder->GetInsertBlock()->getParent();
+	llvm::BasicBlock *withBB = llvm::BasicBlock::Create(*context, std::string("with$")+ss.str(), func);
+	llvm::BasicBlock *endBB = llvm::BasicBlock::Create(*context, std::string("with$end")+ss.str(), func);
+
+	// Insert an explicit fall through from the current block to the with.
+	builder->CreateBr(withBB);
+	// Start insertion in with.
+	builder->SetInsertPoint(withBB);
+
+	v.init->accept(*this);
+	v.body->accept(*this);
+
+	// Insert an explicit fall through from the with.
+	builder->CreateBr(endBB);
+	// Any new code will be inserted in endBB.
+	builder->SetInsertPoint(endBB);
 }

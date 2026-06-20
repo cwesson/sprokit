@@ -88,6 +88,7 @@ public:
 		bool in_params;      ///< true if processing parameter declarations.
 		bool is_last;        ///< true if processing the last element of a List.
 		bool is_member;      ///< true if processing member accesses.
+		bool in_loop;        ///< true if processing loop statement.
 		unsigned int array_depth; ///< Number of array indicies deep.
 		mutable unsigned int ptr_count;   ///< Number of pointer dereferences.
 		/// Function to insert code before the last member access in a chain.

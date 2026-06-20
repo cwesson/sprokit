@@ -1,0 +1,15 @@
+
+func test(var con : int32, const v : int32) : int32 {
+	for var i : int32 = 0; v == con; i = i + v {
+		if const b : int32 = con + v; b == 2 {
+			return 4;
+		}else{
+			return b;
+		}
+	}
+	return 1;
+}
+
+func main(): int32 {
+	return test(17, 17);
+}

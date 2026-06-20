@@ -9,6 +9,11 @@
  */
 unit #in {
 	operator #ft(const i) = i / 12#in/ft;
+	operator #cm(const i) = i * 2.54#cm/in;
+}
+
+unit #cm {
+	operator #in(const c) = c / 2.54#cm/in;
 }
 
 /**
@@ -18,6 +23,7 @@ unit #ft {
 	operator #in(const f) = f * 12#in/ft;
 	operator #yd(const f) = f / 3#ft/yd;
 	operator #mi(const f) = f / 5280#ft/mi;
+	operator #cm(const f) = f * 30.48#cm/ft;
 }
 
 /**
@@ -25,6 +31,11 @@ unit #ft {
  */
 unit #yd {
 	operator #ft(const y) = y * 3#ft/yd;
+	operator #m(const y) = y / 1.093#yd/m;
+}
+
+unit #m {
+	operator #yd(const m) = m *1.093#yd/m;
 }
 
 /**

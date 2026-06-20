@@ -63,8 +63,8 @@ AST::List* program_ast = nullptr;
 %type <node> assignment
 %type <node> block_statement
 %type <node> if_statement
+%type <list> if_else_statement
 %type <node> for_statement
-%type <node> switch_statement
 %type <node> case_statement
 %type <list> case_list
 %type <list> paramdecl_list
@@ -170,9 +170,6 @@ statement:
 	| YIELD expression[exp] SEMICOLON {
 		
 	}
-	| WITH declaration[dec] LBRACE statement_list[body] RBRACE {
-		
-	}
 ;
 
 block_statement:
@@ -181,6 +178,12 @@ block_statement:
 	}
 	| for_statement {
 		$$ = $1;
+	}
+	| SWITCH expression[exp] LBRACE case_list[list] RBRACE {
+
+	}
+	| WITH variable_init[init] LBRACE statement_list[body] RBRACE {
+		$$ = new WithStatement(@1.begin, $init, $body);
 	}
 ;
 
@@ -194,29 +197,33 @@ assignment:
 ;
 
 if_statement:
-	IF expression[cond] LBRACE statement_list[body] RBRACE {
-		$$ = new IfStatement(@1.begin, $cond, $body, nullptr);
+	IF expression[cond] LBRACE statement_list[body] RBRACE if_else_statement[alt] {
+		$$ = new IfStatement(@1.begin, nullptr, $cond, $body, $alt);
 	}
-	| IF expression[cond] LBRACE statement_list[body] RBRACE ELSE LBRACE statement_list[alt] RBRACE {
-		$$ = new IfStatement(@1.begin, $cond, $body, $alt);
-	}
-	| IF expression[cond] LBRACE statement_list[body] RBRACE ELSE if_statement[alt] {
-		$$ = new IfStatement(@1.begin, $cond, $body, new List($alt));
+	| IF variable_init[init] SEMICOLON  expression[cond] LBRACE statement_list[body] RBRACE if_else_statement[alt] {
+		$$ = new IfStatement(@1.begin, $init, $cond, $body, $alt);
 	}
 ;
+
+if_else_statement:
+	ELSE LBRACE statement_list[alt] RBRACE {
+		$$ = $alt;
+	}
+	| ELSE if_statement[alt] {
+		$$ = new List($alt);
+	}
+	| /* empty */ {
+		$$ = nullptr;
+	}
+;
+
 
 for_statement:
-	FOR variable_decl[init] SEMICOLON expression[cond] SEMICOLON ID[id] ASSIGN expression[inc] LBRACE statement_list[body] RBRACE {
-
+	FOR variable_init[init] SEMICOLON expression[cond] SEMICOLON assignment[inc] LBRACE statement_list[body] RBRACE {
+		$$ = new ForStatement(@1.begin, $init, $cond, dynamic_cast<Assignment*>($inc), $body);
 	}
 	| FOR expression[cond] LBRACE statement_list[body] RBRACE {
-
-	}
-;
-
-switch_statement:
-	SWITCH expression[exp] LBRACE case_list[list] RBRACE {
-
+		$$ = new ForStatement(@1.begin, nullptr, $cond, nullptr, $body);
 	}
 ;
 

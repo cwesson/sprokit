@@ -1,0 +1,11 @@
+
+func test(var con : int32, const v : int32) : int32 {
+	with var i : int32 = v {
+		con = con - i;
+	}
+	return con;
+}
+
+func main(): int32 {
+	return test(42, 2);
+}

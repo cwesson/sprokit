@@ -105,6 +105,20 @@ void CollectSymbols::visit(AST::FloatLiteral& v) {
 	prepTable(v);
 }
 
+void CollectSymbols::visit(AST::ForStatement& v) {
+	prepTable(v);
+	table = table->addScope("$for");
+		if(v.init != nullptr){
+			v.init->accept(*this);
+		}
+		v.condition->accept(*this);
+		if(v.increment != nullptr){
+			v.increment->accept(*this);
+		}
+		v.body->accept(*this);
+	removeTable();
+}
+
 void CollectSymbols::visit(AST::FunctionCall& v) {
 	prepTable(v);
 	v.params->accept(*this);
@@ -132,6 +146,10 @@ void CollectSymbols::visit(AST::FunctionDeclaration& v) {
 
 void CollectSymbols::visit(AST::IfStatement& v) {
 	prepTable(v);
+	if(v.init != nullptr){
+		table = table->addScope("$ifinit");
+		v.init->accept(*this);
+	}
 	v.condition->accept(*this);
 	table = table->addScope("$if");
 		v.body->accept(*this);
@@ -139,6 +157,9 @@ void CollectSymbols::visit(AST::IfStatement& v) {
 	if(v.elsebody != nullptr){
 		table = table->addScope("$else");
 			v.elsebody->accept(*this);
+		removeTable();
+	}
+	if(v.init != nullptr){
 		removeTable();
 	}
 }
@@ -307,4 +328,12 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 	if(v.initial != nullptr){
 		v.initial->accept(*this);
 	}
+}
+
+void CollectSymbols::visit(AST::WithStatement& v) {
+	prepTable(v);
+	table = table->addScope("$with");
+		v.init->accept(*this);
+		v.body->accept(*this);
+	removeTable();
 }

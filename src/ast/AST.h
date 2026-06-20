@@ -21,6 +21,7 @@
 	X(Equal) \
 	X(Exponent) \
 	X(FloatLiteral) \
+	X(ForStatement) \
 	X(FunctionCall) \
 	X(FunctionDeclaration) \
 	X(IfStatement) \
@@ -38,6 +39,7 @@
 	X(UnitDeclaration) \
 	X(Variable) \
 	X(VariableDeclaration) \
+	X(WithStatement) \
 
 #include "Addition.h"
 #include "Array.h"
@@ -48,6 +50,7 @@
 #include "Equal.h"
 #include "Exponent.h"
 #include "FloatLiteral.h"
+#include "ForStatement.h"
 #include "FunctionCall.h"
 #include "FunctionDeclaration.h"
 #include "IfStatement.h"
@@ -65,3 +68,4 @@
 #include "UnitDeclaration.h"
 #include "Variable.h"
 #include "VariableDeclaration.h"
+#include "WithStatement.h"

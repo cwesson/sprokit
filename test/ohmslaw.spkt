@@ -2,6 +2,10 @@ unit #V : #A*Ohm {
     
 }
 
+unit #W : #A*V {
+
+}
+
 /**
  * Ohm's Law
  * @param i Current
