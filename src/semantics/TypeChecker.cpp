@@ -42,6 +42,62 @@ void TypeChecker::visit(AST::Assignment& v) {
 	}
 }
 
+void TypeChecker::visit(AST::BitAnd& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot AND ") + std::string(left) + " and " + std::string(right));
+	}
+	if(!left.isInt()){
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to integer");
+	}
+	if(!right.isInt()){
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to integer");
+	}
+}
+
+void TypeChecker::visit(AST::BitNot& v) {
+	v.right->accept(*this);
+	ADT::Type& right = v.right->getType();
+	if(!right.isInt()){
+		printError(v, std::string("Cannot convert ") + std::string(right) + " to integer");
+	}
+}
+
+void TypeChecker::visit(AST::BitOr& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot OR ") + std::string(left) + " and " + std::string(right));
+	}
+	if(!left.isInt()){
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to integer");
+	}
+	if(!right.isInt()){
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to integer");
+	}
+}
+
+void TypeChecker::visit(AST::BitXor& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot XOR ") + std::string(left) + " and " + std::string(right));
+	}
+	if(!left.isInt()){
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to integer");
+	}
+	if(!right.isInt()){
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to integer");
+	}
+}
+
 void TypeChecker::visit(AST::BoolAnd& v) {
 	v.left->accept(*this);
 	v.right->accept(*this);
@@ -49,10 +105,10 @@ void TypeChecker::visit(AST::BoolAnd& v) {
 	ADT::Type& right = v.right->getType();
 	ADT::Type& btype = ADT::Type::findType("bool");
 	if(!right.convertibleTo(btype)){
-		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to " + std::string(btype));
 	}
 	if(!left.convertibleTo(btype)){
-		printError(v, std::string("Cannot convert ") + std::string(left) + " to bool");
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to " + std::string(btype));
 	}
 }
 
@@ -64,7 +120,7 @@ void TypeChecker::visit(AST::BoolNot& v) {
 	ADT::Type& right = v.right->getType();
 	ADT::Type& btype = ADT::Type::findType("bool");
 	if(!right.convertibleTo(btype)){
-		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to " + std::string(btype));
 	}
 }
 
@@ -75,10 +131,10 @@ void TypeChecker::visit(AST::BoolOr& v) {
 	ADT::Type& right = v.right->getType();
 	ADT::Type& btype = ADT::Type::findType("bool");
 	if(!right.convertibleTo(btype)){
-		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to " + std::string(btype));
 	}
 	if(!left.convertibleTo(btype)){
-		printError(v, std::string("Cannot convert ") + std::string(left) + " to bool");
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to " + std::string(btype));
 	}
 }
 
@@ -278,6 +334,34 @@ void TypeChecker::visit(AST::Return& v) {
 	ADT::Type& ret = v.expression->getType();
 	if(!ret.convertibleTo(*func_type)){
 		printError(v, "Cannot return " + std::string(ret) + ", expecting " + std::string(*func_type));
+	}
+}
+
+void TypeChecker::visit(AST::ShiftLeft& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	ADT::Type& stype = ADT::Type::findType("uint8");
+	if(!right.convertibleTo(stype)){
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to " + std::string(stype));
+	}
+	if(!left.isInt()){
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to integer");
+	}
+}
+
+void TypeChecker::visit(AST::ShiftRight& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	ADT::Type& stype = ADT::Type::findType("uint8");
+	if(!right.convertibleTo(stype)){
+		printError(*v.right, std::string("Cannot convert ") + std::string(right) + " to " + std::string(stype));
+	}
+	if(!left.isInt()){
+		printError(*v.left, std::string("Cannot convert ") + std::string(left) + " to integer");
 	}
 }
 

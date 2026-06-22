@@ -8,6 +8,7 @@
 | `const`    | Constant declaration, see [Variables](#variables)            |
 | `continue` | Continue to next loop iteration     |
 | `else`     | Else component of an `if` statement, see [If Statements](#if-statements) |
+| `enum`     | Enum type declaration, see [User Types](#user-types)         |
 | `false`    | Boolean FALSE literal, see [Built-in Types](#built-in-types) |
 | `for`      | Loop statement                      |
 | `func`     | Function declaration, see [Functions](#functions)            |
@@ -16,7 +17,7 @@
 | `return`   | Function return statement           |
 | `switch`   | Switch statement                    |
 | `true`     | Boolean TRUE literal, see [Built-in Types](#built-in-types)  |
-| `type`     | Type declaration, see [User Types](#user-types)              |
+| `struct`   | Struct type declaration, see [User Types](#user-types)       |
 | `unit`     | Unit declaration, see [Units](#units)                        |
 | `var`      | Variable declaration, see [Variables](#variables)            |
 | `with`     | With variable statement                                      |
@@ -80,8 +81,8 @@ unit #Hz : #1/s {
 | `&`      | Bitwise AND             | `a & mask`      | |
 | `\|`     | Bitwise OR              | `a \| set`      | |
 | `^\|`    | Bitwise XOR             | `a ^\| b`       | |
-| `<<`     | Bitwise Left Shift      | `1 << 12`       | |
-| `>>`     | Bitwise Right Shift     | `a >> 4`        | |
+| `<<`     | Bitwise Left Shift      | `1 << 12 #b`    | |
+| `>>`     | Bitwise Right Shift     | `a >> 4 #b`     | Sign extension for signed types. |
 | `!`      | Boolean NOT             | `!a`            | |
 | `&&`     | Boolean AND             | `a && b`        | |
 | `\|\|`   | Boolean OR              | `a \|\| b`      | |

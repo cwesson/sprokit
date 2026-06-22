@@ -50,6 +50,25 @@ void DimensionalAnalysis::visit(AST::Assignment& v) {
 	}
 }
 
+void DimensionalAnalysis::visit(AST::BitAnd& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void DimensionalAnalysis::visit(AST::BitNot& v) {
+	v.right->accept(*this);
+}
+
+void DimensionalAnalysis::visit(AST::BitOr& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void DimensionalAnalysis::visit(AST::BitXor& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
 void DimensionalAnalysis::visit(AST::BoolAnd& v) {
 	v.left->accept(*this);
 	v.right->accept(*this);
@@ -252,6 +271,30 @@ void DimensionalAnalysis::visit(AST::Return& v) {
 			printError(v, "Mismatched units in return, was " + (std::string)constructed_unit + ", expected " + (std::string)ret_unit);
 		}
 	}
+}
+
+void DimensionalAnalysis::visit(AST::ShiftLeft& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	Dimensions right_unit = constructed_unit;
+	if(!equal(v, right_unit, parser.parse("#b"))){
+		printError(v, "Cannot convert " + (std::string)right_unit + " to #b in left shift.");
+	}
+	constructed_unit = left_unit;
+	v.dim = constructed_unit;
+}
+
+void DimensionalAnalysis::visit(AST::ShiftRight& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	Dimensions right_unit = constructed_unit;
+	if(!equal(v, right_unit, parser.parse("#b"))){
+		printError(v, "Cannot convert " + (std::string)right_unit + " to #b in right shift.");
+	}
+	constructed_unit = left_unit;
+	v.dim = constructed_unit;
 }
 
 void DimensionalAnalysis::visit(AST::Subtraction& v) {

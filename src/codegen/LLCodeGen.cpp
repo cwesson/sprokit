@@ -178,6 +178,29 @@ void LLCodeGen::visit(AST::Assignment& v) {
 	}
 }
 
+void LLCodeGen::visit(AST::BitAnd& v) {
+	ADT::Type& type = v.getType();
+	operands op = visitBinaryOp(v.left, v.right, type);
+	last_value = builder->CreateAnd(op.left, op.right);
+}
+
+void LLCodeGen::visit(AST::BitNot& v) {
+	v.right->accept(*this);
+	last_value = builder->CreateNot(last_value);
+}
+
+void LLCodeGen::visit(AST::BitOr& v) {
+	ADT::Type& type = v.getType();
+	operands op = visitBinaryOp(v.left, v.right, type);
+	last_value = builder->CreateOr(op.left, op.right);
+}
+
+void LLCodeGen::visit(AST::BitXor& v) {
+	ADT::Type& type = v.getType();
+	operands op = visitBinaryOp(v.left, v.right, type);
+	last_value = builder->CreateXor(op.left, op.right);
+}
+
 void LLCodeGen::visit(AST::BoolAnd& v) {
 	v.left->accept(*this);
 	llvm::Value* left = last_value;
@@ -558,6 +581,26 @@ void LLCodeGen::visit(AST::Return& v) {
 	ret_type->translate(*this);
 	llvm::Value* ret = typePromotion(last_value, translated_type, ret_type->isSigned());
 	builder->CreateRet(ret);
+}
+
+void LLCodeGen::visit(AST::ShiftLeft& v) {
+	v.left->accept(*this);
+	llvm::Value* left = last_value;
+	v.right->accept(*this);
+	llvm::Value* right = last_value;
+	last_value = builder->CreateShl(left, right);
+}
+
+void LLCodeGen::visit(AST::ShiftRight& v) {
+	v.left->accept(*this);
+	llvm::Value* left = last_value;
+	v.right->accept(*this);
+	llvm::Value* right = last_value;
+	if(v.left->getType().isSigned()){
+		last_value = builder->CreateAShr(left, right);
+	}else{
+		last_value = builder->CreateLShr(left, right);
+	}
 }
 
 void LLCodeGen::visit(AST::Subtraction& v) {

@@ -15,6 +15,10 @@
 	X(Addition) \
 	X(Array) \
 	X(Assignment) \
+	X(BitAnd) \
+	X(BitNot) \
+	X(BitOr) \
+	X(BitXor) \
 	X(BoolAnd) \
 	X(BoolLiteral) \
 	X(BoolNot) \
@@ -42,6 +46,8 @@
 	X(Pointer) \
 	X(Property) \
 	X(Return) \
+	X(ShiftLeft) \
+	X(ShiftRight) \
 	X(Subtraction) \
 	X(TypeDeclaration) \
 	X(UnitDeclaration) \
@@ -52,6 +58,10 @@
 #include "Addition.h"
 #include "Array.h"
 #include "Assignment.h"
+#include "BitAnd.h"
+#include "BitNot.h"
+#include "BitOr.h"
+#include "BitXor.h"
 #include "BoolAnd.h"
 #include "BoolLiteral.h"
 #include "BoolNot.h"
@@ -79,6 +89,8 @@
 #include "Pointer.h"
 #include "Property.h"
 #include "Return.h"
+#include "ShiftLeft.h"
+#include "ShiftRight.h"
 #include "Subtraction.h"
 #include "TypeDeclaration.h"
 #include "UnitDeclaration.h"

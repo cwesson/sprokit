@@ -71,6 +71,29 @@ void CollectSymbols::visit(AST::Assignment& v) {
 	v.expression->accept(*this);
 }
 
+void CollectSymbols::visit(AST::BitAnd& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::BitNot& v) {
+	prepTable(v);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::BitOr& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::BitXor& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
 void CollectSymbols::visit(AST::BoolAnd& v) {
 	prepTable(v);
 	v.left->accept(*this);
@@ -280,6 +303,18 @@ void CollectSymbols::visit(AST::Return& v) {
 	if(v.expression != nullptr){
 		v.expression->accept(*this);
 	}
+}
+
+void CollectSymbols::visit(AST::ShiftLeft& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::ShiftRight& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
 }
 
 void CollectSymbols::visit(AST::Subtraction& v) {

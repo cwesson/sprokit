@@ -57,6 +57,41 @@ void PrintAST::visit(AST::Assignment& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::BitAnd& v) {
+	printIndent(v);
+	std::cout << "BITAND";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::BitNot& v) {
+	printIndent(v);
+	std::cout << "BITNOT";
+	++indent;
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::BitOr& v) {
+	printIndent(v);
+	std::cout << "BITOR";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::BitXor& v) {
+	printIndent(v);
+	std::cout << "BITXOR";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::BoolAnd& v) {
 	printIndent(v);
 	std::cout << "BOOLAND";
@@ -306,6 +341,24 @@ void PrintAST::visit(AST::Return& v) {
 		if(v.expression != nullptr){
 			v.expression->accept(*this);
 		}
+	--indent;
+}
+
+void PrintAST::visit(AST::ShiftLeft& v) {
+	printIndent(v);
+	std::cout << "SHIFTLEFT";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::ShiftRight& v) {
+	printIndent(v);
+	std::cout << "SHIFTRIGHT";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
 	--indent;
 }
 

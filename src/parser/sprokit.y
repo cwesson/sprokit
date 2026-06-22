@@ -509,25 +509,25 @@ expression:
 		$$ = new BoolAnd(@2.begin, $l, $r);
 	}
 	| BOOLNOT expression[r] {
-		$$ = new BoolNot(@2.begin, $r);
+		$$ = new BoolNot(@1.begin, $r);
 	}
 	| expression[l] LSHIFT expression[r] {
-		/// @todo $$ = new ShiftLeft(@2.begin, $l, $r);
+		$$ = new ShiftLeft(@2.begin, $l, $r);
 	}
 	| expression[l] RSHIFT expression[r] {
-		/// @todo $$ = new ShiftRight(@2.begin, $l, $r);
+		$$ = new ShiftRight(@2.begin, $l, $r);
 	}
 	| expression[l] BITOR expression[r] {
-		/// @todo $$ = new BitOr(@2.begin, $l, $r);
+		$$ = new BitOr(@2.begin, $l, $r);
 	}
 	| expression[l] BITXOR expression[r] {
-		/// @todo $$ = new BitXor(@2.begin, $l, $r);
+		$$ = new BitXor(@2.begin, $l, $r);
 	}
 	| expression[l] BITAND expression[r] {
-		/// @todo $$ = new BitAnd(@2.begin, $l, $r);
+		$$ = new BitAnd(@2.begin, $l, $r);
 	}
 	| BITNOT expression[r] {
-		/// @todo $$ = new BitNot(@2.begin, $r);
+		$$ = new BitNot(@1.begin, $r);
 	}
 	| INTEGER[value] UNIT_ID[unit] {
 		unsigned long long i = 0;

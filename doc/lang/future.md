@@ -10,7 +10,7 @@ func acceleration(const v0 #%d/%t : float64, const vt #%d/%t : float64, const ti
 ```
 
 ## Arithmetic Catch
-Sprokit can catch integer overflows and division by zero.
+Sprokit can catch integer overflows, division by zero, and bit shifts larger than the type.
 
 ```sprokit
 const result : int32 = a + b catch 0;

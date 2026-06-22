@@ -35,6 +35,10 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	os << "typedef int16_t int16;" << std::endl;
 	os << "typedef int32_t int32;" << std::endl;
 	os << "typedef int64_t int64;" << std::endl;
+	os << "typedef uint8_t uint8;" << std::endl;
+	os << "typedef uint16_t uint16;" << std::endl;
+	os << "typedef uint32_t uint32;" << std::endl;
+	os << "typedef uint64_t uint64;" << std::endl;
 	os << "typedef __bf16 float16;" << std::endl;
 	os << "typedef float float32;" << std::endl;
 	os << "typedef double float64;" << std::endl;
@@ -122,10 +126,42 @@ void CppTranspiler::visit(AST::Assignment& v) {
 	}
 }
 
+void CppTranspiler::visit(AST::BitAnd& v) {
+	os << "(";
+	v.left->accept(*this);
+	os << " & ";
+	v.right->accept(*this);
+	os << ")";
+}
+
+void CppTranspiler::visit(AST::BitOr& v) {
+	os << "(";
+	v.left->accept(*this);
+	os << " | ";
+	v.right->accept(*this);
+	os << ")";
+}
+
+void CppTranspiler::visit(AST::BitNot& v) {
+	os << "(~";
+	v.right->accept(*this);
+	os << ")";
+}
+
+void CppTranspiler::visit(AST::BitXor& v) {
+	os << "(";
+	v.left->accept(*this);
+	os << " ^ ";
+	v.right->accept(*this);
+	os << ")";
+}
+
 void CppTranspiler::visit(AST::BoolAnd& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " && ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::BoolLiteral& v) {
@@ -133,14 +169,17 @@ void CppTranspiler::visit(AST::BoolLiteral& v) {
 }
 
 void CppTranspiler::visit(AST::BoolNot& v) {
-	os << " !";
+	os << "(!";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::BoolOr& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " || ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Conversion& v) {
@@ -158,9 +197,11 @@ void CppTranspiler::visit(AST::Division& v) {
 }
 
 void CppTranspiler::visit(AST::Equal& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " == ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Exponent& v) {
@@ -221,15 +262,19 @@ void CppTranspiler::visit(AST::FunctionDeclaration& v) {
 }
 
 void CppTranspiler::visit(AST::GreaterEqual& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " >= ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::GreaterThan& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " > ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::IfStatement& v) {
@@ -261,15 +306,19 @@ void CppTranspiler::visit(AST::IntegerLiteral& v) {
 }
 
 void CppTranspiler::visit(AST::LessEqual& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " <= ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::LessThan& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " < ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::List& v) {
@@ -333,9 +382,11 @@ void CppTranspiler::visit(AST::Negation& v) {
 }
 
 void CppTranspiler::visit(AST::NotEqual& v) {
+	os << "(";
 	v.left->accept(*this);
 	os << " != ";
 	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Pointer& v) {
@@ -372,6 +423,22 @@ void CppTranspiler::visit(AST::Return& v) {
 		v.expression->accept(*this);
 	}
 	os << ";" << std::endl;
+}
+
+void CppTranspiler::visit(AST::ShiftLeft& v) {
+	os << "(";
+	v.left->accept(*this);
+	os << " << ";
+	v.right->accept(*this);
+	os << ")";
+}
+
+void CppTranspiler::visit(AST::ShiftRight& v) {
+	os << "(";
+	v.left->accept(*this);
+	os << " >> ";
+	v.right->accept(*this);
+	os << ")";
 }
 
 void CppTranspiler::visit(AST::Subtraction& v) {
