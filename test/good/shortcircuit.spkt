@@ -1,0 +1,85 @@
+
+var track : uint32 = 0;
+
+func true1() : bool {
+	track = track + 1;
+	return true;
+}
+
+func false1() : bool {
+	track = track + 2;
+	return false;
+}
+
+func true2() : bool {
+	track = track + 4;
+	return true;
+}
+
+func false2() : bool {
+	track = track + 8;
+	return false;
+}
+
+func true3() : bool {
+	track = track + 16;
+	return true;
+}
+
+func true4() : bool {
+	track = track + 32;
+	return true;
+}
+
+func false4() : bool {
+	track = track + 64;
+	return false;
+}
+
+func true5() : bool {
+	track = track + 128;
+	return true;
+}
+
+func true6() : bool {
+	track = track + 256;
+	return true;
+}
+
+func false5() : bool {
+	track = track + 512;
+	return false;
+}
+
+func test() : uint32 {
+	var res : uint32 = 0;
+	if true1() && false1() {
+		res = res + 1;
+	}
+
+	if false2() && true2() {
+		res = res + 2;
+	}
+
+	if true3() && true4() {
+		res = res + 4;
+	}
+
+	if false4() || true5() {
+		res = res + 8;
+	}
+
+	if true6() || false5() {
+		res = res + 16;
+	}
+	
+	if track != 507 {
+		res = res + 64;
+	}
+
+	return res;
+}
+
+func main() : uint32{
+	return test();
+}

@@ -132,7 +132,26 @@ LLCodeGen::operands LLCodeGen::visitBinaryOp(AST::Expression* l, AST::Expression
 	type.translate(*this);
 	left = typePromotion(left, translated_type, type.isSigned());
 	right = typePromotion(right, translated_type, type.isSigned());
-	return operands{left, right};
+	return operands{left, right, &type};
+}
+
+LLCodeGen::operands LLCodeGen::visitCompareOp(AST::Expression* l, AST::Expression* r) {
+	l->accept(*this);
+	llvm::Value* left = last_value;
+	r->accept(*this);
+	llvm::Value* right = last_value;
+	ADT::Type& tleft = l->getType();
+	ADT::Type& tright = r->getType();
+	ADT::Type& type = tleft;
+	if(tright.convertibleTo(tleft)){
+		tleft.translate(*this);
+		right = typePromotion(right, translated_type, tleft.isSigned());
+	}else if(tleft.convertibleTo(tright)){
+		tright.translate(*this);
+		left = typePromotion(left, translated_type, tright.isSigned());
+		type = tright;
+	}
+	return operands{left, right, &type};
 }
 
 void LLCodeGen::visit(AST::Addition& v) {
@@ -159,8 +178,81 @@ void LLCodeGen::visit(AST::Assignment& v) {
 	}
 }
 
+void LLCodeGen::visit(AST::BoolAnd& v) {
+	v.left->accept(*this);
+	llvm::Value* left = last_value;
+
+	unsigned int count = getCount("and");
+	std::stringstream ss;
+	ss << count;
+	// Make the new basic block for the loop header, inserting after current block.
+	llvm::Function *func = builder->GetInsertBlock()->getParent();
+	llvm::BasicBlock *trueBB = llvm::BasicBlock::Create(*context, std::string("$and$true")+ss.str(), func);
+	llvm::BasicBlock *falseBB = llvm::BasicBlock::Create(*context, std::string("$and$false")+ss.str(), func);
+	llvm::BasicBlock *endBB = llvm::BasicBlock::Create(*context, std::string("$and$end")+ss.str(), func);
+
+	builder->CreateCondBr(left, trueBB, falseBB);
+
+	// Continue if true
+	builder->SetInsertPoint(trueBB);
+
+	v.right->accept(*this);
+	llvm::Value* right = last_value;
+	builder->CreateBr(endBB);
+
+	// Skip if false
+	builder->SetInsertPoint(falseBB);
+	builder->CreateBr(endBB);
+
+	builder->SetInsertPoint(endBB);
+
+	llvm::PHINode *phi = builder->CreatePHI(llvm::IntegerType::get(*context, 1), 2);
+	phi->addIncoming(right, trueBB);
+	phi->addIncoming(left, falseBB);
+	last_value = phi;
+}
+
 void LLCodeGen::visit(AST::BoolLiteral& v) {
 	last_value = llvm::ConstantInt::get(*context, llvm::APInt(1, v.value ? 1 : 0));
+}
+
+void LLCodeGen::visit(AST::BoolNot& v) {
+	v.right->accept(*this);
+	last_value = builder->CreateNot(last_value);
+}
+
+void LLCodeGen::visit(AST::BoolOr& v) {
+	v.left->accept(*this);
+	llvm::Value* left = last_value;
+
+	unsigned int count = getCount("or");
+	std::stringstream ss;
+	ss << count;
+	// Make the new basic block for the loop header, inserting after current block.
+	llvm::Function *func = builder->GetInsertBlock()->getParent();
+	llvm::BasicBlock *trueBB = llvm::BasicBlock::Create(*context, std::string("$or$true")+ss.str(), func);
+	llvm::BasicBlock *falseBB = llvm::BasicBlock::Create(*context, std::string("$or$false")+ss.str(), func);
+	llvm::BasicBlock *endBB = llvm::BasicBlock::Create(*context, std::string("$or$end")+ss.str(), func);
+
+	builder->CreateCondBr(left, trueBB, falseBB);
+
+	// Continue if false
+	builder->SetInsertPoint(falseBB);
+
+	v.right->accept(*this);
+	llvm::Value* right = last_value;
+	builder->CreateBr(endBB);
+
+	// Skip if true
+	builder->SetInsertPoint(trueBB);
+	builder->CreateBr(endBB);
+
+	builder->SetInsertPoint(endBB);
+
+	llvm::PHINode *phi = builder->CreatePHI(llvm::IntegerType::get(*context, 1), 2);
+	phi->addIncoming(right, falseBB);
+	phi->addIncoming(left, trueBB);
+	last_value = phi;
 }
 
 void LLCodeGen::visit(AST::Conversion& v) {
@@ -179,25 +271,11 @@ void LLCodeGen::visit(AST::Division& v) {
 }
 
 void LLCodeGen::visit(AST::Equal& v) {
-	v.left->accept(*this);
-	llvm::Value* left = last_value;
-	v.right->accept(*this);
-	llvm::Value* right = last_value;
-	ADT::Type& tleft = v.left->getType();
-	ADT::Type& tright = v.right->getType();
-	ADT::Type& type = tleft;
-	if(tright.convertibleTo(tleft)){
-		tleft.translate(*this);
-		right = typePromotion(right, translated_type, tleft.isSigned());
-	}else if(tleft.convertibleTo(tright)){
-		tright.translate(*this);
-		left = typePromotion(left, translated_type, tright.isSigned());
-		type = tright;
-	}
-	if(type.isFloat()){
-		last_value = builder->CreateFCmpOEQ(left, right);
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
+		last_value = builder->CreateFCmpOEQ(op.left, op.right);
 	}else{
-		last_value = builder->CreateICmpEQ(left, right);
+		last_value = builder->CreateICmpEQ(op.left, op.right);
 	}
 }
 
@@ -302,6 +380,28 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	in_func = nullptr;
 }
 
+void LLCodeGen::visit(AST::GreaterEqual& v) {
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
+		last_value = builder->CreateFCmpOGE(op.left, op.right);
+	}else if(op.type->isSigned()){
+		last_value = builder->CreateICmpSGE(op.left, op.right);
+	}else{
+		last_value = builder->CreateICmpUGE(op.left, op.right);
+	}
+}
+
+void LLCodeGen::visit(AST::GreaterThan& v) {
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
+		last_value = builder->CreateFCmpOGT(op.left, op.right);
+	}else if(op.type->isSigned()){
+		last_value = builder->CreateICmpSGT(op.left, op.right);
+	}else{
+		last_value = builder->CreateICmpUGT(op.left, op.right);
+	}
+}
+
 void LLCodeGen::visit(AST::IfStatement& v) {
 	if(v.init != nullptr){
 		v.init->accept(*this);
@@ -363,6 +463,28 @@ void LLCodeGen::visit(AST::IntegerLiteral& v) {
 	last_value = llvm::ConstantInt::get(*context, llvm::APInt(v.getType().size()*8, v.value));
 }
 
+void LLCodeGen::visit(AST::LessEqual& v) {
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
+		last_value = builder->CreateFCmpOLE(op.left, op.right);
+	}else if(op.type->isSigned()){
+		last_value = builder->CreateICmpSLE(op.left, op.right);
+	}else{
+		last_value = builder->CreateICmpULE(op.left, op.right);
+	}
+}
+
+void LLCodeGen::visit(AST::LessThan& v) {
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
+		last_value = builder->CreateFCmpOLT(op.left, op.right);
+	}else if(op.type->isSigned()){
+		last_value = builder->CreateICmpSLT(op.left, op.right);
+	}else{
+		last_value = builder->CreateICmpULT(op.left, op.right);
+	}
+}
+
 void LLCodeGen::visit(AST::List& v) {
 	if(v.node != nullptr){
 		islast = v.next == nullptr;
@@ -406,10 +528,19 @@ void LLCodeGen::visit(AST::Multiplication& v) {
 	}
 }
 
-void LLCodeGen::visit(AST::NotEqual& v) {
+void LLCodeGen::visit(AST::Negation& v) {
 	ADT::Type& type = v.getType();
-	operands op = visitBinaryOp(v.left, v.right, type);
+	v.right->accept(*this);
 	if(type.isFloat()){
+		last_value = builder->CreateFNeg(last_value);
+	}else{
+		last_value = builder->CreateNeg(last_value);
+	}
+}
+
+void LLCodeGen::visit(AST::NotEqual& v) {
+	operands op = visitCompareOp(v.left, v.right);
+	if(op.type->isFloat()){
 		last_value = builder->CreateFCmpONE(op.left, op.right);
 	}else{
 		last_value = builder->CreateICmpNE(op.left, op.right);

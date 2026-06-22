@@ -1,6 +1,5 @@
 
 run_bad_test() {
-	exp=`wc -l "$1.expected" | awk '{print $1}'`
 	err=`./bin/sprokit $1 2>&1`
 	count=$?
 	diff "$1.expected" <(echo "$err")
@@ -8,7 +7,7 @@ run_bad_test() {
 		echo FAIL $1
 		return
 	fi
-	if [ $count -ne $exp ]; then
+	if [ $count -ne 255 ]; then
 		echo FAIL $1
 		return
 	fi
@@ -43,3 +42,4 @@ run_good_test "test/good/arith.spkt" 4
 run_good_test "test/good/scope.spkt" 29
 run_good_test "test/good/loop.spkt" 3
 run_good_test "test/good/with.spkt" 40
+run_good_test "test/good/shortcircuit.spkt" 28

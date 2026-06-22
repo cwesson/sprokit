@@ -15,7 +15,10 @@
 	X(Addition) \
 	X(Array) \
 	X(Assignment) \
+	X(BoolAnd) \
 	X(BoolLiteral) \
+	X(BoolNot) \
+	X(BoolOr) \
 	X(Conversion) \
 	X(Division) \
 	X(Equal) \
@@ -24,12 +27,17 @@
 	X(ForStatement) \
 	X(FunctionCall) \
 	X(FunctionDeclaration) \
+	X(GreaterEqual) \
+	X(GreaterThan) \
 	X(IfStatement) \
+	X(LessEqual) \
+	X(LessThan) \
 	X(IntegerLiteral) \
 	X(List) \
 	X(Member) \
 	X(Modulo) \
 	X(Multiplication) \
+	X(Negation) \
 	X(NotEqual) \
 	X(Pointer) \
 	X(Property) \
@@ -44,7 +52,10 @@
 #include "Addition.h"
 #include "Array.h"
 #include "Assignment.h"
+#include "BoolAnd.h"
 #include "BoolLiteral.h"
+#include "BoolNot.h"
+#include "BoolOr.h"
 #include "Conversion.h"
 #include "Division.h"
 #include "Equal.h"
@@ -53,12 +64,17 @@
 #include "ForStatement.h"
 #include "FunctionCall.h"
 #include "FunctionDeclaration.h"
+#include "GreaterEqual.h"
+#include "GreaterThan.h"
 #include "IfStatement.h"
 #include "IntegerLiteral.h"
+#include "LessEqual.h"
+#include "LessThan.h"
 #include "List.h"
 #include "Member.h"
 #include "Modulo.h"
 #include "Multiplication.h"
+#include "Negation.h"
 #include "NotEqual.h"
 #include "Pointer.h"
 #include "Property.h"

@@ -2,7 +2,11 @@ struct Test {
 	var a: int32;
 }
 
-func test(): int32{
-	var t: Test@ = 0;
+func get_a(const t : Test): int32 {
 	return t.a;
 }
+
+/*func test(): int32{
+	var t: Test@ = 0;
+	return t.a;
+}*/

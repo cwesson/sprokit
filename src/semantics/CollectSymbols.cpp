@@ -71,8 +71,25 @@ void CollectSymbols::visit(AST::Assignment& v) {
 	v.expression->accept(*this);
 }
 
+void CollectSymbols::visit(AST::BoolAnd& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
 void CollectSymbols::visit(AST::BoolLiteral& v) {
 	prepTable(v);
+}
+
+void CollectSymbols::visit(AST::BoolNot& v) {
+	prepTable(v);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::BoolOr& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
 }
 
 void CollectSymbols::visit(AST::Conversion& v) {
@@ -144,6 +161,18 @@ void CollectSymbols::visit(AST::FunctionDeclaration& v) {
 	}
 }
 
+void CollectSymbols::visit(AST::GreaterEqual& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::GreaterThan& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
 void CollectSymbols::visit(AST::IfStatement& v) {
 	prepTable(v);
 	if(v.init != nullptr){
@@ -166,6 +195,18 @@ void CollectSymbols::visit(AST::IfStatement& v) {
 
 void CollectSymbols::visit(AST::IntegerLiteral& v) {
 	prepTable(v);
+}
+
+void CollectSymbols::visit(AST::LessEqual& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::LessThan& v) {
+	prepTable(v);
+	v.left->accept(*this);
+	v.right->accept(*this);
 }
 
 void CollectSymbols::visit(AST::List& v) {
@@ -206,6 +247,11 @@ void CollectSymbols::visit(AST::Modulo& v) {
 void CollectSymbols::visit(AST::Multiplication& v) {
 	prepTable(v);
 	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::Negation& v) {
+	prepTable(v);
 	v.right->accept(*this);
 }
 

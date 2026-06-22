@@ -50,7 +50,21 @@ void DimensionalAnalysis::visit(AST::Assignment& v) {
 	}
 }
 
+void DimensionalAnalysis::visit(AST::BoolAnd& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
+
 void DimensionalAnalysis::visit(AST::BoolLiteral& v) {}
+
+void DimensionalAnalysis::visit(AST::BoolNot& v) {
+	v.right->accept(*this);
+}
+
+void DimensionalAnalysis::visit(AST::BoolOr& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
 
 void DimensionalAnalysis::visit(AST::Conversion& v) {
 	Dimensions expected = parser.parse(v.to);
@@ -133,6 +147,24 @@ void DimensionalAnalysis::visit(AST::FunctionDeclaration& v) {
 	in_func = nullptr;
 }
 
+void DimensionalAnalysis::visit(AST::GreaterEqual& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	if(!equal(v, left_unit, constructed_unit)){
+		printError(v, "Mismatched units in greater than or equal, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
+	}
+}
+
+void DimensionalAnalysis::visit(AST::GreaterThan& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	if(!equal(v, left_unit, constructed_unit)){
+		printError(v, "Mismatched units in greater than, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
+	}
+}
+
 void DimensionalAnalysis::visit(AST::IfStatement& v) {
 	if(v.init != nullptr){
 		v.init->accept(*this);
@@ -146,6 +178,24 @@ void DimensionalAnalysis::visit(AST::IfStatement& v) {
 
 void DimensionalAnalysis::visit(AST::IntegerLiteral& v) {
 	constructed_unit = parser.parse(v.unit);
+}
+
+void DimensionalAnalysis::visit(AST::LessEqual& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	if(!equal(v, left_unit, constructed_unit)){
+		printError(v, "Mismatched units in less than or equal, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
+	}
+}
+
+void DimensionalAnalysis::visit(AST::LessThan& v) {
+	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
+	v.right->accept(*this);
+	if(!equal(v, left_unit, constructed_unit)){
+		printError(v, "Mismatched units in less than, " + (std::string)left_unit + ", and " + (std::string)constructed_unit);
+	}
 }
 
 void DimensionalAnalysis::visit(AST::List& v) {
@@ -171,6 +221,10 @@ void DimensionalAnalysis::visit(AST::Multiplication& v) {
 	Dimensions right_unit = constructed_unit;
 	constructed_unit = left_unit *= right_unit;
 	v.dim = constructed_unit;
+}
+
+void DimensionalAnalysis::visit(AST::Negation& v) {
+	v.right->accept(*this);
 }
 
 void DimensionalAnalysis::visit(AST::NotEqual& v) {

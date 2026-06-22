@@ -57,9 +57,35 @@ void PrintAST::visit(AST::Assignment& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::BoolAnd& v) {
+	printIndent(v);
+	std::cout << "BOOLAND";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::BoolLiteral& v) {
 	printIndent(v);
 	std::cout << (v.value ? "true" : "false");
+}
+
+void PrintAST::visit(AST::BoolNot& v) {
+	printIndent(v);
+	std::cout << "BOOLNOT";
+	++indent;
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::BoolOr& v) {
+	printIndent(v);
+	std::cout << "BOOLOR";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
 }
 
 void PrintAST::visit(AST::Conversion& v) {
@@ -140,6 +166,24 @@ void PrintAST::visit(AST::FunctionDeclaration& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::GreaterEqual& v) {
+	printIndent(v);
+	std::cout << "GREATEREQUAL";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::GreaterThan& v) {
+	printIndent(v);
+	std::cout << "GREATER";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::IfStatement& v) {
 	printIndent(v);
 	std::cout << "IF ";
@@ -162,6 +206,24 @@ void PrintAST::visit(AST::IfStatement& v) {
 void PrintAST::visit(AST::IntegerLiteral& v) {
 	printIndent(v);
 	std::cout << v.value << " " << v.unit;
+}
+
+void PrintAST::visit(AST::LessEqual& v) {
+	printIndent(v);
+	std::cout << "LESSEQUAL";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::LessThan& v) {
+	printIndent(v);
+	std::cout << "LESS";
+	++indent;
+		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
 }
 
 void PrintAST::visit(AST::List& v) {
@@ -196,6 +258,14 @@ void PrintAST::visit(AST::Multiplication& v) {
 	std::cout << "MUL";
 	++indent;
 		v.left->accept(*this);
+		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::Negation& v) {
+	printIndent(v);
+	std::cout << "NEG";
+	++indent;
 		v.right->accept(*this);
 	--indent;
 }

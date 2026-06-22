@@ -35,7 +35,7 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	os << "typedef int16_t int16;" << std::endl;
 	os << "typedef int32_t int32;" << std::endl;
 	os << "typedef int64_t int64;" << std::endl;
-	os << "typedef __fp16 float16;" << std::endl;
+	os << "typedef __bf16 float16;" << std::endl;
 	os << "typedef float float32;" << std::endl;
 	os << "typedef double float64;" << std::endl;
 	os << "// End Sprokit preamble" << std::endl;
@@ -122,8 +122,25 @@ void CppTranspiler::visit(AST::Assignment& v) {
 	}
 }
 
+void CppTranspiler::visit(AST::BoolAnd& v) {
+	v.left->accept(*this);
+	os << " && ";
+	v.right->accept(*this);
+}
+
 void CppTranspiler::visit(AST::BoolLiteral& v) {
 	os << (v.value ? "true" : "false");
+}
+
+void CppTranspiler::visit(AST::BoolNot& v) {
+	os << " !";
+	v.right->accept(*this);
+}
+
+void CppTranspiler::visit(AST::BoolOr& v) {
+	v.left->accept(*this);
+	os << " || ";
+	v.right->accept(*this);
 }
 
 void CppTranspiler::visit(AST::Conversion& v) {
@@ -203,8 +220,24 @@ void CppTranspiler::visit(AST::FunctionDeclaration& v) {
 	os << indent << "}" << std::endl;
 }
 
+void CppTranspiler::visit(AST::GreaterEqual& v) {
+	v.left->accept(*this);
+	os << " >= ";
+	v.right->accept(*this);
+}
+
+void CppTranspiler::visit(AST::GreaterThan& v) {
+	v.left->accept(*this);
+	os << " > ";
+	v.right->accept(*this);
+}
+
 void CppTranspiler::visit(AST::IfStatement& v) {
 	os << indent << "if(";
+	if(v.init != nullptr){
+		v.init->accept(*this);
+		os << "; ";
+	}
 	v.condition->accept(*this);
 	os << "){" << std::endl;
 
@@ -225,6 +258,18 @@ void CppTranspiler::visit(AST::IfStatement& v) {
 
 void CppTranspiler::visit(AST::IntegerLiteral& v) {
 	os << v.value << formatUnit(v.unit);
+}
+
+void CppTranspiler::visit(AST::LessEqual& v) {
+	v.left->accept(*this);
+	os << " <= ";
+	v.right->accept(*this);
+}
+
+void CppTranspiler::visit(AST::LessThan& v) {
+	v.left->accept(*this);
+	os << " < ";
+	v.right->accept(*this);
 }
 
 void CppTranspiler::visit(AST::List& v) {
@@ -277,6 +322,12 @@ void CppTranspiler::visit(AST::Multiplication& v) {
 	os << "(";
 	v.left->accept(*this);
 	os << " * ";
+	v.right->accept(*this);
+	os << ")";
+}
+
+void CppTranspiler::visit(AST::Negation& v) {
+	os << "(-";
 	v.right->accept(*this);
 	os << ")";
 }

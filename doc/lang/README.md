@@ -128,7 +128,7 @@ func velocity(const v0 #m/s: int32, const a #m/s^2: int32, const t #s: int32) #m
 ## Statements
 
 ### If Statements
-The condition of `if` statements in Sprokit must evaluate to a `bool`.  The condition may also be preceded by an initializer, this variable is accessible in the condition and both the `if` and the `else` blocks.  The body of the `if` and `else` blocks is surrounded by curly braces.
+The condition of `if` statements in Sprokit must evaluate to a `bool`.  The condition may also be preceded by an initializer, this variable is accessible in the condition and both the `if` and the `else` blocks.  Unlike in C, the body of the `if` and `else` blocks must be surrounded by curly braces.
 
 ```sprokit
 if a == 100 {

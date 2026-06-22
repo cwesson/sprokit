@@ -1,0 +1,4 @@
+
+func circle_area(const r #m: float64) #m^2 : float64 {
+	return 3.14159 * r * r;
+}

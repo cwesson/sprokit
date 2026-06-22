@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 
 	AST::List* ast;
 	const char* infile = argv[optind];
-	int ret = parse(infile, &ast);
+	unsigned int ecount = parse(infile, &ast);
 
 	if(ast != nullptr){
 		if(print_ast){
@@ -120,20 +120,20 @@ int main(int argc, char* argv[]) {
 
 		CollectSymbols c;
 		c.visit(*ast);
-		ret += c.error_count;
+		ecount += c.error_count;
 		if(print_sym){
 			std::cout << *c.global;
 		}
 
 		DimensionalAnalysis d;
 		d.visit(*ast);
-		ret += d.error_count;
+		ecount += d.error_count;
 
 		TypeChecker t;
 		t.visit(*ast);
-		ret += t.error_count;
+		ecount += t.error_count;
 
-		if(ret == 0){
+		if(ecount == 0){
 			std::filesystem::path path(outfile);
 			std::string ext = path.extension();
 
@@ -182,5 +182,5 @@ int main(int argc, char* argv[]) {
 		delete ast;
 	}
 
-	return ret;
+	return (ecount != 0 ? -1 : 0);
 }

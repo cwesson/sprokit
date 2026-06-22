@@ -1,8 +1,8 @@
-Error at test/bad/types.spkt:7.17: Cannot initialize int8 with int16
-Error at test/bad/types.spkt:8.18: Cannot initialize int16 with int32
-Error at test/bad/types.spkt:9.14: Cannot initialize A with int8
-Error at test/bad/types.spkt:10.22: Cannot add int8 and bool
+Error at test/bad/types.spkt:7.17: Cannot initialize int8 with uint16
+Error at test/bad/types.spkt:8.18: Cannot initialize int16 with uint32
+Error at test/bad/types.spkt:9.14: Cannot initialize A with uint8
+Error at test/bad/types.spkt:10.22: Cannot add uint8 and bool
 Error at test/bad/types.spkt:10.22: Cannot initialize int32 with unknown type
-Error at test/bad/types.spkt:11.2: Cannot convert int8 to bool
+Error at test/bad/types.spkt:11.2: Cannot convert uint8 to bool
 Error at test/bad/types.spkt:12.5: Cannot assign bool to int8
 Error at test/bad/types.spkt:15.2: Cannot return bool, expecting int32

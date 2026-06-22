@@ -42,7 +42,44 @@ void TypeChecker::visit(AST::Assignment& v) {
 	}
 }
 
+void TypeChecker::visit(AST::BoolAnd& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	ADT::Type& btype = ADT::Type::findType("bool");
+	if(!right.convertibleTo(btype)){
+		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+	}
+	if(!left.convertibleTo(btype)){
+		printError(v, std::string("Cannot convert ") + std::string(left) + " to bool");
+	}
+}
+
 void TypeChecker::visit(AST::BoolLiteral& v) {
+}
+
+void TypeChecker::visit(AST::BoolNot& v) {
+	v.right->accept(*this);
+	ADT::Type& right = v.right->getType();
+	ADT::Type& btype = ADT::Type::findType("bool");
+	if(!right.convertibleTo(btype)){
+		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+	}
+}
+
+void TypeChecker::visit(AST::BoolOr& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	ADT::Type& btype = ADT::Type::findType("bool");
+	if(!right.convertibleTo(btype)){
+		printError(v, std::string("Cannot convert ") + std::string(right) + " to bool");
+	}
+	if(!left.convertibleTo(btype)){
+		printError(v, std::string("Cannot convert ") + std::string(left) + " to bool");
+	}
 }
 
 void TypeChecker::visit(AST::Conversion& v) {
@@ -101,10 +138,10 @@ void TypeChecker::visit(AST::FunctionCall& v) {
 	if(f == nullptr){
 		printError(v, std::string("Unkown function ") + v.name);
 	}else{
+		auto last_func = func;
 		func = f;
-		v.params->accept(*this);
-		func = nullptr;
-		func_type = f->type;
+			v.params->accept(*this);
+		func = last_func;
 	}
 }
 
@@ -115,6 +152,26 @@ void TypeChecker::visit(AST::FunctionDeclaration& v) {
 	func_type = nullptr;
 	if(!v.body->allPathsReturn()){
 		printError(v, std::string("Reached end of function `") + std::string(v.name) + "` without return");
+	}
+}
+
+void TypeChecker::visit(AST::GreaterEqual& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot compare ") + std::string(left) + " and " + std::string(right));
+	}
+}
+
+void TypeChecker::visit(AST::GreaterThan& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot compare ") + std::string(left) + " and " + std::string(right));
 	}
 }
 
@@ -136,6 +193,26 @@ void TypeChecker::visit(AST::IfStatement& v) {
 }
 
 void TypeChecker::visit(AST::IntegerLiteral& v) {
+}
+
+void TypeChecker::visit(AST::LessEqual& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot compare ") + std::string(left) + " and " + std::string(right));
+	}
+}
+
+void TypeChecker::visit(AST::LessThan& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+	ADT::Type& left = v.left->getType();
+	ADT::Type& right = v.right->getType();
+	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
+		printError(v, std::string("Cannot compare ") + std::string(left) + " and " + std::string(right));
+	}
 }
 
 void TypeChecker::visit(AST::List& v) {
@@ -169,6 +246,14 @@ void TypeChecker::visit(AST::Multiplication& v) {
 	ADT::Type& right = v.right->getType();
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot multiply ") + std::string(left) + " by " + std::string(right));
+	}
+}
+
+void TypeChecker::visit(AST::Negation& v) {
+	v.right->accept(*this);
+	ADT::Type& right = v.right->getType();
+	if(!right.isSigned()){
+		printError(v, std::string("Cannot negate ") + std::string(right));
 	}
 }
 

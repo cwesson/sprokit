@@ -156,19 +156,19 @@ statement:
 		$$ = new Return(@1.begin, $2);
 	}
 	| BREAK SEMICOLON {
-		
+		/// @todo break/continue statements
 	}
 	| BREAK ID[id] SEMICOLON {
-		
+		/// @todo break/continue statements
 	}
 	| CONTINUE SEMICOLON {
-		
+		/// @todo break/continue statements
 	}
 	| CONTINUE ID[id] SEMICOLON {
-		
+		/// @todo break/continue statements
 	}
 	| YIELD expression[exp] SEMICOLON {
-		
+		/// @todo Statement initializers
 	}
 ;
 
@@ -180,7 +180,7 @@ block_statement:
 		$$ = $1;
 	}
 	| SWITCH expression[exp] LBRACE case_list[list] RBRACE {
-
+		/// @todo switch statements
 	}
 	| WITH variable_init[init] LBRACE statement_list[body] RBRACE {
 		$$ = new WithStatement(@1.begin, $init, $body);
@@ -192,7 +192,7 @@ assignment:
 		$$ = new Assignment(@2.begin, $var, $value);
 	}
 	| variable_access[var] ASSIGN block_statement[value] {
-		
+		/// @todo Statement initializers
 	}
 ;
 
@@ -239,10 +239,10 @@ case_list:
 
 case_statement:
 	CASE expression[exp] LBRACE statement_list[list] RBRACE {
-
+		/// @todo switch statements
 	}
 	| DEFAULT LBRACE statement_list[list] RBRACE {
-
+		/// @todo switch statements
 	}
 ;
 
@@ -356,10 +356,10 @@ enum_list:
 
 enum_val:
 	ID SEMICOLON {
-
+		/// @todo Enums
 	}
 	| ID ASSIGN INTEGER SEMICOLON {
-
+		/// @todo Enums
 	}
 ;
 
@@ -385,10 +385,10 @@ variable_init:
 		$var->initial = $value;
 	}
 	| variable_decl[var] ASSIGN statement[value] {
-		
+		/// @todo Statement initializers
 	}
 	| variable_decl[var] ASSIGN LBRACE expression_list[value] RBRACE {
-		
+		/// @todo Statement initializers
 	}
 ;
 
@@ -412,7 +412,7 @@ declaration:
 
 attr_list:
 	PROPERTY attribute attr_list {
-
+		/// @todo Attributes
 	}
 	| /* empty */{
 	}
@@ -420,37 +420,37 @@ attr_list:
 
 attribute:
 	ID[name] {
-
+		/// @todo Attributes
 	}
 	| ID[name] LPAREN attr_param_list RPAREN {
-
+		/// @todo Attributes
 	}
 	| ID[scope] SCOPE attribute[att] {
-
+		/// @todo Attributes
 	}
 ;
 
 attr_param_list:
 	attr_param_list COMMA attr_param {
-
+		/// @todo Attributes
 	}
 	| attr_param {
-
+		/// @todo Attributes
 	}
 	| /* empty */ {
-
+		/// @todo Attributes
 	}
 ;
 
 attr_param:
 	ID[value] {
-
+		/// @todo Attribute parameters
 	}
 	| INTEGER[value] {
-
+		/// @todo Attribute parameters
 	}
 	| INTEGER[value] UNIT_ID[unit] {
-
+		/// @todo Attribute parameters
 	}
 ;
 
@@ -497,10 +497,37 @@ expression:
 		$$ = new Exponent(@2.begin, $l, $r);
 	}
 	| MINUS expression[r] %prec UMINUS {
-		
+		$$ = new Negation(@1.begin, $r);
 	}
 	| PLUS expression[r] %prec UPLUS {
 		$$ = $r;
+	}
+	| expression[l] BOOLOR expression[r] {
+		$$ = new BoolOr(@2.begin, $l, $r);
+	}
+	| expression[l] BOOLAND expression[r] {
+		$$ = new BoolAnd(@2.begin, $l, $r);
+	}
+	| BOOLNOT expression[r] {
+		$$ = new BoolNot(@2.begin, $r);
+	}
+	| expression[l] LSHIFT expression[r] {
+		/// @todo $$ = new ShiftLeft(@2.begin, $l, $r);
+	}
+	| expression[l] RSHIFT expression[r] {
+		/// @todo $$ = new ShiftRight(@2.begin, $l, $r);
+	}
+	| expression[l] BITOR expression[r] {
+		/// @todo $$ = new BitOr(@2.begin, $l, $r);
+	}
+	| expression[l] BITXOR expression[r] {
+		/// @todo $$ = new BitXor(@2.begin, $l, $r);
+	}
+	| expression[l] BITAND expression[r] {
+		/// @todo $$ = new BitAnd(@2.begin, $l, $r);
+	}
+	| BITNOT expression[r] {
+		/// @todo $$ = new BitNot(@2.begin, $r);
 	}
 	| INTEGER[value] UNIT_ID[unit] {
 		unsigned long long i = 0;
@@ -538,8 +565,20 @@ expression:
 	| expression[l] NEQUAL expression[r] {
 		$$ = new NotEqual(@2.begin, $l, $r);
 	}
+	| expression[l] GREATER expression[r] {
+		$$ = new GreaterThan(@2.begin, $l, $r);
+	}
+	| expression[l] LESSER expression[r] {
+		$$ = new LessThan(@2.begin, $l, $r);
+	}
+	| expression[l] GTEQUAL expression[r] {
+		$$ = new GreaterEqual(@2.begin, $l, $r);
+	}
+	| expression[l] LTEQUAL expression[r] {
+		$$ = new LessEqual(@2.begin, $l, $r);
+	}
 	| expression[cond] QUESTION expression[t] QUESTION QUESTION expression[f]{
-
+		/// @todo ternary operator
 	}
 	| variable_access {
 		$$ = $1;
@@ -551,10 +590,10 @@ expression:
 		$$ = new Property(@2.begin, $var, $name);
 	}
 	| COLON type_spec[type] PROPERTY ID[name] {
-		
+		/// @todo Type properties
 	}
 	| expression[e] COLON type_spec[type] {
-
+		/// @todo Type casting
 	}
 ;
 

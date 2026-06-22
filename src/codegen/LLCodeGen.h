@@ -94,6 +94,7 @@ class LLCodeGen : public CodeGen {
 		struct operands {
 			llvm::Value* left;   ///< Left-hand side.
 			llvm::Value* right;  ///< Right-hand side.
+			ADT::Type*   type;   ///< Type of operands.
 		};
 
 		/**
@@ -104,6 +105,14 @@ class LLCodeGen : public CodeGen {
 		 * @return Type-promoted operands for the operator.
 		 */
 		operands visitBinaryOp(AST::Expression* l, AST::Expression* r, ADT::Type& type);
+
+		/**
+		 * Visit a comparison operator, and perform appropriate type promotions.
+		 * @param l Left-hand side of the operator.
+		 * @param r Right-hand side of the operator.
+		 * @return Type-promoted operands for the operator.
+		 */
+		operands visitCompareOp(AST::Expression* l, AST::Expression* r);
 };
 
 /** @} */

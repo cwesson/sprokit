@@ -42,13 +42,13 @@ class IntegerLiteral : public Expression {
 
 		virtual ADT::Type& getType() const override {
 			if(value < std::pow(2, 8)){
-				return ADT::Type::findType("int8");
+				return ADT::Type::findType("uint8");
 			}else if(value < std::pow(2, 16)){
-				return ADT::Type::findType("int16");
+				return ADT::Type::findType("uint16");
 			}else if(value < std::pow(2, 32)){
-				return ADT::Type::findType("int32");
+				return ADT::Type::findType("uint32");
 			}else{
-				return ADT::Type::findType("int64");
+				return ADT::Type::findType("uint64");
 			}
 		}
 		
