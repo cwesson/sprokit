@@ -70,7 +70,7 @@ class LLCodeGen : public CodeGen {
 		std::vector<llvm::Value*> values_list;           ///< Collected values.
 		llvm::Function* in_func;                         ///< Function being processed.
 		ADT::Type* ret_type;                             ///< Return type of function being processed.
-		ADT::Type* expect_type;                          
+		ADT::Type* expect_type;                          ///< Expected type for struct declarations.
 
 		/**
 		 * Get a counter of the given name.  The counter is incremented each

@@ -65,6 +65,22 @@ class SymbolTable {
 		};
 
 		/**
+		 * Struct member entry for symbol tables.
+		 * Members are indexed by position.
+		 */
+		struct member : variable {
+			std::string name; ///< Parameter name.
+
+			/**
+			 * Constructor.
+			 * @param n Parameter name.
+			 */
+			explicit member(const std::string& n) :
+				variable(),
+				name(n) {}
+		};
+
+		/**
 		 * Function declaration entry for symbol tables.
 		 * Functions are indexed by name.
 		 */

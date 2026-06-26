@@ -25,7 +25,7 @@ class Member : public Variable {
 		 * @param r Right-hand side of `.`.
 		 */
 		Member(yy::position pos, Variable* l, Variable* r) :
-			Variable(pos, (l->name + "." + r->name).c_str(), nullptr),
+			Variable(pos, "$member", nullptr),
 			left(l),
 			right(r) {}
 

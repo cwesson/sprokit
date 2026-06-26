@@ -27,14 +27,17 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 		sym->print(os, depth+1);
 	}
 
-	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
-	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
-	for(const auto& sym : vars){
-		os << std::left << "| " << std::setw(15) << sym.first
-			<< " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
-			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->used ? "true " : "false")
-			<< " | " << std::setw(5) << (sym.second->modified ? "true " : "false") << " |" << std::endl;
+	os << "|    # | Name            | Type       | Unit       | const | used  | modif |" << std::endl;
+	os << "|-----:|-----------------|------------|------------|-------|-------|-------|" << std::endl;
+	
+	for(unsigned int i = 0; i < vars.size(); ++i){
+		const auto& sym = vars[i];
+		os << std::right << "|" << std::setw(5) << i << std::left << " | " << std::setw(15) << sym->name
+			<< " | " << std::setw(10) << (std::string)*sym->type << " | " << std::setw(10) << sym->unit
+			<< " | " << std::setw(5) << (sym->constant ? "true " : "false")
+			<< " | " << std::setw(5) << (sym->used ? "true " : "false")
+			<< " | " << std::setw(5) << (sym->modified ? "true " : "false") << " |" << std::endl;
+
 	}
 	os << std::endl;
 	
@@ -55,19 +58,30 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 }
 
 SymbolTable::variable* TypeSymbols::addVariable(const std::string& n, SymbolTable** outtable) {
-	if(vars.contains(n) || funcs.contains(n)){
+	for(auto* mem : vars){
+		if(mem->name == n){
+			return nullptr;
+		}
+	}
+	if(funcs.contains(n)){
 		return nullptr;
 	}else{
-		vars[n] = new SymbolTable::variable();
+		member* var = new SymbolTable::member(n);
+		vars.push_back(var);
 		if(outtable != nullptr){
 			*outtable = this;
 		}
-		return vars[n];
+		return var;
 	}
 }
 
 SymbolTable::function* TypeSymbols::addFunction(const std::string& n) {
-	if(funcs.contains(n) || vars.contains(n)){
+	for(auto* mem : vars){
+		if(mem->name == n){
+			return nullptr;
+		}
+	}
+	if(funcs.contains(n)){
 		return nullptr;
 	}else{
 		funcs[n] = new SymbolTable::function();
@@ -77,9 +91,12 @@ SymbolTable::function* TypeSymbols::addFunction(const std::string& n) {
 }
 
 SymbolTable::variable* TypeSymbols::findVariable(const std::string& n) {
-	if(vars.contains(n)){
-		return vars[n];
-	}else if(parent != nullptr){
+	for(auto* mem : vars){
+		if(mem->name == n){
+			return mem;
+		}
+	}
+	if(parent != nullptr){
 		return parent->findVariable(n);
 	}else{
 		return nullptr;

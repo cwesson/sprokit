@@ -257,9 +257,11 @@ void CollectSymbols::visit(AST::Member& v) {
 		//printError(v, std::string("Using type table ") + type_table->name);
 	}
 
-	v.right->table = type_table;
 	v.right->accept(*this);
-	type_table = nullptr;
+	sym = type_table->findVariable(v.right->name);
+	if(sym != nullptr){
+		type_table = v.table->findType((std::string)sym->type->baseType());
+	}
 }
 
 void CollectSymbols::visit(AST::MemberInitialization& v) {

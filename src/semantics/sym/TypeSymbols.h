@@ -8,6 +8,7 @@
 
 #include "SymbolTable.h"
 #include <map>
+#include <vector>
 
 /**
  * Type symbol table.
@@ -37,6 +38,6 @@ class TypeSymbols : public SymbolTable {
 
 		virtual bool isScope() const override;
 
-		std::map<std::string, variable*> vars;  ///< Map of declared member variables.
+		std::vector<member*> vars;  ///< List of declared member variables.
 		std::map<std::string, function*> funcs; ///< Map of declared member functions.
 };

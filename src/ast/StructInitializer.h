@@ -20,6 +20,7 @@ class StructInitializer : public Expression {
 		/**
 		 * Constructor.
 		 * @param pos Position in source file.
+		 * @param l List of member initializations.
 		 */
 		StructInitializer(yy::position pos, List* l) :
 			Expression(pos),

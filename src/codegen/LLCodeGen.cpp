@@ -532,8 +532,8 @@ void LLCodeGen::visit(AST::Member& v) {
 	ADT::Type& t = v.left->getType();
 	TypeSymbols* type_table = v.table->findType(t);
 	unsigned int index = 0;
-	for(auto mem : type_table->vars){
-		if(mem.first == v.right->name){
+	for(auto* mem : type_table->vars){
+		if(mem->name == v.right->name){
 			break;
 		}
 		++index;
@@ -544,23 +544,30 @@ void LLCodeGen::visit(AST::Member& v) {
 
 void LLCodeGen::visit(AST::MemberInitialization& v) {
 	llvm::Value* var = last_value;
-	v.initial->accept(*this);
-	llvm::Value* init = last_value;
 	TypeSymbols* type_table = v.table->findType(*expect_type);
 	unsigned int index = 0;
 	ADT::Type* memtype = nullptr;
-	for(auto mem : type_table->vars){
-		if(mem.first == v.name){
-			memtype = mem.second->type;
+	for(auto* mem : type_table->vars){
+		if(mem->name == v.name){
+			memtype = mem->type;
 			break;
 		}
 		++index;
 	}
 	expect_type->translate(*this);
 	llvm::Value* gep = builder->CreateStructGEP(translated_type, var, index);
-	memtype->translate(*this);
-	init = typePromotion(init, translated_type, memtype->isSigned());
-	builder->CreateStore(init, gep);
+	ADT::Type* old_type = expect_type;
+	expect_type = memtype;
+		last_value = gep;
+		v.initial->accept(*this);
+		llvm::Value* init = last_value;
+	expect_type= old_type;
+	if(!memtype->isStruct()){
+		memtype->translate(*this);
+		init = typePromotion(init, translated_type, memtype->isSigned());
+		builder->CreateStore(init, gep);
+	}
+	last_value = gep;
 }
 
 void LLCodeGen::visit(AST::Modulo& v) {
@@ -670,7 +677,7 @@ void LLCodeGen::visit(AST::TypeDeclaration& v) {
 }
 
 void LLCodeGen::visit(AST::UnitDeclaration& v) {
-	(void)v;
+	v.list->accept(*this);
 }
 
 void LLCodeGen::visit(AST::Variable& v) {

@@ -12,7 +12,7 @@
 namespace AST {
 
 /**
- * ASTNode for `\`` operator.
+ * ASTNode for property operator.
  * @ingroup ast
  */
 class Property : public Expression {
