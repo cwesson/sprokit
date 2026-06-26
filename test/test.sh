@@ -43,3 +43,4 @@ run_good_test "test/good/scope.spkt" 29
 run_good_test "test/good/loop.spkt" 3
 run_good_test "test/good/with.spkt" 40
 run_good_test "test/good/shortcircuit.spkt" 28
+run_good_test "test/good/struct.spkt" 5

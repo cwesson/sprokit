@@ -35,8 +35,8 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 			<< " | " << std::setw(5) << (sym.second->constant ? "true " : "false")
 			<< " | " << std::setw(5) << (sym.second->used ? "true " : "false")
 			<< " | " << std::setw(5) << (sym.second->modified ? "true " : "false") << " |" << std::endl;
-		os << std::endl;
 	}
+	os << std::endl;
 	
 	os << "| Name            | Type       | Unit       | const | point |" << std::endl;
 	os << "|-----------------|------------|------------|-------|-------|" << std::endl;

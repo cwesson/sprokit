@@ -1,0 +1,13 @@
+
+struct Test {
+	var a #m : int32;
+	var b #kg : int32;
+	var c : int32;
+}
+
+
+func main() #kg : int32 {
+	var test : Test = { .a = 107 #m; .b = 192#kg; .c = 23; };
+	test.b = 5 #kg;
+	return test.b;
+}

@@ -41,6 +41,9 @@ class VariableDeclaration : public ASTNode {
 		 * Destructor.
 		 */
 		virtual ~VariableDeclaration() override {
+			if(array != nullptr) {
+				delete array;
+			}
 			if(initial != nullptr) {
 				delete initial;
 			}

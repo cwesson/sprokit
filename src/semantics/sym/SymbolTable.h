@@ -19,6 +19,7 @@
 class FunctionSymbols;
 class OrderedSymbol;
 class ScopedSymbols;
+class TypeSymbols;
 
 /**
  * Abstract symbol table.
@@ -198,7 +199,7 @@ class SymbolTable {
 		 * @param n Type name.
 		 * @return The type symbol table, or nullptr if no type with the given name was found.
 		 */
-		virtual SymbolTable* findType(const std::string& n);
+		virtual TypeSymbols* findType(const std::string& n);
 
 		/**
 		 * Recursively search for the unit.

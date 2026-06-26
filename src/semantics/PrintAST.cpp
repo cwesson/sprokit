@@ -168,13 +168,29 @@ void PrintAST::visit(AST::ForStatement& v) {
 	std::cout << "FOR ";
 	++indent;
 		if(v.init != nullptr){
-			v.init->accept(*this);
+			printIndent(v);
+			std::cout << "INIT";
+			++indent;
+				v.init->accept(*this);
+			--indent;
 		}
-		v.condition->accept(*this);
+		printIndent(v);
+		std::cout << "CONDITION";
+		++indent;
+			v.condition->accept(*this);
+		--indent;
 		if(v.increment != nullptr){
-			v.increment->accept(*this);
+			printIndent(v);
+			std::cout << "INCREMENT";
+			++indent;
+				v.increment->accept(*this);
+			--indent;
 		}
-		v.body->accept(*this);
+		printIndent(v);
+		std::cout << "BODY";
+		++indent;
+			v.body->accept(*this);
+		--indent;
 	--indent;
 }
 
@@ -183,21 +199,31 @@ void PrintAST::visit(AST::FunctionCall& v) {
 	std::cout << "CALL " << v.name;
 	++indent;
 		if(v.params){
-			v.params->accept(*this);
+			printIndent(v);
+			std::cout << "PARAMETERS";
+			++indent;
+				v.params->accept(*this);
+			--indent;
 		}
 	--indent;
 }
 
 void PrintAST::visit(AST::FunctionDeclaration& v) {
 	printIndent(v);
-	std::cout << "FUNC " << v.type << " " << v.name << " " << v.unit;
+	std::cout << "FUNC " << v.name << "() " << v.unit << " : " << v.type ;
 	++indent;
 		if(v.params){
-			v.params->accept(*this);
+			printIndent(v);
+			std::cout << "PARAMETERS";
+			++indent;
+				v.params->accept(*this);
+			--indent;
 		}
-	--indent;
-	++indent;
-		v.body->accept(*this);
+		printIndent(v);
+		std::cout << "BODY";
+		++indent;
+			v.body->accept(*this);
+		--indent;
 	--indent;
 }
 
@@ -221,21 +247,33 @@ void PrintAST::visit(AST::GreaterThan& v) {
 
 void PrintAST::visit(AST::IfStatement& v) {
 	printIndent(v);
-	std::cout << "IF ";
+	std::cout << "IF";
 	++indent;
 		if(v.init != nullptr){
-			v.init->accept(*this);
+			printIndent(v);
+			std::cout << "INIT";
+			++indent;
+				v.init->accept(*this);
+			--indent;
 		}
-		v.condition->accept(*this);
-		v.body->accept(*this);
-	--indent;
-	if(v.elsebody != nullptr){
 		printIndent(v);
-		std::cout << "ELSE ";
+		std::cout << "CONDITION";
 		++indent;
-			v.elsebody->accept(*this);
+			v.condition->accept(*this);
 		--indent;
-	}
+		printIndent(v);
+		std::cout << "THEN";
+		++indent;
+			v.body->accept(*this);
+		--indent;
+		if(v.elsebody != nullptr){
+			printIndent(v);
+			std::cout << "ELSE ";
+			++indent;
+				v.elsebody->accept(*this);
+			--indent;
+		}
+	--indent;
 }
 
 void PrintAST::visit(AST::IntegerLiteral& v) {
@@ -276,6 +314,14 @@ void PrintAST::visit(AST::Member& v) {
 	++indent;
 		v.left->accept(*this);
 		v.right->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::MemberInitialization& v) {
+	printIndent(v);
+	std::cout << "MEMBERINIT ." << v.name;
+	++indent;
+		v.initial->accept(*this);
 	--indent;
 }
 
@@ -362,6 +408,14 @@ void PrintAST::visit(AST::ShiftRight& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::StructInitializer& v) {
+	printIndent(v);
+	std::cout << "STRUCT";
+	++indent;
+		v.list->accept(*this);
+	--indent;
+}
+
 void PrintAST::visit(AST::Subtraction& v) {
 	printIndent(v);
 	std::cout << "SUB";
@@ -401,11 +455,11 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 	printIndent(v);
 	std::cout << "DECLARE ";
 	if(v.constant){
-		std::cout << "CONST ";
+		std::cout << "const ";
 	}else{
-		std::cout << "VAR   ";
+		std::cout << "var   ";
 	}
-	std::cout << (std::string)v.type << " " << v.name << " " << v.unit;
+	std::cout << v.name << " " << v.unit << " : " << (std::string)v.type;
 	++indent;
 		if(v.array != nullptr){
 			v.array->accept(*this);
@@ -416,11 +470,23 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
+}
+
 void PrintAST::visit(AST::WithStatement& v) {
 	printIndent(v);
 	std::cout << "WITH ";
 	++indent;
-		v.init->accept(*this);
-		v.body->accept(*this);
+		printIndent(v);
+		std::cout << "INIT";
+		++indent;
+			v.init->accept(*this);
+		--indent;
+		printIndent(v);
+		std::cout << "BODY";
+		++indent;
+			v.body->accept(*this);
+		--indent;
 	--indent;
 }

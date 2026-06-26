@@ -12,6 +12,7 @@
 
 #include "Visitor.h"
 #include "Type.h"
+#include "sym/SymbolTable.h"
 
 /**
  * Visitor to check type safety.
@@ -39,6 +40,8 @@ class TypeChecker : public Visitor {
 	private:
 		ADT::Type* func_type;        ///< Return type when processing function declarations.
 		SymbolTable::function* func; ///< Symbol table when processing member accesses.
+		ADT::Type* expect_type;      ///< Expected type for assignments.
+		SymbolTable* type_table;     ///< Symbol table for types.
 };
 
 /** @} */

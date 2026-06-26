@@ -41,6 +41,10 @@ class PrimitiveType : public Type {
 			return false;
 		}
 
+		virtual bool isStruct() const override {
+			return false;
+		}
+
 		virtual std::string translate(const CodeGen& g) const override = 0;
 
 	protected:

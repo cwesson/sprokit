@@ -56,6 +56,10 @@ class UnknownType : public Type {
 			return false;
 		}
 
+		virtual bool isStruct() const override {
+			return false;
+		}
+
 		virtual unsigned int size() const override {
 			return 0;
 		}

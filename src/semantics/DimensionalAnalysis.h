@@ -25,6 +25,7 @@ class DimensionalAnalysis : public Visitor {
 		AST::FunctionDeclaration* in_func; ///< Function currently being checked.
 		Dimensions unit;                   ///< Dimensions of unit declaration being processed.
 		std::string con_symbol;            ///< Unit conversion variable name.
+		TypeSymbols* type_table;
 
 	public:
 		/**

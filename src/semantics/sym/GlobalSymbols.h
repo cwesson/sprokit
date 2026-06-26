@@ -38,7 +38,7 @@ class GlobalSymbols : public SymbolTable {
 
 		virtual function* findFunction(const std::string& n) override;
 
-		virtual SymbolTable* findType(const std::string& n) override;
+		virtual TypeSymbols* findType(const std::string& n) override;
 
 		virtual unit* findUnit(const std::string& n) override;
 

@@ -8,6 +8,7 @@
 #include "PrimitiveType.h"
 #include "StructType.h"
 #include "TypeDecorator.h"
+#include "sym/TypeSymbols.h"
 #include <llvm/IR/Verifier.h>
 #include <llvm/Transforms/Utils/ModuleUtils.h>
 #include <sstream>
@@ -20,17 +21,18 @@ LLCodeGen::LLCodeGen(std::ostream& o, const char* filename) :
 	context(std::make_unique<llvm::LLVMContext>()),
 	module(),
 	builder(),
-	namedValues(),
 	globalValues(),
 	allocaValues(),
 	last_value(nullptr),
+	last_ptr(nullptr),
 	translated_type(nullptr),
 	arg_types(),
 	arg_names(),
 	counters(),
 	values_list(),
 	in_func(nullptr),
-	ret_type(nullptr)
+	ret_type(nullptr),
+	expect_type(nullptr)
 {
 	// Open a new context and module.
 	module = std::make_unique<llvm::Module>(filename, *context);
@@ -168,14 +170,13 @@ void LLCodeGen::visit(AST::Array& v) {
 }
 
 void LLCodeGen::visit(AST::Assignment& v) {
+	v.var->accept(*this);
+	llvm::Value* alloca = last_value;
 	v.expression->accept(*this);
-	if(allocaValues.contains(v.var->name)){
-		builder->CreateStore(last_value, allocaValues[v.var->name]);
-	}else if(namedValues.contains(v.var->name)){
-		namedValues[v.var->name] = last_value;
-	}else{
-		builder->CreateStore(last_value, globalValues[v.var->name]);
-	}
+	ADT::Type& t = v.var->getType();
+	t.translate(*this);
+	last_value = typePromotion(last_value, translated_type, t.isSigned());
+	builder->CreateStore(last_value, alloca);
 }
 
 void LLCodeGen::visit(AST::BitAnd& v) {
@@ -376,9 +377,10 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	llvm::Function *func = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, v.name, module.get());
 
 	// Set names for all arguments.
+	std::map<std::string, llvm::Value*> argValues;
 	unsigned i = 0;
 	for (auto &arg : func->args()){
-		namedValues[arg_names[i]] = &arg;
+		argValues[arg_names[i]] = &arg;
 		arg.setName(arg_names[i++]);
 	}
 
@@ -391,8 +393,8 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	in_func = func;
 		for (auto &arg : func->args()){
 			std::string name(arg.getName().str());
-			allocaValues[name] = builder->CreateAlloca(namedValues[name]->getType(), nullptr, name);
-			builder->CreateStore(namedValues[name], allocaValues[name]);
+			allocaValues[name] = builder->CreateAlloca(argValues[name]->getType(), nullptr, name);
+			builder->CreateStore(argValues[name], allocaValues[name]);
 		}
 
 		v.body->accept(*this);
@@ -525,8 +527,37 @@ void LLCodeGen::visit(AST::Member& v) {
 	v.left->accept(*this);
 	llvm::Value* var = last_value;
 	ADT::Type& t = v.left->getType();
+	TypeSymbols* type_table = v.table->findType(t);
+	unsigned int index = 0;
+	for(auto mem : type_table->vars){
+		if(mem.first == v.right->name){
+			break;
+		}
+		++index;
+	}
 	t.translate(*this);
-	last_value = builder->CreateStructGEP(translated_type, var, 0);
+	last_value = builder->CreateStructGEP(translated_type, var, index);
+}
+
+void LLCodeGen::visit(AST::MemberInitialization& v) {
+	llvm::Value* var = last_value;
+	v.initial->accept(*this);
+	llvm::Value* init = last_value;
+	TypeSymbols* type_table = v.table->findType(*expect_type);
+	unsigned int index = 0;
+	ADT::Type* memtype = nullptr;
+	for(auto mem : type_table->vars){
+		if(mem.first == v.name){
+			memtype = mem.second->type;
+			break;
+		}
+		++index;
+	}
+	expect_type->translate(*this);
+	llvm::Value* gep = builder->CreateStructGEP(translated_type, var, index);
+	memtype->translate(*this);
+	init = typePromotion(init, translated_type, memtype->isSigned());
+	builder->CreateStore(init, gep);
 }
 
 void LLCodeGen::visit(AST::Modulo& v) {
@@ -603,6 +634,15 @@ void LLCodeGen::visit(AST::ShiftRight& v) {
 	}
 }
 
+void LLCodeGen::visit(AST::StructInitializer& v) {
+	llvm::Value* alloca = last_value;
+	for(AST::List* head = v.list; head != nullptr && head->node != nullptr; head = head->next){
+		last_value = alloca;
+		head->node->accept(*this);
+	}
+	last_value = nullptr;
+}
+
 void LLCodeGen::visit(AST::Subtraction& v) {
 	ADT::Type& type = v.getType();
 	operands op = visitBinaryOp(v.left, v.right, type);
@@ -629,30 +669,33 @@ void LLCodeGen::visit(AST::UnitDeclaration& v) {
 
 void LLCodeGen::visit(AST::Variable& v) {
 	if(allocaValues.contains(v.name)){
-		llvm::AllocaInst* alloca = allocaValues[v.name];
-		last_value = builder->CreateLoad(alloca->getAllocatedType(), alloca, v.name);
-	}else if(namedValues.contains(v.name)){
-		last_value = namedValues[v.name];
+		last_value = allocaValues[v.name];
 	}else{
-		llvm::GlobalVariable* value = globalValues[v.name];
-		last_value = builder->CreateLoad(value->getValueType(), value, v.name);
+		last_value = globalValues[v.name];
 	}
 }
 
 void LLCodeGen::visit(AST::VariableDeclaration& v) {
 	ADT::Type& t = *v.table->findVariable(v.name)->type;
+	expect_type = &t;
 	t.translate(*this);
 	if(inparams){
 		arg_types.push_back(translated_type);
 		arg_names.push_back(v.name);
 	}else if(in_func != nullptr){
+		llvm::AllocaInst* alloca = builder->CreateAlloca(translated_type, nullptr, v.name);
+		allocaValues[v.name] = alloca;
+		last_ptr = alloca;
+		last_value = alloca;
 		v.initial->accept(*this);
-		allocaValues[v.name] = builder->CreateAlloca(translated_type, nullptr, v.name);
-		builder->CreateStore(last_value, allocaValues[v.name]);
+		if(last_value != nullptr){
+			builder->CreateStore(last_value, allocaValues[v.name]);
+		}
 	}else if(v.initial != nullptr){
 		llvm::GlobalVariable* global = new llvm::GlobalVariable(translated_type, v.constant, llvm::GlobalValue::InternalLinkage, llvm::Constant::getNullValue(translated_type), v.name);
 		module->insertGlobalVariable(global);
 		globalValues[v.name] = global;
+		last_ptr = global;
 
 		std::stringstream ss;
 		ss << "$ctor$" << v.name;
@@ -663,7 +706,9 @@ void LLCodeGen::visit(AST::VariableDeclaration& v) {
 
 		in_func = ctor;
 			v.initial->accept(*this);
-			builder->CreateStore(last_value, globalValues[v.name]);
+			if(last_value != nullptr){
+				builder->CreateStore(last_value, globalValues[v.name]);
+			}
 			builder->CreateRetVoid();
 			builder->CreateUnreachable();
 
@@ -671,6 +716,17 @@ void LLCodeGen::visit(AST::VariableDeclaration& v) {
 			llvm::verifyFunction(*ctor);
 		in_func = nullptr;
 		llvm::appendToGlobalCtors(*module, ctor, 0);
+	}
+	expect_type = nullptr;
+}
+
+void LLCodeGen::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
+	llvm::Type* t = last_value->getType();
+	if(t->isPointerTy()){
+		ADT::Type& type = v.getType();
+		type.translate(*this);
+		last_value = builder->CreateLoad(translated_type, last_value, v.var->name);
 	}
 }
 

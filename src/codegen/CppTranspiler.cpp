@@ -359,6 +359,12 @@ void CppTranspiler::visit(AST::Member& v) {
 	is_last = true;
 }
 
+void CppTranspiler::visit(AST::MemberInitialization& v) {
+	os << indent << "." << v.name << " = ";
+	v.initial->accept(*this);
+	os << "," << std::endl;
+}
+
 void CppTranspiler::visit(AST::Modulo& v) {
 	os << "(";
 	v.left->accept(*this);
@@ -439,6 +445,14 @@ void CppTranspiler::visit(AST::ShiftRight& v) {
 	os << " >> ";
 	v.right->accept(*this);
 	os << ")";
+}
+
+void CppTranspiler::visit(AST::StructInitializer& v) {
+	os << "{" << std::endl;
+	++indent;
+		v.list->accept(*this);
+	--indent;
+	os << "}" << std::endl;
 }
 
 void CppTranspiler::visit(AST::Subtraction& v) {
@@ -530,6 +544,10 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 			os << ";" << std::endl;
 		}
 	}
+}
+
+void CppTranspiler::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
 }
 
 void CppTranspiler::visit(AST::WithStatement& v) {

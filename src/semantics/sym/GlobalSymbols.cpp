@@ -118,7 +118,7 @@ SymbolTable::function* GlobalSymbols::findFunction(const std::string& n) {
 	}
 }
 
-SymbolTable* GlobalSymbols::findType(const std::string& n) {
+TypeSymbols* GlobalSymbols::findType(const std::string& n) {
 	if(types.contains(n)){
 		return types[n];
 	}else{

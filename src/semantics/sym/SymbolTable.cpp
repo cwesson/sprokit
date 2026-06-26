@@ -11,6 +11,7 @@
 #include "FunctionSymbols.h"
 #include "OrderedSymbol.h"
 #include "ScopedSymbols.h"
+#include "TypeSymbols.h"
 #include <string>
 #include <iostream>
 
@@ -101,7 +102,7 @@ SymbolTable::function* SymbolTable::findFunction(const std::string& n) {
 	}
 }
 
-SymbolTable* SymbolTable::findType(const std::string& n) {
+TypeSymbols* SymbolTable::findType(const std::string& n) {
 	if(parent != nullptr){
 		return parent->findType(n);
 	}else{

@@ -10,11 +10,11 @@ unit #m {
     operator #cm(const x) = x * 100#cm/m;
 }
 
-type Device {
+struct Device {
     var a : int32[3];
 }
 
-type GPS {
+struct GPS {
     var lat #deg : int32;  // Latitude
     var lon #deg : int32;  // Longitude
     var alt #m : int32;    // Altitude
@@ -26,7 +26,7 @@ type GPS {
     }
 }
 
-type Circle {
+struct Circle {
     var r #m : int32;
 
     func area() #m^2 : int32 {

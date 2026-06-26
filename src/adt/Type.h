@@ -159,6 +159,21 @@ class Type {
 		virtual bool isFloat() const = 0;
 
 		/**
+		 * Check if the type holds a struct value.
+		 * @return true if the type holds a struct value, false otherwise.
+		 */
+		virtual bool isStruct() const = 0;
+
+		/**
+		 * Check if the type has a member with the given name.
+		 * @param mem Member name.
+		 * @return true if the type contains a member with the name, false otherwise.
+		 */
+		virtual bool hasMember(std::string& mem) const {
+			return false;
+		}
+
+		/**
 		 * Get the string name.
 		 * @return String rname of the type.
 		 */

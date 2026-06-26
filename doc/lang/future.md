@@ -62,7 +62,7 @@ for var a = data.length(); a > 0; a = a - 1 {
 ```
 
 ## Attributes
-Attributes may be attached to the declaration of any variable, function, struct, or enum.  These attributes modify how the compiler handles the object.
+Attributes may be attached to the declaration of any variable, function, struct, or enum.  These attributes modify how the compiler handles the construct.
 
 ```sprokit
 var `volatile `endian(big) x : int32 = 0;
@@ -73,14 +73,16 @@ Attribute names may include a namespace, attributes without a namespace are rese
 Some attribute take arguments, which may be either a word or a number.  Word arguments may also include a namespace, this is useful for compiler extensions.
 
 ### Variable Attributes
-| Name         | Value      | Description                                           |
-|--------------|------------|-------------------------------------------------------|
-| `align`      | Bytes      | Required alignment in bytes                           |
-| `endian`     | `big`      | Use big-endianness                                    |
-|              | `little`   | Use little-endianness                                 |
-| `section`    | name       | Linker section to store the variable in               |
-| `static`     |            | Static lifetime                                       |
-| `volatile`   |            | Compiler must not optimize out reads and writes       |
+| Name         | Value       | Description                                           |
+|--------------|-------------|-------------------------------------------------------|
+| `align`      | Bytes       | Required alignment in bytes                           |
+| `endian`     | `big`       | Use big-endianness                                    |
+|              | `little`    | Use little-endianness                                 |
+| `section`    | name        | Linker section to store the variable in               |
+| `lifetime`   | (none)      | Default lifetime                                      |
+|              | `static`    | Static lifetime, preserved between function calls     |
+|              | `persist`   | Persistent lifetime, preserved between program execution |
+| `volatile`   |             | Compiler must not optimize out reads and writes       |
 
 ### Function Attributes
 | Name         | Value      | Description                                           |
@@ -102,8 +104,7 @@ In addition to the [Variable Attributes](#variable-attributes):
 | `mutable`    |            | Variable can be modified even if the object is const  |
 | `visibility` | `public`   | Public visibility                                     |
 |              | `private`  | Private visibility (default)                          |
-| `virtual`    | (none)     | Automatically determine `base` or `override`          |
-|              | `base`     | Base implementation, default if no parameter is given |
+| `virtual`    | `base`     | Base implementation, default if no parameter is given |
 |              | `final`    | Final implementation, may not be overridden           |
 |              | `override` | Override implementation                               |
 

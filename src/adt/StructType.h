@@ -43,7 +43,7 @@ class StructType : public Type {
 		}
 
 		virtual bool visit(const StructType& t) const override {
-			return false;
+			return (&t == this);
 		}
 
 		virtual bool isSigned() const override {
@@ -55,6 +55,14 @@ class StructType : public Type {
 		}
 
 		virtual bool isFloat() const override {
+			return false;
+		}
+
+		virtual bool isStruct() const override {
+			return true;
+		}
+
+		virtual bool hasMember(std::string& mem) const override {
 			return false;
 		}
 

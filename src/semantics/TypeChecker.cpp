@@ -5,11 +5,13 @@
  */
 
 #include "TypeChecker.h"
-#include "sym/SymbolTable.h"
+#include "sym/TypeSymbols.h"
 
 TypeChecker::TypeChecker() :
 	func_type(nullptr),
-	func(nullptr)
+	func(nullptr),
+	expect_type(nullptr),
+	type_table(nullptr)
 {}
 
 void TypeChecker::visit(AST::Addition& v) {
@@ -285,6 +287,14 @@ void TypeChecker::visit(AST::Member& v) {
 	v.right->accept(*this);
 }
 
+void TypeChecker::visit(AST::MemberInitialization& v) {
+	v.initial->accept(*this);
+	SymbolTable::variable* var = type_table->findVariable(v.name);
+	if(var == nullptr){
+		printError(v, std::string("No member named `") + std::string(v.name) + "` in " + std::string(*expect_type));
+	}
+}
+
 void TypeChecker::visit(AST::Modulo& v) {
 	v.left->accept(*this);
 	v.right->accept(*this);
@@ -365,6 +375,25 @@ void TypeChecker::visit(AST::ShiftRight& v) {
 	}
 }
 
+void TypeChecker::visit(AST::StructInitializer& v) {
+	type_table = v.table->findType(*expect_type);
+		v.list->accept(*this);
+		for(auto& mem : dynamic_cast<TypeSymbols*>(type_table)->vars){
+			/// @todo check for uninitialized members
+			bool init = false;
+			for(AST::List* head = v.list; head != nullptr && head->node != nullptr; head = head->next){
+				AST::MemberInitialization* check = dynamic_cast<AST::MemberInitialization*>(head->node);
+				if(check->name == mem.first){
+					init = true;
+				}
+			}
+			if(!init){
+				printError(v, std::string("Uninitialized member ") + mem.first);
+			}
+		}
+	type_table = nullptr;
+}
+
 void TypeChecker::visit(AST::Subtraction& v) {
 	v.left->accept(*this);
 	v.right->accept(*this);
@@ -388,16 +417,22 @@ void TypeChecker::visit(AST::Variable& v) {
 
 void TypeChecker::visit(AST::VariableDeclaration& v) {
 	if(v.initial != nullptr){
-		v.initial->accept(*this);
-		auto var = v.table->findVariable(v.name);
-		if(var != nullptr){
-			ADT::Type& left = *var->type;
-			ADT::Type& right = v.initial->getType();
-			if(!right.convertibleTo(left)){
-				printError(*v.initial, std::string("Cannot initialize ") + std::string(left) + " with " + std::string(right));
+		ADT::Type& left = v.type;
+		expect_type = &left;
+			v.initial->accept(*this);
+			auto var = v.table->findVariable(v.name);
+			if(var != nullptr){
+				ADT::Type& right = v.initial->getType();
+				if(!right.convertibleTo(left)){
+					printError(*v.initial, std::string("Cannot initialize ") + std::string(left) + " with " + std::string(right));
+				}
 			}
-		}
+		expect_type = nullptr;
 	}
+}
+
+void TypeChecker::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
 }
 
 void TypeChecker::visit(AST::WithStatement& v) {

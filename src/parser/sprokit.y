@@ -72,6 +72,9 @@ AST::List* program_ast = nullptr;
 %type <symbol> unit_id
 %type <var_decl> variable_init
 %type <var_decl> variable_decl
+%type <exp> struct_init
+%type <node> struct_init_member
+%type <list> struct_init_list
 %type <var> variable_access
 %type <arr> array_access
 %type <arr> array_decl
@@ -384,11 +387,37 @@ variable_init:
 		$$ = $var;
 		$var->initial = $value;
 	}
+	| variable_decl[var] ASSIGN struct_init[value] {
+		$$ = $var;
+		$var->initial = $value;
+	}
 	| variable_decl[var] ASSIGN statement[value] {
 		/// @todo Statement initializers
 	}
-	| variable_decl[var] ASSIGN LBRACE expression_list[value] RBRACE {
-		/// @todo Statement initializers
+;
+
+struct_init:
+	LBRACE struct_init_list[list] RBRACE {
+		$$ = new StructInitializer(@1.begin, $list);
+	}
+;
+
+struct_init_member:
+	MEMBER ID[name] ASSIGN expression[init] SEMICOLON {
+		$$ = new MemberInitialization(@1.begin, $name, $init);
+	}
+	| MEMBER ID[name] ASSIGN struct_init[init] SEMICOLON {
+		$$ = new MemberInitialization(@1.begin, $name, $init);
+	}
+;
+
+struct_init_list:
+	struct_init_member struct_init_list {
+		$$ = new List($1);
+		$$->next = $2;
+	}
+	| /* empty */ {
+		$$ = new List(nullptr);
 	}
 ;
 
@@ -581,7 +610,7 @@ expression:
 		/// @todo ternary operator
 	}
 	| variable_access {
-		$$ = $1;
+		$$ = new VariableLoad(@1.begin, $1);
 	}
 	| POINTER variable_access[var] {
 		$$ = new Pointer(@1.begin, $var);

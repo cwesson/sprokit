@@ -59,10 +59,10 @@ class LLCodeGen : public CodeGen {
 		std::unique_ptr<llvm::LLVMContext> context;      ///< LLVM context.
 		std::unique_ptr<llvm::Module> module;            ///< LLVM module.
 		std::unique_ptr<llvm::IRBuilder<>> builder;      ///< LLVM builder.
-		std::map<std::string, llvm::Value*> namedValues; ///< Map of named values.
 		std::map<std::string, llvm::GlobalVariable*> globalValues; ///< Map of global values.
 		std::map<std::string, llvm::AllocaInst*> allocaValues; ///< Map of allocated values.
 		llvm::Value* last_value;                         ///< Previous generated value.
+		llvm::Value* last_ptr;                           ///< Previous generated ptr value.
 		mutable llvm::Type* translated_type;             ///< LLVM type from translateType.
 		std::vector<llvm::Type*> arg_types;              ///< Function argument types, must match arg_names.
 		std::vector<std::string> arg_names;              ///< Function argument names, must match arg_types.
@@ -70,6 +70,7 @@ class LLCodeGen : public CodeGen {
 		std::vector<llvm::Value*> values_list;           ///< Collected values.
 		llvm::Function* in_func;                         ///< Function being processed.
 		ADT::Type* ret_type;                             ///< Return type of function being processed.
+		ADT::Type* expect_type;                          
 
 		/**
 		 * Get a counter of the given name.  The counter is incremented each

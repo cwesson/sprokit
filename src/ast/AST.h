@@ -39,6 +39,7 @@
 	X(IntegerLiteral) \
 	X(List) \
 	X(Member) \
+	X(MemberInitialization) \
 	X(Modulo) \
 	X(Multiplication) \
 	X(Negation) \
@@ -48,11 +49,13 @@
 	X(Return) \
 	X(ShiftLeft) \
 	X(ShiftRight) \
+	X(StructInitializer) \
 	X(Subtraction) \
 	X(TypeDeclaration) \
 	X(UnitDeclaration) \
 	X(Variable) \
 	X(VariableDeclaration) \
+	X(VariableLoad) \
 	X(WithStatement) \
 
 #include "Addition.h"
@@ -82,6 +85,7 @@
 #include "LessThan.h"
 #include "List.h"
 #include "Member.h"
+#include "MemberInitialization.h"
 #include "Modulo.h"
 #include "Multiplication.h"
 #include "Negation.h"
@@ -91,9 +95,11 @@
 #include "Return.h"
 #include "ShiftLeft.h"
 #include "ShiftRight.h"
+#include "StructInitializer.h"
 #include "Subtraction.h"
 #include "TypeDeclaration.h"
 #include "UnitDeclaration.h"
 #include "Variable.h"
 #include "VariableDeclaration.h"
+#include "VariableLoad.h"
 #include "WithStatement.h"

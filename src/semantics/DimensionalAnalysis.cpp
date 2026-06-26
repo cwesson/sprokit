@@ -8,13 +8,15 @@
 #include "AST.h"
 #include "sym/SymbolTable.h"
 #include "sym/FunctionSymbols.h"
+#include "sym/TypeSymbols.h"
 
 DimensionalAnalysis::DimensionalAnalysis() :
 	constructed_unit(),
 	parser(),
 	in_func(nullptr),
 	unit(),
-	con_symbol("")
+	con_symbol(""),
+	type_table(nullptr)
 {}
 
 void DimensionalAnalysis::visit(AST::Addition& v) {
@@ -231,6 +233,17 @@ void DimensionalAnalysis::visit(AST::Member& v) {
 	v.right->accept(*this);
 }
 
+void DimensionalAnalysis::visit(AST::MemberInitialization& v) {
+	SymbolTable::variable* var = type_table->findVariable(v.name);
+	if(var != nullptr){
+		Dimensions expect = parser.parse(var->unit);
+		v.initial->accept(*this);
+		if(!equal(v, expect, constructed_unit)){
+			printError(v, "Mismatched units in initialization of member " + v.name + ", " + (std::string)expect + ", and " + (std::string)constructed_unit);
+		}
+	}
+}
+
 void DimensionalAnalysis::visit(AST::Modulo& v) {}
 
 void DimensionalAnalysis::visit(AST::Multiplication& v) {
@@ -297,6 +310,12 @@ void DimensionalAnalysis::visit(AST::ShiftRight& v) {
 	v.dim = constructed_unit;
 }
 
+void DimensionalAnalysis::visit(AST::StructInitializer& v) {
+	type_table = v.table->findType(v.getType());
+		v.list->accept(*this);
+	type_table = nullptr;
+}
+
 void DimensionalAnalysis::visit(AST::Subtraction& v) {
 	v.left->accept(*this);
 	Dimensions left_unit = constructed_unit;
@@ -353,6 +372,10 @@ void DimensionalAnalysis::visit(AST::VariableDeclaration& v) {
 			printError(v, "Mismatched units in initialization, was " + (std::string)constructed_unit + ", expected " + v.unit);
 		}
 	}
+}
+
+void DimensionalAnalysis::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
 }
 
 void DimensionalAnalysis::visit(AST::WithStatement& v) {

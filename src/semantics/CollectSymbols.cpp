@@ -19,7 +19,8 @@ CollectSymbols::CollectSymbols() :
 	user_type(nullptr),
 	unit(nullptr),
 	con_symbol(""),
-	collect_param(false)
+	collect_param(false),
+	expect_type(nullptr)
 {}
 
 CollectSymbols::~CollectSymbols() {
@@ -261,6 +262,11 @@ void CollectSymbols::visit(AST::Member& v) {
 	type_table = nullptr;
 }
 
+void CollectSymbols::visit(AST::MemberInitialization& v) {
+	prepTable(v);
+	v.initial->accept(*this);
+}
+
 void CollectSymbols::visit(AST::Modulo& v) {
 	prepTable(v);
 	v.left->accept(*this);
@@ -315,6 +321,14 @@ void CollectSymbols::visit(AST::ShiftRight& v) {
 	prepTable(v);
 	v.left->accept(*this);
 	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::StructInitializer& v) {
+	prepTable(v);
+	if(expect_type != nullptr){
+		v.type = expect_type;
+	}
+	v.list->accept(*this);
 }
 
 void CollectSymbols::visit(AST::Subtraction& v) {
@@ -401,6 +415,9 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 			if(user_type != nullptr){
 				user_type->addMember(sym->type);
 			}
+			if(sym->type->isStruct()){
+				expect_type = sym->type;
+			}
 			table = updated;
 			v.table = updated;
 		}
@@ -409,6 +426,11 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 	if(v.initial != nullptr){
 		v.initial->accept(*this);
 	}
+	expect_type = nullptr;
+}
+
+void CollectSymbols::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
 }
 
 void CollectSymbols::visit(AST::WithStatement& v) {

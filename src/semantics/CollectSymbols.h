@@ -21,6 +21,8 @@ class CollectSymbols : public Visitor {
 		ADT::StructType* user_type; ///< ADT type when processing member declarations.
 		SymbolTable::unit* unit;  ///< Symbol table when processing a unit declaration.
 		std::string con_symbol;   ///< Unit conversion variable name.
+		bool collect_param;       ///< Set to true when visiting parameter declarations.
+		ADT::Type* expect_type;   ///< Expected type for struct initialization.
 
 	private:
 		/**
@@ -33,8 +35,6 @@ class CollectSymbols : public Visitor {
 		 * Replace the current symbol table with its parent.
 		 */
 		void removeTable();
-
-		bool collect_param; ///< Set to true when visiting parameter declarations.
 
 	public:
 		/**
