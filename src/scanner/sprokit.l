@@ -17,6 +17,7 @@ unsigned int yycolumn = 0;
 /* Definitions */
 
 %option noyywrap
+%option noinput
 %option nounput
 %option yylineno
 %option bison-bridge

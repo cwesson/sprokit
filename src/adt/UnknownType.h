@@ -25,22 +25,27 @@ class UnknownType : public Type {
 		}
 
 		virtual std::string translate(const CodeGen& g) const override {
+			(void)g;
 			return name;
 		}
 
 		virtual bool visit(const BoolType& t) const override {
+			(void)t;
 			return false;
 		}
 
 		virtual bool visit(const IntType& t) const override {
+			(void)t;
 			return false;
 		}
 
 		virtual bool visit(const FloatType& t) const override {
+			(void)t;
 			return false;
 		}
 
 		virtual bool visit(const StructType& t) const override {
+			(void)t;
 			return false;
 		}
 

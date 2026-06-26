@@ -115,6 +115,7 @@ void TypeChecker::visit(AST::BoolAnd& v) {
 }
 
 void TypeChecker::visit(AST::BoolLiteral& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::BoolNot& v) {
@@ -141,6 +142,7 @@ void TypeChecker::visit(AST::BoolOr& v) {
 }
 
 void TypeChecker::visit(AST::Conversion& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::Division& v) {
@@ -174,6 +176,7 @@ void TypeChecker::visit(AST::Exponent& v) {
 }
 
 void TypeChecker::visit(AST::FloatLiteral& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::ForStatement& v) {
@@ -251,6 +254,7 @@ void TypeChecker::visit(AST::IfStatement& v) {
 }
 
 void TypeChecker::visit(AST::IntegerLiteral& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::LessEqual& v) {
@@ -334,9 +338,11 @@ void TypeChecker::visit(AST::NotEqual& v) {
 }
 
 void TypeChecker::visit(AST::Pointer& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::Property& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::Return& v) {
@@ -413,6 +419,7 @@ void TypeChecker::visit(AST::UnitDeclaration& v) {
 }
 
 void TypeChecker::visit(AST::Variable& v) {
+	(void)v;
 }
 
 void TypeChecker::visit(AST::VariableDeclaration& v) {

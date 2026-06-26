@@ -105,6 +105,7 @@ class Type {
 		 * @return true if this Type is convertible to UnknownType.
 		 */
 		virtual bool visit(const UnknownType& t) const final {
+			(void)t;
 			return false;
 		}
 
@@ -163,15 +164,6 @@ class Type {
 		 * @return true if the type holds a struct value, false otherwise.
 		 */
 		virtual bool isStruct() const = 0;
-
-		/**
-		 * Check if the type has a member with the given name.
-		 * @param mem Member name.
-		 * @return true if the type contains a member with the name, false otherwise.
-		 */
-		virtual bool hasMember(std::string& mem) const {
-			return false;
-		}
 
 		/**
 		 * Get the string name.

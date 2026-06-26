@@ -76,7 +76,10 @@ void DimensionalAnalysis::visit(AST::BoolAnd& v) {
 	v.right->accept(*this);
 }
 
-void DimensionalAnalysis::visit(AST::BoolLiteral& v) {}
+void DimensionalAnalysis::visit(AST::BoolLiteral& v) {
+	(void)v;
+	constructed_unit = Dimensions{};
+}
 
 void DimensionalAnalysis::visit(AST::BoolNot& v) {
 	v.right->accept(*this);
@@ -244,7 +247,10 @@ void DimensionalAnalysis::visit(AST::MemberInitialization& v) {
 	}
 }
 
-void DimensionalAnalysis::visit(AST::Modulo& v) {}
+void DimensionalAnalysis::visit(AST::Modulo& v) {
+	v.left->accept(*this);
+	v.right->accept(*this);
+}
 
 void DimensionalAnalysis::visit(AST::Multiplication& v) {
 	v.left->accept(*this);

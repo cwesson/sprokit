@@ -1,6 +1,6 @@
 
 BIN := bin
-SCANNER := $(BIN)/lex.yy.c
+SCANNER := $(BIN)/lex.yy.cc
 PARSER  := $(BIN)/sprokit.tab.cc
 COMPILER := $(BIN)/sprokit
 INCLUDE := -Ibin/ -Isrc/parser -Isrc/ast -Isrc/adt -Isrc/semantics -Isrc/codegen
@@ -10,7 +10,7 @@ OBJS := $(addsuffix .o,$(addprefix bin/,$(basename $(SRCS))))
 DEPS := $(OBJS:%.o=%.d)
 
 CPP := clang++
-CPPARGS := -std=c++23 -Wall -g $(INCLUDE)
+CPPARGS := -std=c++26 -Wall -Wextra -Werror -g $(INCLUDE)
 LDFLAGS := $(shell llvm-config --cxxflags --ldflags --system-libs --libs core)
 
 .PHONY: all scanner parser test clean realclean

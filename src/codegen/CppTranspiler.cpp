@@ -46,6 +46,7 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	os << std::endl;
 }
 std::string CppTranspiler::translateType(const ADT::BoolType& t) const {
+	(void)t;
 	return "bool";
 }
 

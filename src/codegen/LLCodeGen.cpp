@@ -49,6 +49,7 @@ LLCodeGen::~LLCodeGen() {
 }
 
 std::string LLCodeGen::translateType(const ADT::BoolType& t) const {
+	(void)t;
 	translated_type = llvm::IntegerType::get(*context, 1);
 	return "i1";
 }
@@ -167,6 +168,7 @@ void LLCodeGen::visit(AST::Addition& v) {
 }
 
 void LLCodeGen::visit(AST::Array& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Assignment& v) {
@@ -280,6 +282,7 @@ void LLCodeGen::visit(AST::BoolOr& v) {
 }
 
 void LLCodeGen::visit(AST::Conversion& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Division& v) {
@@ -602,9 +605,11 @@ void LLCodeGen::visit(AST::NotEqual& v) {
 }
 
 void LLCodeGen::visit(AST::Pointer& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Property& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Return& v) {
@@ -665,6 +670,7 @@ void LLCodeGen::visit(AST::TypeDeclaration& v) {
 }
 
 void LLCodeGen::visit(AST::UnitDeclaration& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Variable& v) {

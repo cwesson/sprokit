@@ -61,10 +61,12 @@ ScopedSymbols* SymbolTable::addScope(const std::string& n) {
 }
 
 SymbolTable::parameter* SymbolTable::addParameter(const std::string& n) {
+	(void)n;
 	return nullptr;
 }
 
 SymbolTable::function* SymbolTable::addFunction(const std::string& n) {
+	(void)n;
 	return nullptr;
 }
 
@@ -83,6 +85,7 @@ SymbolTable::unit* SymbolTable::addUnit(const std::string& n) {
 }
 
 SymbolTable* SymbolTable::addType(const std::string& n) {
+	(void)n;
 	return nullptr;
 }
 

@@ -31,14 +31,17 @@ class StructType : public Type {
 		}
 
 		virtual bool visit(const BoolType& t) const override {
+			(void)t;
 			return false;
 		}
 
 		virtual bool visit(const IntType& t) const override {
+			(void)t;
 			return false;
 		}
 
 		virtual bool visit(const FloatType& t) const override {
+			(void)t;
 			return false;
 		}
 
@@ -60,10 +63,6 @@ class StructType : public Type {
 
 		virtual bool isStruct() const override {
 			return true;
-		}
-
-		virtual bool hasMember(std::string& mem) const override {
-			return false;
 		}
 
 		/**
