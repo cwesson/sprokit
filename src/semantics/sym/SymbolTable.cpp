@@ -84,8 +84,15 @@ SymbolTable::unit* SymbolTable::addUnit(const std::string& n) {
 	return nullptr;
 }
 
-SymbolTable* SymbolTable::addType(const std::string& n) {
+TypeSymbols* SymbolTable::addType(const std::string& n) {
 	(void)n;
+	return nullptr;
+}
+
+TypeSymbols* SymbolTable::addType(const std::string& n, SymbolTable* p) {
+	if(parent != nullptr){
+		return parent->addType(n, p);
+	}
 	return nullptr;
 }
 

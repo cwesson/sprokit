@@ -15,7 +15,7 @@
 CollectSymbols::CollectSymbols() :
 	table(new GlobalSymbols()),
 	global(table),
-	type_table(nullptr),
+	member_table(nullptr),
 	user_type(nullptr),
 	unit(nullptr),
 	con_symbol(""),
@@ -247,21 +247,13 @@ void CollectSymbols::visit(AST::Member& v) {
 	prepTable(v);
 	v.left->accept(*this);
 
-	auto sym = v.table->findVariable(v.left->name);
-	if(type_table != nullptr){
-		sym = type_table->findVariable(v.left->name);
-	}
-	if(sym != nullptr){
-		type_table = v.table->findType((std::string)sym->type->baseType());
-		//if(type_table != nullptr)
-		//printError(v, std::string("Using type table ") + type_table->name);
-	}
+	ADT::Type& type = v.left->getType();
+	member_table = v.table->findType((std::string)type.baseType());
+	//if(member_table != nullptr)
+	//printError(v, std::string("Using type table ") + member_table->name);
 
 	v.right->accept(*this);
-	sym = type_table->findVariable(v.right->name);
-	if(sym != nullptr){
-		type_table = v.table->findType((std::string)sym->type->baseType());
-	}
+	member_table = nullptr;
 }
 
 void CollectSymbols::visit(AST::MemberInitialization& v) {
@@ -371,8 +363,8 @@ void CollectSymbols::visit(AST::UnitDeclaration& v) {
 
 void CollectSymbols::visit(AST::Variable& v) {
 	prepTable(v);
-	if(type_table != nullptr){
-		v.table = type_table;
+	if(member_table != nullptr){
+		v.table = member_table;
 	}
 
 	if(con_symbol != ""){
@@ -382,6 +374,9 @@ void CollectSymbols::visit(AST::Variable& v) {
 	}
 
 	auto sym = v.table->findVariable(v.name);
+	if(member_table != nullptr){
+		sym = member_table->findMember(v.name);
+	}
 	if(sym == nullptr) {
 		printError(v, "Variable `" + v.name + "` not declared.");
 	}else{

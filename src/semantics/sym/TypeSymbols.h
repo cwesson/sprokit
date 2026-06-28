@@ -36,6 +36,13 @@ class TypeSymbols : public SymbolTable {
 
 		virtual variable* findVariable(const std::string& n) override;
 
+		/**
+		 * Search for the member variable.
+		 * @param n Variable name.
+		 * @return The variable entry, or nullptr if no variable with the given name was found.
+		 */
+		virtual variable* findMember(const std::string& n);
+
 		virtual bool isScope() const override;
 
 		std::vector<member*> vars;  ///< List of declared member variables.

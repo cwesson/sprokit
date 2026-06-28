@@ -186,7 +186,15 @@ class SymbolTable {
 		 * @param n Type name.
 		 * @return The new symbol table, or nullptr if the table already contains a type of the given name.
 		 */
-		virtual SymbolTable* addType(const std::string& n);
+		virtual TypeSymbols* addType(const std::string& n);
+
+		/**
+		 * Attempt to add a type declaration.
+		 * @param n Type name.
+		 * @param p Parent symbol table.
+		 * @return The new symbol table, or nullptr if the table already contains a type of the given name.
+		 */
+		virtual TypeSymbols* addType(const std::string& n, SymbolTable* p);
 
 		/**
 		 * Add a unit declaration.

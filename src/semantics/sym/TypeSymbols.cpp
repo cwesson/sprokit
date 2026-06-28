@@ -103,6 +103,15 @@ SymbolTable::variable* TypeSymbols::findVariable(const std::string& n) {
 	}
 }
 
+SymbolTable::variable* TypeSymbols::findMember(const std::string& n) {
+	for(auto* mem : vars){
+		if(mem->name == n){
+			return mem;
+		}
+	}
+	return nullptr;
+}
+
 bool TypeSymbols::isScope() const {
 	return true;
 }

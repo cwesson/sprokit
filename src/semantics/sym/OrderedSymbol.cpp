@@ -44,8 +44,8 @@ SymbolTable::function* OrderedSymbol::addFunction(const std::string& n, SymbolTa
 	return parent->addFunction(n, p);
 }
 
-SymbolTable* OrderedSymbol::addType(const std::string& n) {
-	return parent->addType(n);
+TypeSymbols* OrderedSymbol::addType(const std::string& n) {
+	return parent->addType(n, this);
 }
 
 SymbolTable::unit* OrderedSymbol::addUnit(const std::string& name) {

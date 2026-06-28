@@ -245,6 +245,7 @@ void DimensionalAnalysis::visit(AST::MemberInitialization& v) {
 			printError(v, "Mismatched units in initialization of member " + v.name + ", " + (std::string)expect + ", and " + (std::string)constructed_unit);
 		}
 	}
+	constructed_unit = Dimensions{};
 }
 
 void DimensionalAnalysis::visit(AST::Modulo& v) {
@@ -317,9 +318,10 @@ void DimensionalAnalysis::visit(AST::ShiftRight& v) {
 }
 
 void DimensionalAnalysis::visit(AST::StructInitializer& v) {
+	TypeSymbols* old_table = type_table;
 	type_table = v.table->findType(v.getType());
 		v.list->accept(*this);
-	type_table = nullptr;
+	type_table = old_table;
 }
 
 void DimensionalAnalysis::visit(AST::Subtraction& v) {

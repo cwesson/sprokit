@@ -32,7 +32,9 @@ class GlobalSymbols : public SymbolTable {
 
 		virtual function* addFunction(const std::string& n, SymbolTable* p) override;
 
-		virtual SymbolTable* addType(const std::string& n) override;
+		virtual TypeSymbols* addType(const std::string& n) override;
+		
+		virtual TypeSymbols* addType(const std::string& n, SymbolTable* p) override;
 
 		virtual unit* addUnit(const std::string& name) override;
 

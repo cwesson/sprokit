@@ -17,7 +17,7 @@ class CollectSymbols : public Visitor {
 	public:
 		SymbolTable* table;       ///< Current symbol table.
 		SymbolTable* global;      ///< Global symbol table.
-		SymbolTable* type_table;  ///< Symbol table when processing member accesses.
+		TypeSymbols* member_table;  ///< Symbol table when processing member accesses.
 		ADT::StructType* user_type; ///< ADT type when processing member declarations.
 		SymbolTable::unit* unit;  ///< Symbol table when processing a unit declaration.
 		std::string con_symbol;   ///< Unit conversion variable name.
