@@ -125,8 +125,18 @@ void DimensionalAnalysis::visit(AST::Exponent& v) {
 	if(constructed_unit != Dimensions{}){
 		printError(v, "Exponent must be dimensionless, was " + (std::string)constructed_unit);
 	}
+	constructed_unit = left_unit;
 	if(v.right->is_constexpr()){
-		/// @todo Evaluate the exponent
+		auto value = v.right->eval();
+		if(value.has<uint64_t>()){
+			constructed_unit ^= value.get<uint64_t>();
+		}else if(value.has<int64_t>()){
+			constructed_unit ^= value.get<int64_t>();
+		}else if(value.has<double>()){
+			printWarning(v, "Cannot evaluate dimensions with non-integer exponent");
+		}else{
+			printError(v, "Could not evaluate exponent");
+		}
 	}else{
 		printWarning(v, "Cannot evaluate dimensions with non-constant exponent");
 	}
@@ -250,7 +260,11 @@ void DimensionalAnalysis::visit(AST::MemberInitialization& v) {
 
 void DimensionalAnalysis::visit(AST::Modulo& v) {
 	v.left->accept(*this);
+	Dimensions left_unit = constructed_unit;
 	v.right->accept(*this);
+	Dimensions right_unit = constructed_unit;
+	constructed_unit = left_unit /= right_unit;
+	v.dim = constructed_unit;
 }
 
 void DimensionalAnalysis::visit(AST::Multiplication& v) {
@@ -353,12 +367,12 @@ void DimensionalAnalysis::visit(AST::Variable& v) {
 
 	if(con_symbol != "" && v.name == con_symbol){
 		constructed_unit = unit;
-	}
-
-	auto sym = v.table->findVariable(v.name);
-	if(sym != nullptr){
-		constructed_unit = parser.parse(sym->unit);
-		v.dim = constructed_unit;
+	}else{
+		auto sym = v.table->findVariable(v.name);
+		if(sym != nullptr){
+			constructed_unit = parser.parse(sym->unit);
+			v.dim = constructed_unit;
+		}
 	}
 }
 

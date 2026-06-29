@@ -292,7 +292,7 @@ void TypeChecker::visit(AST::Member& v) {
 }
 
 void TypeChecker::visit(AST::MemberInitialization& v) {
-	SymbolTable::variable* var = type_table->findVariable(v.name);
+	SymbolTable::variable* var = type_table->findMember(v.name);
 	ADT::Type* old_type = expect_type;
 	if(var == nullptr){
 		printError(v, std::string("No member named `") + std::string(v.name) + "` in " + std::string(*expect_type));
@@ -386,7 +386,7 @@ void TypeChecker::visit(AST::ShiftRight& v) {
 }
 
 void TypeChecker::visit(AST::StructInitializer& v) {
-	SymbolTable* old_table = type_table;
+	TypeSymbols* old_table = type_table;
 	type_table = v.table->findType(*expect_type);
 		v.list->accept(*this);
 		for(auto* mem : dynamic_cast<TypeSymbols*>(type_table)->vars){
@@ -398,7 +398,7 @@ void TypeChecker::visit(AST::StructInitializer& v) {
 				}
 			}
 			if(!init){
-				printError(v, std::string("Uninitialized member ") + mem->name);
+				printError(v, std::string("Uninitialized member `") + mem->name + "` in " + (std::string)*expect_type);
 			}
 		}
 	type_table = old_table;

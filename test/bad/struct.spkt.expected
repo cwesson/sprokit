@@ -1,0 +1,2 @@
+Error at test/bad/struct.spkt:24.4: No member named `t` in Nested
+Error at test/bad/struct.spkt:18.20: Uninitialized member `b` in Test

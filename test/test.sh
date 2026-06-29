@@ -37,6 +37,7 @@ run_bad_test "test/bad/modified.spkt"
 run_bad_test "test/bad/types.spkt"
 run_bad_test "test/bad/scope.spkt"
 run_bad_test "test/bad/usebeforedecl.spkt"
+run_bad_test "test/bad/struct.spkt"
 run_good_test "test/good/simple.spkt" 42
 run_good_test "test/good/arith.spkt" 4
 run_good_test "test/good/scope.spkt" 29

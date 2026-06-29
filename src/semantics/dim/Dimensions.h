@@ -49,6 +49,13 @@ class Dimensions {
 		Dimensions& operator/=(const Dimensions& other);
 
 		/**
+		 * Exponentiate a dimension.
+		 * @param value Exponent to add in.
+		 * @return Reference to the updated Dimension.
+		 */
+		Dimensions& operator^=(int64_t value);
+
+		/**
 		 * Check if two Dimensions are equivalent.
 		 * @param other Dimensions to compare to.
 		 * @return True if the two are equivalent.

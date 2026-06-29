@@ -1,0 +1,32 @@
+
+struct Nested {
+	var q : int32;
+	var r : int64;
+	var s : int64;
+}
+
+struct Test {
+	var a #m : int32;
+	var sub : Nested;
+	var b #kg : int32;
+	var c : int32;
+}
+
+
+func main() : int32 {
+	var pause : int32 = 17;
+	var test : Test = {
+		.a = 107 #m;
+		.sub = {
+			.q = 56;
+			.r = 82;
+			.s = 357;
+			.t = 27;
+		};
+		.c = 51;
+	};
+	test.b = 5 #kg;
+	var ret : int32 = test.sub.q + pause;
+	ret = ret - pause;
+	return ret - test.c;
+}

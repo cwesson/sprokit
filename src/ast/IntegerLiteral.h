@@ -40,6 +40,10 @@ class IntegerLiteral : public Expression {
 			return true;
 		}
 
+		virtual comptime_eval_t eval() const override {
+			return comptime_eval_t((uint64_t)value);
+		}
+
 		virtual ADT::Type& getType() const override {
 			if(value < std::pow(2, 8)){
 				return ADT::Type::findType("uint8");

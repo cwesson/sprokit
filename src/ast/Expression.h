@@ -9,6 +9,7 @@
 #include "ASTNode.h"
 #include "dim/Dimensions.h"
 #include "Type.h"
+#include "Comptime.h"
 #include <string>
 
 namespace AST {
@@ -40,6 +41,17 @@ class Expression : public ASTNode {
 		 */
 		virtual bool is_constexpr() const {
 			return false;
+		}
+
+		/// Type for compile-time evaluation.
+		typedef CompTime<uint64_t, int64_t, double> comptime_eval_t;
+
+		/**
+		 * Evaluate an expression at compile-time.
+		 * @return Value of the expression.
+		 */
+		virtual comptime_eval_t eval() const {
+			return comptime_eval_t{};
 		}
 
 		/**

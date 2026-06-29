@@ -41,7 +41,7 @@ class TypeChecker : public Visitor {
 		ADT::Type* func_type;        ///< Return type when processing function declarations.
 		SymbolTable::function* func; ///< Symbol table when processing member accesses.
 		ADT::Type* expect_type;      ///< Expected type for assignments.
-		SymbolTable* type_table;     ///< Symbol table for types.
+		TypeSymbols* type_table;     ///< Symbol table for types.
 };
 
 /** @} */

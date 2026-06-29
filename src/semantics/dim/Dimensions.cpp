@@ -46,6 +46,17 @@ Dimensions& Dimensions::operator/=(const Dimensions& other) {
 	return *this;
 }
 
+Dimensions& Dimensions::operator^=(int64_t value){
+	for(auto& d : dim){
+		if(value > 0){
+			d.second *= value;
+		}else{
+			d.second /= -value;
+		}
+	}
+	return *this;
+}
+
 bool Dimensions::operator==(const Dimensions& other) const {
 	for(auto d : other.dim){
 		if(d.second != 0){

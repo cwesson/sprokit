@@ -40,6 +40,10 @@ class FloatLiteral : public Expression {
 			return true;
 		}
 
+		virtual comptime_eval_t eval() const override {
+			return comptime_eval_t(value);
+		}
+
 		virtual ADT::Type& getType() const override {
 			return ADT::Type::findType("float64");
 		}
