@@ -1,0 +1,10 @@
+Error at test/bad/bool.spkt:4.5: Cannot add non-numeric type bool
+Error at test/bad/bool.spkt:4.9: Cannot add non-numeric type bool
+Error at test/bad/bool.spkt:4.11: Cannot compare bool and uint8
+Error at test/bad/bool.spkt:5.7: Cannot divide non-numeric type bool
+Error at test/bad/bool.spkt:5.11: Cannot divide non-numeric type bool
+Error at test/bad/bool.spkt:8.5: Cannot subtract non-numeric type bool
+Error at test/bad/bool.spkt:8.9: Cannot subtract non-numeric type bool
+Error at test/bad/bool.spkt:8.11: Cannot compare bool and uint8
+Error at test/bad/bool.spkt:9.7: Cannot multiply non-numeric type bool
+Error at test/bad/bool.spkt:9.11: Cannot multiply non-numeric type bool

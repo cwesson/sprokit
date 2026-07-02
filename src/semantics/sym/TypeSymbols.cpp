@@ -44,7 +44,7 @@ std::ostream& TypeSymbols::print(std::ostream& os, unsigned int depth) const {
 	os << "| Name            | Type       | Unit       | const | point |" << std::endl;
 	os << "|-----------------|------------|------------|-------|-------|" << std::endl;
 	for(const auto& sym : funcs) {
-		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << sym.second->type << " | " << std::setw(10) << sym.second->unit
+		os << std::left << "| " << std::setw(15) << (sym.first + "()") << " | " << std::setw(10) << (std::string)*sym.second->type << " | " << std::setw(10) << sym.second->unit
 			<< " | " << std::setw(5) << "n/a"
 			<< " | " << std::setw(5) << (sym.second->pointer ? "true " : "false") << " |" << std::endl;
 	}
@@ -98,6 +98,19 @@ SymbolTable::variable* TypeSymbols::findVariable(const std::string& n) {
 	}
 	if(parent != nullptr){
 		return parent->findVariable(n);
+	}else{
+		return nullptr;
+	}
+}
+
+SymbolTable::function* TypeSymbols::findFunction(const std::string& n) {
+	for(auto mem : funcs){
+		if(mem.first == n){
+			return mem.second;
+		}
+	}
+	if(parent != nullptr){
+		return parent->findFunction(n);
 	}else{
 		return nullptr;
 	}

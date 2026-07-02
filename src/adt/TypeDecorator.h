@@ -103,6 +103,10 @@ class PointerType : public TypeDecorator {
 			return false;
 		}
 
+		virtual bool isNumeric() const override {
+			return false;
+		}
+
 		virtual bool isStruct() const override {
 			return type.isStruct();
 		}

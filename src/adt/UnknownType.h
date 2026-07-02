@@ -44,6 +44,10 @@ class UnknownType : public Type {
 			return false;
 		}
 
+		virtual bool isNumeric() const override {
+			return true;
+		}
+
 		virtual bool visit(const StructType& t) const override {
 			(void)t;
 			return false;

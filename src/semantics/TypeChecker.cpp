@@ -22,6 +22,12 @@ void TypeChecker::visit(AST::Addition& v) {
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot add ") + std::string(left) + " and " + std::string(right));
 	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot add non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot add non-numeric type " + std::string(right)));
+	}
 }
 
 void TypeChecker::visit(AST::Array& v) {
@@ -153,6 +159,12 @@ void TypeChecker::visit(AST::Division& v) {
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot divide ") + std::string(left) + " by " + std::string(right));
 	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot divide non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot divide non-numeric type " + std::string(right)));
+	}
 }
 
 void TypeChecker::visit(AST::Equal& v) {
@@ -172,6 +184,12 @@ void TypeChecker::visit(AST::Exponent& v) {
 	ADT::Type& right = v.right->getType();
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot raise ") + std::string(left) + " to " + std::string(right));
+	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot raise non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot raise non-numeric type " + std::string(right)));
 	}
 }
 
@@ -209,7 +227,7 @@ void TypeChecker::visit(AST::FunctionCall& v) {
 void TypeChecker::visit(AST::FunctionDeclaration& v) {
 	auto table = v.table->findFunction(v.name);
 	func_type = table->type;
-	v.body->accept(*this);
+		v.body->accept(*this);
 	func_type = nullptr;
 	if(!v.body->allPathsReturn()){
 		printError(v, std::string("Reached end of function `") + std::string(v.name) + "` without return");
@@ -311,6 +329,12 @@ void TypeChecker::visit(AST::Modulo& v) {
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot modulo ") + std::string(left) + " by " + std::string(right));
 	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot modulo non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot modulo non-numeric type " + std::string(right)));
+	}
 }
 
 void TypeChecker::visit(AST::Multiplication& v) {
@@ -321,6 +345,12 @@ void TypeChecker::visit(AST::Multiplication& v) {
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot multiply ") + std::string(left) + " by " + std::string(right));
 	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot multiply non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot multiply non-numeric type " + std::string(right)));
+	}
 }
 
 void TypeChecker::visit(AST::Negation& v) {
@@ -328,6 +358,9 @@ void TypeChecker::visit(AST::Negation& v) {
 	ADT::Type& right = v.right->getType();
 	if(!right.isSigned()){
 		printError(v, std::string("Cannot negate ") + std::string(right));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot negate non-numeric type " + std::string(right)));
 	}
 }
 
@@ -412,10 +445,18 @@ void TypeChecker::visit(AST::Subtraction& v) {
 	if(!right.convertibleTo(left) && !left.convertibleTo(right)){
 		printError(v, std::string("Cannot subtract ") + std::string(left) + " and " + std::string(right));
 	}
+	if(!left.isNumeric()){
+		printError(*v.left, std::string("Cannot subtract non-numeric type " + std::string(left)));
+	}
+	if(!right.isNumeric()){
+		printError(*v.right, std::string("Cannot subtract non-numeric type " + std::string(right)));
+	}
 }
 
 void TypeChecker::visit(AST::TypeDeclaration& v) {
-	v.list->accept(*this);
+	type_table = v.table->addType(v.name);
+		v.list->accept(*this);
+	type_table = nullptr;
 }
 
 void TypeChecker::visit(AST::UnitDeclaration& v) {

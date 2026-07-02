@@ -1,0 +1,12 @@
+func main() : int32 {
+	var a : bool = true;
+	var b : bool = false;
+	if a + b > 2 {
+		a = b / a;
+	}
+	var c : bool = false;
+	if a - c < 1 {
+		c = a * b;
+	}
+	return 0;
+}

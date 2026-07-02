@@ -160,6 +160,12 @@ class Type {
 		virtual bool isFloat() const = 0;
 
 		/**
+		 * Check if the type holds a numeric value.
+		 * @return true if the type holds a numeric value, false otherwise.
+		 */
+		virtual bool isNumeric() const = 0;
+
+		/**
 		 * Check if the type holds a struct value.
 		 * @return true if the type holds a struct value, false otherwise.
 		 */

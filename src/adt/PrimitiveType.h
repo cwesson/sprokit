@@ -41,6 +41,10 @@ class PrimitiveType : public Type {
 			return false;
 		}
 
+		virtual bool isNumeric() const override {
+			return false;
+		}
+
 		virtual bool isStruct() const override {
 			return false;
 		}
@@ -158,6 +162,10 @@ class FloatType : public PrimitiveType {
 			return true;
 		}
 
+		virtual bool isNumeric() const override {
+			return true;
+		}
+
 		virtual unsigned int size() const override {
 			return (exponent+significand)/8;
 		}
@@ -234,6 +242,10 @@ class IntType : public PrimitiveType {
 		}
 
 		virtual bool isInt() const override {
+			return true;
+		}
+
+		virtual bool isNumeric() const override {
 			return true;
 		}
 

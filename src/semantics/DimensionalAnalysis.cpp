@@ -390,7 +390,7 @@ void DimensionalAnalysis::visit(AST::VariableDeclaration& v) {
 				sym->unit = constructed_unit;
 			}
 		}
-		if(constructed_unit != parser.parse(v.unit)){
+		if(!equal(v, constructed_unit, parser.parse(v.unit))){
 			printError(v, "Mismatched units in initialization, was " + (std::string)constructed_unit + ", expected " + v.unit);
 		}
 	}

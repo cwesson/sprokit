@@ -36,6 +36,8 @@ class TypeSymbols : public SymbolTable {
 
 		virtual variable* findVariable(const std::string& n) override;
 
+		virtual function* findFunction(const std::string& n) override;
+
 		/**
 		 * Search for the member variable.
 		 * @param n Variable name.
