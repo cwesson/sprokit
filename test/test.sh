@@ -39,6 +39,7 @@ run_bad_test "test/bad/scope.spkt"
 run_bad_test "test/bad/usebeforedecl.spkt"
 run_bad_test "test/bad/struct.spkt"
 run_bad_test "test/bad/bool.spkt"
+run_bad_test "test/bad/void.spkt"
 run_good_test "test/good/simple.spkt" 42
 run_good_test "test/good/arith.spkt" 4
 run_good_test "test/good/scope.spkt" 29
@@ -46,3 +47,4 @@ run_good_test "test/good/loop.spkt" 3
 run_good_test "test/good/with.spkt" 40
 run_good_test "test/good/shortcircuit.spkt" 28
 run_good_test "test/good/struct.spkt" 5
+run_good_test "test/good/void.spkt" 32

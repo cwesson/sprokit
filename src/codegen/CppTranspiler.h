@@ -38,6 +38,7 @@ public:
 		AST_LIST
 		#undef X
 
+		virtual std::string translateType(const ADT::VoidType& t) const override;
 		virtual std::string translateType(const ADT::BoolType& t) const override;
 		virtual std::string translateType(const ADT::IntType& t) const override;
 		virtual std::string translateType(const ADT::FloatType& t) const override;

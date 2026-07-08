@@ -19,6 +19,7 @@ class CodeGen;
 namespace ADT {
 
 class UnknownType;
+class VoidType;
 class StructType;
 class BoolType;
 class FloatType;
@@ -69,6 +70,15 @@ class Type {
 		}
 
 		/**
+		 * Check if types are equivalent.
+		 * @param other Other type to check.
+		 * @return true if the two types are equivalent, false otherwise.
+		 */
+		bool operator==(const Type& other) const {
+			return &other == this;
+		}
+
+		/**
 		 * Check if types are not equivalent.
 		 * @param other Other type to check.
 		 * @return true if the two types are not equivalent, false otherwise.
@@ -105,6 +115,17 @@ class Type {
 		 * @return true if this Type is convertible to UnknownType.
 		 */
 		virtual bool visit(const UnknownType& t) const final {
+			(void)t;
+			return false;
+		}
+
+		/**
+		 * Visitor pattern, check is VoidType is convertible to this.
+		 * @warning Do not call this directly, call @ref convertibleTo().
+		 * @param t Type being converted to.
+		 * @return true if this Type is convertible to VoidType.
+		 */
+		virtual bool visit(const VoidType& t) const final {
 			(void)t;
 			return false;
 		}

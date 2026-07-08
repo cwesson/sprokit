@@ -48,6 +48,12 @@ LLCodeGen::~LLCodeGen() {
 	module->print(os, nullptr);
 }
 
+std::string LLCodeGen::translateType(const ADT::VoidType& t) const {
+	(void)t;
+	translated_type = llvm::Type::getVoidTy(*context);
+	return "void";
+}
+
 std::string LLCodeGen::translateType(const ADT::BoolType& t) const {
 	(void)t;
 	translated_type = llvm::IntegerType::get(*context, 1);
@@ -373,10 +379,15 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 	inparams = true;
 		v.params->accept(*this);
 	inparams = false;
-	ADT::Type& type = ADT::Type::findType(v.type);
+	ADT::Type& type = v.type;
 	ret_type = &type;
 	type.translate(*this);
-	llvm::FunctionType *ft = llvm::FunctionType::get(translated_type, arg_types, false);
+	llvm::FunctionType *ft;
+	if(v.type == ADT::Type::findType("$void")){
+		ft = llvm::FunctionType::get(llvm::Type::getVoidTy(*context), arg_types, false);
+	}else{
+		ft = llvm::FunctionType::get(translated_type, arg_types, false);
+	}
 	llvm::Function *func = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, v.name, module.get());
 
 	// Set names for all arguments.
@@ -401,6 +412,9 @@ void LLCodeGen::visit(AST::FunctionDeclaration& v) {
 		}
 
 		v.body->accept(*this);
+		if(v.type == ADT::Type::findType("$void")){
+			builder->CreateRetVoid();
+		}
 		builder->CreateUnreachable();
 
 		// Validate the generated code, checking for consistency.
@@ -620,10 +634,14 @@ void LLCodeGen::visit(AST::Property& v) {
 }
 
 void LLCodeGen::visit(AST::Return& v) {
-	v.expression->accept(*this);
-	ret_type->translate(*this);
-	llvm::Value* ret = typePromotion(last_value, translated_type, ret_type->isSigned());
-	builder->CreateRet(ret);
+	if(v.expression != nullptr){
+		v.expression->accept(*this);
+		ret_type->translate(*this);
+		llvm::Value* ret = typePromotion(last_value, translated_type, ret_type->isSigned());
+		builder->CreateRet(ret);
+	}else{
+		builder->CreateRetVoid();
+	}
 }
 
 void LLCodeGen::visit(AST::ShiftLeft& v) {
@@ -741,6 +759,10 @@ void LLCodeGen::visit(AST::VariableLoad& v) {
 		type.translate(*this);
 		last_value = builder->CreateLoad(translated_type, last_value, v.var->name);
 	}
+}
+
+void LLCodeGen::visit(AST::VariableStatement& v) {
+	v.var->accept(*this);
 }
 
 void LLCodeGen::visit(AST::WithStatement& v) {

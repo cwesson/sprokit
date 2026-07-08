@@ -400,6 +400,10 @@ void DimensionalAnalysis::visit(AST::VariableLoad& v) {
 	v.var->accept(*this);
 }
 
+void DimensionalAnalysis::visit(AST::VariableStatement& v) {
+	v.var->accept(*this);
+}
+
 void DimensionalAnalysis::visit(AST::WithStatement& v) {
 	v.init->accept(*this);
 	v.body->accept(*this);

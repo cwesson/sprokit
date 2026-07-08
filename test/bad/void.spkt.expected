@@ -1,0 +1,4 @@
+Error at test/bad/void.spkt:2.2: Cannot return int32 from void function
+Error at test/bad/void.spkt:5.1: Reached end of function `test2` without return
+Error at test/bad/void.spkt:11.2: Non-void access without assignment.
+Error at test/bad/void.spkt:12.2: Cannot return, expecting int32

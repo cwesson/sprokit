@@ -1,0 +1,13 @@
+func test(const a : int32, const b : int32) {
+	return a + b;
+}
+
+func test2(const a : int32, const b : int32) : int32{
+	const c : int32 = a + b;
+}
+
+func test3(const a : int32, const b : int32) : int32{
+	const c : int32 = a + b;
+	test2(a, b);
+	return;
+}

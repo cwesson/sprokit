@@ -5,8 +5,9 @@
  */
 
 #include "Type.h"
-#include "PrimitiveType.h"
 #include "UnknownType.h"
+#include "VoidType.h"
+#include "PrimitiveType.h"
 #include "StructType.h"
 #include "TypeDecorator.h"
 
@@ -53,6 +54,7 @@ Type::Type(const std::string& n) :
 void Type::init(){
 	if(table.empty()){
 		table.insert<UnknownType>();
+		table.insert<VoidType>();
 		table.insert<BoolType>();
 		table.insert<IntType>(  8, true);
 		table.insert<IntType>( 16, true);

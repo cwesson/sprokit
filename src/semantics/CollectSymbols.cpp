@@ -172,7 +172,7 @@ void CollectSymbols::visit(AST::FunctionDeclaration& v) {
 	if(function == nullptr){
 		printError(v, "Duplicate function declaration " + v.name);
 	}else{
-		function->type = &ADT::Type::findType(v.type);
+		function->type = &v.type;
 		function->unit = v.unit;
 		function->pointer = v.pointer;
 
@@ -427,6 +427,10 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 }
 
 void CollectSymbols::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
+}
+
+void CollectSymbols::visit(AST::VariableStatement& v) {
 	v.var->accept(*this);
 }
 

@@ -229,7 +229,7 @@ void TypeChecker::visit(AST::FunctionDeclaration& v) {
 	func_type = table->type;
 		v.body->accept(*this);
 	func_type = nullptr;
-	if(!v.body->allPathsReturn()){
+	if(!v.body->allPathsReturn() && v.type != ADT::Type::findType("$void")){
 		printError(v, std::string("Reached end of function `") + std::string(v.name) + "` without return");
 	}
 }
@@ -383,10 +383,16 @@ void TypeChecker::visit(AST::Property& v) {
 }
 
 void TypeChecker::visit(AST::Return& v) {
-	v.expression->accept(*this);
-	ADT::Type& ret = v.expression->getType();
-	if(!ret.convertibleTo(*func_type)){
-		printError(v, "Cannot return " + std::string(ret) + ", expecting " + std::string(*func_type));
+	if(v.expression != nullptr){
+		v.expression->accept(*this);
+		ADT::Type& ret = v.expression->getType();
+		if(*func_type == ADT::Type::findType("$void")){
+			printError(v, "Cannot return " + std::string(ret) + " from void function");
+		}else if(!ret.convertibleTo(*func_type)){
+			printError(v, "Cannot return " + std::string(ret) + ", expecting " + std::string(*func_type));
+		}
+	}else if(*func_type != ADT::Type::findType("$void")){
+		printError(v, "Cannot return, expecting " + std::string(*func_type));
 	}
 }
 
@@ -485,6 +491,13 @@ void TypeChecker::visit(AST::VariableDeclaration& v) {
 
 void TypeChecker::visit(AST::VariableLoad& v) {
 	v.var->accept(*this);
+}
+
+void TypeChecker::visit(AST::VariableStatement& v) {
+	v.var->accept(*this);
+	if(v.getType() != ADT::Type::findType("$void")){
+		printError(v, "Non-void access without assignment.");
+	}
 }
 
 void TypeChecker::visit(AST::WithStatement& v) {

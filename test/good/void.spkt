@@ -1,0 +1,23 @@
+var c : int32 = 0;
+
+func test(const a : int32, const b : int32) {
+	c = a + b;
+}
+
+func test2(const a : int32, const b : int32) {
+	if a > 10 {
+		c = 10;
+		return;
+	}
+	if c > 10 {
+		c = c + b;
+		return;
+	}
+	c = a + b;
+}
+
+func main() : int32 {
+	test(10, 20);
+	test2(5, 2);
+	return c;
+}

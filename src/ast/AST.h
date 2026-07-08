@@ -56,6 +56,7 @@
 	X(Variable) \
 	X(VariableDeclaration) \
 	X(VariableLoad) \
+	X(VariableStatement) \
 	X(WithStatement) \
 
 #include "Addition.h"
@@ -102,4 +103,5 @@
 #include "Variable.h"
 #include "VariableDeclaration.h"
 #include "VariableLoad.h"
+#include "VariableStatement.h"
 #include "WithStatement.h"

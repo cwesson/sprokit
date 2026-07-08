@@ -158,6 +158,9 @@ statement:
 	| RETURN expression SEMICOLON {
 		$$ = new Return(@1.begin, $2);
 	}
+	| RETURN SEMICOLON {
+		$$ = new Return(@1.begin, nullptr);
+	}
 	| BREAK SEMICOLON {
 		/// @todo break/continue statements
 	}
@@ -172,6 +175,9 @@ statement:
 	}
 	| YIELD expression[exp] SEMICOLON {
 		/// @todo Statement initializers
+	}
+	| variable_access SEMICOLON {
+		$$ = new VariableStatement(@1.begin, $1);
 	}
 ;
 
@@ -391,7 +397,7 @@ variable_init:
 		$$ = $var;
 		$var->initial = $value;
 	}
-	| variable_decl[var] ASSIGN statement[value] {
+	| variable_decl[var] ASSIGN block_statement[value] {
 		/// @todo Statement initializers
 	}
 ;
@@ -484,21 +490,14 @@ attr_param:
 ;
 
 funcdecl:
-	FUNC attr_list ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON ID[type] LBRACE statement_list[body] RBRACE {
-		auto d = new FunctionDeclaration(@1.begin, $name, $type, $unit, $body);
+	FUNC attr_list ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON type_spec[type] LBRACE statement_list[body] RBRACE {
+		auto d = new FunctionDeclaration(@1.begin, $name, *$type, $unit, $body);
 		d->params = $param;
 		$$ = d;
 	}
-	| FUNC attr_list ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON ID[type] POINTER LBRACE statement_list[body] RBRACE {
-		auto d = new FunctionDeclaration(@1.begin, $name, $type, $unit, $body);
+	| FUNC attr_list ID[name] LPAREN paramdecl_list[param] RPAREN LBRACE statement_list[body] RBRACE {
+		auto d = new FunctionDeclaration(@1.begin, $name, ADT::Type::findType("$void"), "#1", $body);
 		d->params = $param;
-		d->pointer = true;
-		$$ = d;
-	}
-	| FUNC attr_list ID[name] LPAREN paramdecl_list[param] RPAREN unit_id[unit] COLON CONST ID[type] POINTER LBRACE statement_list[body] RBRACE {
-		auto d = new FunctionDeclaration(@1.begin, $name, $type, $unit, $body);
-		d->params = $param;
-		d->pointer = true;
 		$$ = d;
 	}
 ;

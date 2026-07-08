@@ -210,7 +210,7 @@ void PrintAST::visit(AST::FunctionCall& v) {
 
 void PrintAST::visit(AST::FunctionDeclaration& v) {
 	printIndent(v);
-	std::cout << "FUNC " << v.name << "() " << v.unit << " : " << v.type ;
+	std::cout << "FUNC " << v.name << "() " << v.unit << " : " << (std::string)v.type ;
 	++indent;
 		if(v.params){
 			printIndent(v);
@@ -471,6 +471,10 @@ void PrintAST::visit(AST::VariableDeclaration& v) {
 }
 
 void PrintAST::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
+}
+
+void PrintAST::visit(AST::VariableStatement& v) {
 	v.var->accept(*this);
 }
 

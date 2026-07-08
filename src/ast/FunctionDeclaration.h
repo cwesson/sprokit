@@ -26,7 +26,7 @@ class FunctionDeclaration : public ASTNode {
 		 * @param u Declared return unit.
 		 * @param b Function body.
 		 */
-		FunctionDeclaration(yy::position pos, const char* n, const char* t, const char* u, List* b) :
+		FunctionDeclaration(yy::position pos, const char* n, ADT::Type& t, const char* u, List* b) :
 			ASTNode(pos),
 			name(n),
 			type(t),
@@ -48,7 +48,7 @@ class FunctionDeclaration : public ASTNode {
 		virtual void accept(Visitor& v) override;
 		
 		std::string name; ///< Function name.
-		std::string type; ///< Declared return type.
+		ADT::Type& type;  ///< Declared return type.
 		std::string unit; ///< Declared return unit.
 		List* params;     ///< Function parameters.
 		List* body;       ///< Function body.

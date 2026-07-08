@@ -45,6 +45,12 @@ CppTranspiler::CppTranspiler(std::ostream& o) :
 	os << "// End Sprokit preamble" << std::endl;
 	os << std::endl;
 }
+
+std::string CppTranspiler::translateType(const ADT::VoidType& t) const {
+	(void)t;
+	return "void";
+}
+
 std::string CppTranspiler::translateType(const ADT::BoolType& t) const {
 	(void)t;
 	return "bool";
@@ -249,7 +255,7 @@ void CppTranspiler::visit(AST::FunctionCall& v) {
 
 void CppTranspiler::visit(AST::FunctionDeclaration& v) {
 	os << std::endl;
-	os << indent << v.type << " " << v.name << "(";
+	os << indent << v.type.translate(*this) << " " << v.name << "(";
 	in_params = true;
 		v.params->accept(*this);
 	in_params = false;
@@ -548,6 +554,10 @@ void CppTranspiler::visit(AST::VariableDeclaration& v) {
 }
 
 void CppTranspiler::visit(AST::VariableLoad& v) {
+	v.var->accept(*this);
+}
+
+void CppTranspiler::visit(AST::VariableStatement& v) {
 	v.var->accept(*this);
 }
 
