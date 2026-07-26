@@ -8,7 +8,7 @@
 #include "UnknownType.h"
 #include "VoidType.h"
 #include "PrimitiveType.h"
-#include "StructType.h"
+#include "UserType.h"
 #include "TypeDecorator.h"
 
 namespace ADT {
@@ -77,7 +77,7 @@ Type& Type::findType(const std::string& type) {
 	init();
 
 	if(!table.contains(type)){
-		table.insert<StructType>(type);
+		table.insert<UserType>(type);
 	}
 	return *table.at(type);
 }
@@ -94,12 +94,12 @@ Type& Type::findPointerType(const std::string& type) {
 	return *table.at(ptr);
 }
 
-StructType* Type::createType(const std::string& type){
+UserType* Type::createType(const std::string& type){
 	init();
 
 	if(!table.contains(type)){
-		table.insert<StructType>(type);
-		return static_cast<StructType*>(table.at(type));
+		table.insert<UserType>(type);
+		return static_cast<UserType*>(table.at(type));
 	}else{
 		return nullptr;
 	}

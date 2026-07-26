@@ -23,7 +23,7 @@ AST::List* program_ast = nullptr;
 %token <symbol> UNIT_ID
 %token <symbol> ID
 
-%token CONST VAR FUNC STRUCT ENUM UNIT
+%token CONST VAR FUNC TYPE UNIT
 %token RETURN
 %token OPERATOR
 %token IF ELSE FOR BREAK CONTINUE YIELD SWITCH CASE DEFAULT WITH
@@ -82,6 +82,9 @@ AST::List* program_ast = nullptr;
 %type <node> member
 %type <list> enum_list
 %type <node> enum_val
+%type <list> union_list
+%type <list> union_list_tail
+%type <type> union_mem
 %type <list> unitmember_list
 %type <node> unitmember
 %type <list> declaration_list
@@ -339,8 +342,8 @@ member_list:
 		$$ = new List($1);
 		$$->next = $2;
 	}
-	| /* empty */ {
-		$$ = new List(nullptr);
+	| member {
+		$$ = new List($1);
 	}
 ;
 
@@ -358,17 +361,17 @@ enum_list:
 		$$ = new List($1);
 		$$->next = $2;
 	}
-	| /* empty */ {
+	| enum_val {
 		$$ = new List(nullptr);
 	}
 ;
 
 enum_val:
-	ID SEMICOLON {
-		/// @todo Enums
+	ID[name] SEMICOLON {
+		$$ = new EnumValue(@1.begin, $name, nullptr);
 	}
-	| ID ASSIGN INTEGER SEMICOLON {
-		/// @todo Enums
+	| ID[name] ASSIGN expression[value] SEMICOLON {
+		$$ = new EnumValue(@1.begin, $name, $value);
 	}
 ;
 
@@ -427,15 +430,50 @@ struct_init_list:
 	}
 ;
 
+union_list:
+	union_mem[type] BITOR union_list_tail[list] {
+		/// @todo Union type
+	}
+;
+
+union_list_tail:
+	union_mem[type] BITOR union_list_tail[list] {
+		/// @todo Union type
+	}
+	| union_mem[type] {
+		/// @todo Union type
+	}
+;
+
+union_mem:
+	type_spec[type] {
+		$$ = $type;
+	}
+;
+
 declaration:
 	funcdecl {
 		$$ = $1;
 	}
-	| STRUCT attr_list ID[type] LBRACE member_list[list] RBRACE {
+	| TYPE attr_list ID[type] LBRACE member_list[list] RBRACE {
 		$$ = new TypeDeclaration(@1.begin, $type, $list);
 	}
-	| ENUM attr_list ID[type] LBRACE enum_list[list] RBRACE {
+	| TYPE attr_list ID[type] LBRACE enum_list[list] RBRACE {
+		$$ = new EnumDeclaration(@1.begin, $type, $list);
+	}
+	| TYPE attr_list ID[type] COLON ID[base] LBRACE member_list[list] RBRACE {
 		$$ = new TypeDeclaration(@1.begin, $type, $list);
+		/// @todo inheritance
+	}
+	| TYPE attr_list ID[type] COLON ID[base] LBRACE enum_list[list] RBRACE {
+		$$ = new EnumDeclaration(@1.begin, $type, $list);
+		/// @todo inheritance
+	}
+	| TYPE attr_list ID[type] ASSIGN type_spec[alias] SEMICOLON {
+		/// @todo alias types
+	}
+	| TYPE attr_list ID[type] ASSIGN union_list SEMICOLON {
+		/// @todo union types
 	}
 	| UNIT attr_list UNIT_ID[unit] LBRACE unitmember_list[list] RBRACE {
 		$$ = new UnitDeclaration(@1.begin, $unit, $list, "");

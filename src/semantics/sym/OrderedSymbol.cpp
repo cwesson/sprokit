@@ -14,20 +14,11 @@ OrderedSymbol::OrderedSymbol(const std::string& n, SymbolTable* p) :
 {}
 
 std::ostream& OrderedSymbol::print(std::ostream& os, unsigned int depth) const {
-	for(unsigned int i = 0; i < depth; ++i){
-		os << "#";
-	}
-	os << " " << name << std::endl;
-
-	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
-	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
-	
 	os << std::left << "| " << std::setw(15) << name
 		<< " | " << std::setw(10) << (std::string)*var.type << " | " << std::setw(10) << var.unit
-		<< " | " << std::setw(5) << (var.constant ? "true " : "false")
+		<< " | " << std::setw(5) << (var.constant ? var.value.has_value() ? std::to_string(var.value.value()) : "true " : "false")
 		<< " | " << std::setw(5) << (var.used ? "true " : "false")
 		<< " | " << std::setw(5) << (var.modified ? "true " : "false") << " |" << std::endl;
-	os << std::endl;
 
 	for(const auto* sym : children){
 		sym->print(os, depth+1);

@@ -109,6 +109,16 @@ void DimensionalAnalysis::visit(AST::Division& v) {
 	v.dim = constructed_unit;
 }
 
+void DimensionalAnalysis::visit(AST::EnumDeclaration& v) {
+	v.list->accept(*this);
+}
+
+void DimensionalAnalysis::visit(AST::EnumValue& v) {
+	if(v.value != nullptr){
+		v.value->accept(*this);
+	}
+}
+
 void DimensionalAnalysis::visit(AST::Equal& v) {
 	v.left->accept(*this);
 	Dimensions left_unit = constructed_unit;

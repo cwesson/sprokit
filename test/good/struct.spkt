@@ -1,11 +1,11 @@
 
-struct Nested {
+type Nested {
 	var q : int32;
 	var r : int64;
 	var s : int64;
 }
 
-struct Test {
+type Test {
 	var a #m : int32;
 	var sub : Nested;
 	var b #kg : int32;

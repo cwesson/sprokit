@@ -1,4 +1,4 @@
-struct Test {
+type Test {
 	var a: int32;
 }
 

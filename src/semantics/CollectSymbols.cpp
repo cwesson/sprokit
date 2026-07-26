@@ -10,7 +10,7 @@
 #include "sym/FunctionSymbols.h"
 #include "sym/OrderedSymbol.h"
 #include "sym/ScopedSymbols.h"
-#include "StructType.h"
+#include "UserType.h"
 
 CollectSymbols::CollectSymbols() :
 	table(new GlobalSymbols()),
@@ -20,7 +20,8 @@ CollectSymbols::CollectSymbols() :
 	unit(nullptr),
 	con_symbol(""),
 	collect_param(false),
-	expect_type(nullptr)
+	expect_type(nullptr),
+	next_enum(0)
 {}
 
 CollectSymbols::~CollectSymbols() {
@@ -128,6 +129,50 @@ void CollectSymbols::visit(AST::Division& v) {
 	prepTable(v);
 	v.left->accept(*this);
 	v.right->accept(*this);
+}
+
+void CollectSymbols::visit(AST::EnumDeclaration& v) {
+	prepTable(v);
+
+	next_enum = 0;
+	ADT::UserType& type = dynamic_cast<ADT::UserType&>(ADT::Type::findType(v.name));
+	if(!type.defined){
+		type.is_enum = true;
+		user_type = &type;
+			v.list->accept(*this);
+		user_type = nullptr;
+		type.defined = true;
+	}else{
+		printError(v, "Duplicate type declaration " + v.name);
+	}
+}
+
+void CollectSymbols::visit(AST::EnumValue& v) {
+	prepTable(v);
+	SymbolTable* updated = nullptr;
+	auto sym = table->addVariable(v.name, &updated);
+	if(sym != nullptr){
+		table = updated;
+		v.table = updated;
+		sym->constant = true;
+		sym->type = user_type;
+		if(v.value != nullptr){
+			v.value->accept(*this);
+			if(!v.value->is_constexpr()){
+				printError(*v.value, "Enum expression must be constant.");
+			}else{
+				auto value = v.value->eval();
+				if(value.has<int64_t>()){
+					next_enum = value.get<int64_t>();
+				}else if(value.has<uint64_t>()){
+					next_enum = value.get<uint64_t>();
+				}else{
+					printError(*v.value, "Enum expression must be an integer value.");
+				}
+			}
+		}
+		sym->value = next_enum++;
+	}
 }
 
 void CollectSymbols::visit(AST::Equal& v) {
@@ -334,11 +379,12 @@ void CollectSymbols::visit(AST::Subtraction& v) {
 void CollectSymbols::visit(AST::TypeDeclaration& v) {
 	prepTable(v);
 
+	next_enum = 0;
 	SymbolTable* t = table->addType(v.name);
 	if(t == nullptr){
 		printError(v, "Duplicate type declaration " + v.name);
 	}else{
-		ADT::StructType& type = dynamic_cast<ADT::StructType&>(ADT::Type::findType(v.name));
+		ADT::UserType& type = dynamic_cast<ADT::UserType&>(ADT::Type::findType(v.name));
 		if(!type.defined){
 			user_type = &type;
 			table = t;
@@ -410,7 +456,7 @@ void CollectSymbols::visit(AST::VariableDeclaration& v) {
 			sym->unit = v.unit;
 			sym->constant = v.constant;
 			if(user_type != nullptr){
-				user_type->addMember(sym->type);
+				dynamic_cast<ADT::UserType*>(user_type)->addMember(sym->type);
 			}
 			if(sym->type->isStruct()){
 				expect_type = sym->type;

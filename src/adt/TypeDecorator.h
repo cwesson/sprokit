@@ -86,7 +86,7 @@ class PointerType : public TypeDecorator {
 			return false;
 		}
 
-		virtual bool visit(const StructType& t) const override {
+		virtual bool visit(const UserType& t) const override {
 			(void)t;
 			return false;
 		}

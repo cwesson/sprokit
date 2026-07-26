@@ -1,0 +1,15 @@
+
+type Color {
+	RED;
+	GREEN;
+	BLUE;
+	CYAN;
+	YELLOW;
+	MAGENTA;
+	BLACK;
+	WHITE;
+}
+
+func main() : Color {
+	return YELLOW;
+}

@@ -18,11 +18,12 @@ class CollectSymbols : public Visitor {
 		SymbolTable* table;       ///< Current symbol table.
 		SymbolTable* global;      ///< Global symbol table.
 		TypeSymbols* member_table;  ///< Symbol table when processing member accesses.
-		ADT::StructType* user_type; ///< ADT type when processing member declarations.
+		ADT::UserType* user_type; ///< ADT type when processing member declarations.
 		SymbolTable::unit* unit;  ///< Symbol table when processing a unit declaration.
 		std::string con_symbol;   ///< Unit conversion variable name.
 		bool collect_param;       ///< Set to true when visiting parameter declarations.
 		ADT::Type* expect_type;   ///< Expected type for struct initialization.
+		int64_t next_enum;        ////< Next automatic enum value.
 
 	private:
 		/**

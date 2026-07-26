@@ -48,3 +48,4 @@ run_good_test "test/good/with.spkt" 40
 run_good_test "test/good/shortcircuit.spkt" 28
 run_good_test "test/good/struct.spkt" 5
 run_good_test "test/good/void.spkt" 32
+run_good_test "test/good/enums.spkt" 4

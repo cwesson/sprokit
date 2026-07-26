@@ -1,5 +1,5 @@
 /**
- * @file StructType.h
+ * @file UserType.h
  * @author Conlan Wesson
  * @copyright (c) 2025, Conlan Wesson, GNU General Public License v3
  */
@@ -20,7 +20,7 @@ namespace ADT {
 /**
  * Placeholder Type for user defined types.
  */
-class StructType : public Type {
+class UserType : public Type {
 	public:
 		virtual bool accept(const Type& t) const override {
 			return t.visit(*this);
@@ -45,7 +45,7 @@ class StructType : public Type {
 			return false;
 		}
 
-		virtual bool visit(const StructType& t) const override {
+		virtual bool visit(const UserType& t) const override {
 			return (&t == this);
 		}
 
@@ -78,11 +78,15 @@ class StructType : public Type {
 		}
 
 		virtual unsigned int size() const override {
-			unsigned int s = 0;
-			for(auto m : members){
-				s += m->size();
+			if(is_enum){
+				return sizeof(uint64_t);
+			}else{
+				unsigned int s = 0;
+				for(auto m : members){
+					s += m->size();
+				}
+				return s;
 			}
-			return s;
 		}
 
 	protected:
@@ -90,7 +94,7 @@ class StructType : public Type {
 		 * Constructor.
 		 * @param name Type name.
 		 */
-		explicit StructType(const std::string& name) :
+		explicit UserType(const std::string& name) :
 			Type(name),
 			defined(false)
 		{}
@@ -101,6 +105,7 @@ class StructType : public Type {
 	
 	public:
 		bool defined; ///< true if the user type has been defined.
+		bool is_enum; ///< true if the user type is an enum.
 };
 
 }

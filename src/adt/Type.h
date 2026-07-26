@@ -20,7 +20,7 @@ namespace ADT {
 
 class UnknownType;
 class VoidType;
-class StructType;
+class UserType;
 class BoolType;
 class FloatType;
 class IntType;
@@ -46,11 +46,11 @@ class Type {
 		static Type& findPointerType(const std::string& type);
 
 		/**
-		 * Create a new StructType.
+		 * Create a new UserType.
 		 * @param type Type name.
 		 * @return Type object, or nullptr if the type already exists.
 		 */
-		static StructType* createType(const std::string& type);
+		static UserType* createType(const std::string& type);
 
 		/**
 		 * Get the base type.
@@ -155,12 +155,12 @@ class Type {
 		virtual bool visit(const FloatType& t) const = 0;
 
 		/**
-		 * Visitor pattern, check if StructType is convertible to this.
+		 * Visitor pattern, check if UserType is convertible to this.
 		 * @warning Do not call this directly, call @ref convertibleTo().
 		 * @param t Type being converted to.
 		 * @return true if this Type is convertible to UserTpe.
 		 */
-		virtual bool visit(const StructType& t) const = 0;
+		virtual bool visit(const UserType& t) const = 0;
 
 		/**
 		 * Check if the type can hold a signed value.

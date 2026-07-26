@@ -1,5 +1,5 @@
 
-struct A {
+type A {
 	var v : int32;
 }
 

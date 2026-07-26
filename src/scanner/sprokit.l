@@ -36,8 +36,7 @@ unit {word}+(\^{dec}+)?
 "const"    { return token::CONST; }
 "var"      { return token::VAR; }
 "func"     { return token::FUNC; }
-"struct"   { return token::STRUCT; }
-"enum"     { return token::ENUM; }
+"type"     { return token::TYPE; }
 "unit"     { return token::UNIT; }
 "return"   { return token::RETURN; }
 "operator" { return token::OPERATOR; }

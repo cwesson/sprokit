@@ -13,6 +13,7 @@
 #include "Type.h"
 #include <iostream>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@ class SymbolTable {
 		struct variable {
 			ADT::Type* type;  ///< Declared type.
 			std::string unit; ///< Declared unit.
+			std::optional<int64_t> value; ///< Enum value.
 			bool constant;    ///< True if declared constant.
 			bool used;        ///< True if the variable is accessed.
 			bool modified;    ///< True if the variable is modified.
@@ -43,6 +45,7 @@ class SymbolTable {
 			variable() :
 				type(),
 				unit(),
+				value(),
 				constant(true),
 				used(false),
 				modified(false) {}

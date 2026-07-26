@@ -140,6 +140,24 @@ void PrintAST::visit(AST::Division& v) {
 	--indent;
 }
 
+void PrintAST::visit(AST::EnumDeclaration& v) {
+	printIndent(v);
+	std::cout << "ENUM " << v.name;
+	++indent;
+		v.list->accept(*this);
+	--indent;
+}
+
+void PrintAST::visit(AST::EnumValue& v) {
+	printIndent(v);
+	std::cout << "ENUM " << v.name;
+	if(v.value != nullptr){
+		++indent;
+			v.value->accept(*this);
+		--indent;
+	}
+}
+
 void PrintAST::visit(AST::Equal& v) {
 	printIndent(v);
 	std::cout << "EQUAL";

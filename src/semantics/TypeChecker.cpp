@@ -167,6 +167,16 @@ void TypeChecker::visit(AST::Division& v) {
 	}
 }
 
+void TypeChecker::visit(AST::EnumDeclaration& v) {
+	v.list->accept(*this);
+}
+
+void TypeChecker::visit(AST::EnumValue& v) {
+	if(v.value != nullptr){
+		v.value->accept(*this);
+	}
+}
+
 void TypeChecker::visit(AST::Equal& v) {
 	v.left->accept(*this);
 	v.right->accept(*this);

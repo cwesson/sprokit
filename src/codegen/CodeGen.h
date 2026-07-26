@@ -55,7 +55,7 @@ class CodeGen : public Visitor {
 		 * @param t Type to translate.
 		 * @return Translation string.
 		 */
-		virtual std::string translateType(const ADT::StructType& t) const = 0;
+		virtual std::string translateType(const ADT::UserType& t) const = 0;
 
 		/**
 		 * Visitor callback for translating ADT types to codegen types.

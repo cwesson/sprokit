@@ -17,6 +17,20 @@ const result : int32 = a + b catch 0;
 ```
 
 ## Memory Safety
+Sprokit can catch out-of-bounds array access and invalid union access.
+
+```sprokit
+var arr : int32[5] = {0, 0, 0, 0, 0};
+
+func set(const index : uint32, const value : int32) : ErrorCode {
+	arr[index] = value catch {
+		print("Error");
+		return ERROR_OUT_OF_BOUNDS;
+	}
+	return OK;
+}
+```
+
 Sprokit uses a borrow checker similar to Rust.
 
 ## Initializer statements
@@ -115,3 +129,4 @@ In addition to the [Variable Attributes](#variable-attributes):
 | `coding` | `count`, init, step  | Numbers enum with sequential value (default, init=0, step=1) |
 |          | `gray`               | Numbers enum with values using Gray Code                     |
 |          | `onehot`             | Numbers enum with values that have a single 1-bit            |
+| `flags`  |                      | Enables bitwise operations yielding the same type            |

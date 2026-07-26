@@ -8,7 +8,6 @@
 | `const`    | Constant declaration, see [Variables](#variables)            |
 | `continue` | Continue to next loop iteration     |
 | `else`     | Else component of an `if` statement, see [If Statements](#if-statements) |
-| `enum`     | Enum type declaration, see [User Types](#user-types)         |
 | `false`    | Boolean FALSE literal, see [Built-in Types](#built-in-types) |
 | `for`      | Loop statement                      |
 | `func`     | Function declaration, see [Functions](#functions)            |
@@ -17,7 +16,7 @@
 | `return`   | Function return statement           |
 | `switch`   | Switch statement                    |
 | `true`     | Boolean TRUE literal, see [Built-in Types](#built-in-types)  |
-| `struct`   | Struct type declaration, see [User Types](#user-types)       |
+| `type`     | Struct and enum type declaration, see [User Types](#user-types) |
 | `unit`     | Unit declaration, see [Units](#units)                        |
 | `var`      | Variable declaration, see [Variables](#variables)            |
 | `with`     | With variable statement                                      |

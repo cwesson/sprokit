@@ -6,7 +6,7 @@
 
 #include "LLCodeGen.h"
 #include "PrimitiveType.h"
-#include "StructType.h"
+#include "UserType.h"
 #include "TypeDecorator.h"
 #include "sym/TypeSymbols.h"
 #include <llvm/IR/Verifier.h>
@@ -87,10 +87,15 @@ std::string LLCodeGen::translateType(const ADT::FloatType& t) const {
 	}
 }
 
-std::string LLCodeGen::translateType(const ADT::StructType& t) const {
+std::string LLCodeGen::translateType(const ADT::UserType& t) const {
 	std::stringstream s;
-	s << "%" << (std::string)t;
-	translated_type = llvm::StructType::getTypeByName(*context, (std::string)t);
+	if(t.is_enum){
+		s << "i" << t.size()*8;
+		translated_type = llvm::IntegerType::get(*context, t.size()*8);
+	}else{
+		s << "%" << (std::string)t;
+		translated_type = llvm::StructType::getTypeByName(*context, (std::string)t);
+	}
 	return s.str();
 }
 
@@ -301,6 +306,14 @@ void LLCodeGen::visit(AST::Division& v) {
 	}else{
 		last_value = builder->CreateUDiv(op.left, op.right);
 	}
+}
+
+void LLCodeGen::visit(AST::EnumDeclaration& v) {
+	(void)v;
+}
+
+void LLCodeGen::visit(AST::EnumValue& v) {
+	(void)v;
 }
 
 void LLCodeGen::visit(AST::Equal& v) {
@@ -701,8 +714,13 @@ void LLCodeGen::visit(AST::UnitDeclaration& v) {
 void LLCodeGen::visit(AST::Variable& v) {
 	if(allocaValues.contains(v.name)){
 		last_value = allocaValues[v.name];
-	}else{
+	}else if(globalValues.contains(v.name)){
 		last_value = globalValues[v.name];
+	}else{
+		auto sym = v.table->findVariable(v.name);
+		if(sym != nullptr && sym->constant && sym->value.has_value()){
+			last_value = llvm::ConstantInt::get(*context, llvm::APInt(v.getType().size()*8, sym->value.value()));
+		}
 	}
 }
 

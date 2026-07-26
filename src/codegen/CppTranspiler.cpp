@@ -7,7 +7,7 @@
 #include "CppTranspiler.h"
 #include "sym/SymbolTable.h"
 #include "PrimitiveType.h"
-#include "StructType.h"
+#include "UserType.h"
 #include "TypeDecorator.h"
 #include <functional>
 #include <sstream>
@@ -68,8 +68,15 @@ std::string CppTranspiler::translateType(const ADT::FloatType& t) const {
 	return s.str();
 }
 
-std::string CppTranspiler::translateType(const ADT::StructType& t) const {
-	return (std::string)t;
+std::string CppTranspiler::translateType(const ADT::UserType& t) const {
+	std::stringstream s;
+	if(t.is_enum){
+		s << "enum ";
+	}else{
+		s << "struct ";
+	}
+	s << (std::string)t.translate(*this);
+	return s.str();
 }
 
 std::string CppTranspiler::translateType(const ADT::PointerType& t) const {
@@ -201,6 +208,23 @@ void CppTranspiler::visit(AST::Division& v) {
 	os << " / ";
 	v.right->accept(*this);
 	os << ")";
+}
+
+void CppTranspiler::visit(AST::EnumDeclaration& v) {
+	os << "enum class " << v.name << " {";
+	++indent;
+		v.list->accept(*this);
+	--indent;
+	os << "};" << std::endl;
+}
+
+void CppTranspiler::visit(AST::EnumValue& v) {
+	os << v.name;
+	if(v.value != nullptr){
+		os << " = ";
+		v.value->accept(*this);
+	}
+	os << "," << std::endl;
 }
 
 void CppTranspiler::visit(AST::Equal& v) {

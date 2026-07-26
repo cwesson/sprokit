@@ -42,7 +42,7 @@ public:
 		virtual std::string translateType(const ADT::BoolType& t) const override;
 		virtual std::string translateType(const ADT::IntType& t) const override;
 		virtual std::string translateType(const ADT::FloatType& t) const override;
-		virtual std::string translateType(const ADT::StructType& t) const override;
+		virtual std::string translateType(const ADT::UserType& t) const override;
 		virtual std::string translateType(const ADT::PointerType& t) const override;
 
 		/**

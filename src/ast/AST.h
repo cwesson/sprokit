@@ -25,6 +25,8 @@
 	X(BoolOr) \
 	X(Conversion) \
 	X(Division) \
+	X(EnumDeclaration) \
+	X(EnumValue) \
 	X(Equal) \
 	X(Exponent) \
 	X(FloatLiteral) \
@@ -72,6 +74,8 @@
 #include "BoolOr.h"
 #include "Conversion.h"
 #include "Division.h"
+#include "EnumDeclaration.h"
+#include "EnumValue.h"
 #include "Equal.h"
 #include "Exponent.h"
 #include "FloatLiteral.h"

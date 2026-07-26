@@ -39,15 +39,17 @@ std::ostream& GlobalSymbols::print(std::ostream& os, unsigned int depth) const {
 
 	os << "| Name            | Expanded        |" << std::endl;
 	os << "|-----------------|-----------------|" << std::endl;
-
 	for(auto sym : units) {
 		os << std::left << "| " << std::setw(15) << sym.first << " | " << std::setw(15) << sym.second->expanded << " |" << std::endl;
 	}
 	os << std::endl;
 
+	os << "| Name            | Type       | Unit       | const | used  | modif |" << std::endl;
+	os << "|-----------------|------------|------------|-------|-------|-------|" << std::endl;
 	for(const auto* sym : children){
 		sym->print(os, depth+1);
 	}
+	os << std::endl;
 
 	for(const auto& sym : funcs) {
 		sym.second->table->print(os, depth+1);
